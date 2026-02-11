@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Farm Finance Tracker - Finances</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec13",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102210",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-primary/10 bg-white dark:bg-background-dark/50 flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white text-sm">agriculture</span>
+</div>
+<h1 class="font-bold text-lg tracking-tight">FarmFlow</h1>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-icons">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-icons">map</span>
+<span class="text-sm font-medium">Farm Map</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg" href="#">
+<span class="material-icons">payments</span>
+<span class="text-sm font-medium">Finances</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-icons">inventory_2</span>
+<span class="text-sm font-medium">Resources</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-icons">groups</span>
+<span class="text-sm font-medium">Labor Force</span>
+</a>
+</nav>
+<div class="p-4 mt-auto">
+<div class="bg-primary/5 rounded-xl p-4 border border-primary/10">
+<p class="text-xs text-slate-500 mb-1">Total Balance</p>
+<p class="text-xl font-bold text-slate-900">$42,500.80</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col relative h-screen overflow-hidden">
+<!-- Top Header -->
+<header class="h-16 border-b border-primary/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md flex items-center justify-between px-8 z-10">
+<div class="flex items-center gap-4">
+<h2 class="text-xl font-semibold">Finance Overview</h2>
+<div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-1">
+<span class="text-xs font-medium text-slate-500">Q3 2023</span>
+<span class="material-icons text-sm text-slate-400">calendar_today</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm w-64 focus:ring-2 focus:ring-primary/50" placeholder="Search transactions..." type="text"/>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-icons text-sm">add</span>
+                    Add Transaction
+                </button>
+</div>
+</header>
+<!-- Financial Content -->
+<div class="flex-1 overflow-y-auto p-8 space-y-6">
+<!-- Summary Metrics -->
+<div class="grid grid-cols-4 gap-6">
+<div class="bg-white dark:bg-background-dark/40 border border-primary/5 p-5 rounded-xl">
+<p class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Total Spend</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold">$124,500</span>
+<span class="text-xs text-red-500 font-medium">+12% vs last month</span>
+</div>
+</div>
+<div class="bg-white dark:bg-background-dark/40 border border-primary/5 p-5 rounded-xl">
+<p class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Operating Budget</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold">$250,000</span>
+<span class="text-xs text-slate-400 font-medium">Annual</span>
+</div>
+</div>
+<div class="bg-white dark:bg-background-dark/40 border border-primary/5 p-5 rounded-xl">
+<p class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Remaining</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold text-primary">$125,500</span>
+<span class="text-xs text-primary font-medium">50.2% left</span>
+</div>
+</div>
+<div class="bg-white dark:bg-background-dark/40 border border-primary/5 p-5 rounded-xl">
+<p class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Projected Profit</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold">$89,420</span>
+<span class="material-icons text-primary text-sm">trending_up</span>
+</div>
+</div>
+</div>
+<!-- Categories Accordion List -->
+<div class="space-y-3">
+<!-- Category: Materials (Collapsed) -->
+<div class="bg-white dark:bg-background-dark/40 border border-primary/5 rounded-xl overflow-hidden group">
+<button class="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+<span class="material-icons">construction</span>
+</div>
+<div class="text-left">
+<h3 class="font-bold text-slate-800">Materials</h3>
+<p class="text-xs text-slate-500">Infrastructure &amp; Maintenance</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-sm font-bold text-slate-800">$12,450.00</p>
+<p class="text-[10px] text-slate-400 uppercase">Total for period</p>
+</div>
+<span class="material-icons text-slate-400 group-hover:text-primary">expand_more</span>
+</div>
+</button>
+</div>
+<!-- Category: Labor (Collapsed) -->
+<div class="bg-white dark:bg-background-dark/40 border border-primary/5 rounded-xl overflow-hidden group">
+<button class="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+<span class="material-icons">engineering</span>
+</div>
+<div class="text-left">
+<h3 class="font-bold text-slate-800">Labor</h3>
+<p class="text-xs text-slate-500">Wages, Contractors &amp; Insurance</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-sm font-bold text-slate-800">$45,200.00</p>
+<p class="text-[10px] text-slate-400 uppercase">Total for period</p>
+</div>
+<span class="material-icons text-slate-400 group-hover:text-primary">expand_more</span>
+</div>
+</button>
+</div>
+<!-- Category: Fertilizer (Expanded) -->
+<div class="bg-white dark:bg-background-dark/40 border-2 border-primary/20 rounded-xl overflow-hidden">
+<button class="w-full px-6 py-4 flex items-center justify-between bg-primary/5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-icons">opacity</span>
+</div>
+<div class="text-left">
+<h3 class="font-bold text-slate-800">Fertilizer</h3>
+<p class="text-xs text-slate-500">Nutrients &amp; Supplements</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-sm font-bold text-primary font-bold text-slate-800">$32,840.50</p>
+<p class="text-[10px] text-slate-400 uppercase">Total for period</p>
+</div>
+<span class="material-icons text-primary">expand_less</span>
+</div>
+</button>
+<div class="px-6 pb-6">
+<table class="w-full text-left">
+<thead class="text-[11px] text-slate-400 uppercase tracking-widest border-b border-slate-100">
+<tr>
+<th class="py-4 font-semibold">Date</th>
+<th class="py-4 font-semibold">Description</th>
+<th class="py-4 font-semibold">Vendor</th>
+<th class="py-4 font-semibold text-right">Amount</th>
+<th class="py-4 font-semibold text-right">Action</th>
+</tr>
+</thead>
+<tbody class="text-sm divide-y divide-slate-50">
+<tr class="group hover:bg-slate-50/50 cursor-pointer">
+<td class="py-4 text-slate-500 font-medium">Aug 14, 2023</td>
+<td class="py-4">
+<div class="font-semibold text-slate-800">Premium Grade Potash (50t)</div>
+<p class="text-[11px] text-slate-400">Transaction ID: #F-9284</p>
+</td>
+<td class="py-4 text-slate-600">AgriSupplies Co.</td>
+<td class="py-4 text-right font-bold text-slate-900">$8,450.00</td>
+<td class="py-4 text-right">
+<button class="text-primary hover:bg-primary/10 p-1 rounded">
+<span class="material-icons text-sm">open_in_new</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50/50 cursor-pointer border-l-4 border-primary">
+<td class="py-4 text-slate-500 font-medium">Aug 02, 2023</td>
+<td class="py-4">
+<div class="font-semibold text-slate-800">Urea Fertilizer Bulk Delivery</div>
+<p class="text-[11px] text-slate-400">Transaction ID: #F-9210</p>
+</td>
+<td class="py-4 text-slate-600">Global Soil Solutions</td>
+<td class="py-4 text-right font-bold text-slate-900">$12,390.50</td>
+<td class="py-4 text-right">
+<button class="bg-primary text-white p-1 rounded">
+<span class="material-icons text-sm">open_in_new</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50/50 cursor-pointer">
+<td class="py-4 text-slate-500 font-medium">Jul 28, 2023</td>
+<td class="py-4">
+<div class="font-semibold text-slate-800">Micronutrient Spray Mix</div>
+<p class="text-[11px] text-slate-400">Transaction ID: #F-8902</p>
+</td>
+<td class="py-4 text-slate-600">NatureGrow Ltd.</td>
+<td class="py-4 text-right font-bold text-slate-900">$2,100.00</td>
+<td class="py-4 text-right">
+<button class="text-primary hover:bg-primary/10 p-1 rounded">
+<span class="material-icons text-sm">open_in_new</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Category: Seeds (Collapsed) -->
+<div class="bg-white dark:bg-background-dark/40 border border-primary/5 rounded-xl overflow-hidden group">
+<button class="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+<span class="material-icons">grass</span>
+</div>
+<div class="text-left">
+<h3 class="font-bold text-slate-800">Seeds</h3>
+<p class="text-xs text-slate-500">Grain, Veggie &amp; Cover Crops</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-sm font-bold text-slate-800">$24,150.00</p>
+<p class="text-[10px] text-slate-400 uppercase">Total for period</p>
+</div>
+<span class="material-icons text-slate-400 group-hover:text-primary">expand_more</span>
+</div>
+</button>
+</div>
+<!-- Category: Fuel (Collapsed) -->
+<div class="bg-white dark:bg-background-dark/40 border border-primary/5 rounded-xl overflow-hidden group">
+<button class="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+<span class="material-icons">local_gas_station</span>
+</div>
+<div class="text-left">
+<h3 class="font-bold text-slate-800">Fuel</h3>
+<p class="text-xs text-slate-500">Diesel, Gasoline &amp; Propane</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-sm font-bold text-slate-800">$9,860.00</p>
+<p class="text-[10px] text-slate-400 uppercase">Total for period</p>
+</div>
+<span class="material-icons text-slate-400 group-hover:text-primary">expand_more</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Modal: Transaction Detail -->
+<div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-end">
+<div class="w-[500px] h-full bg-white dark:bg-background-dark shadow-2xl flex flex-col">
+<!-- Modal Header -->
+<div class="p-6 border-b border-primary/10 flex items-center justify-between">
+<div>
+<h2 class="text-xl font-bold">Transaction Detail</h2>
+<p class="text-xs text-slate-500">#F-9210 • Fertilizer Category</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+<span class="material-icons text-slate-500">close</span>
+</button>
+</div>
+<!-- Modal Body -->
+<div class="flex-1 overflow-y-auto p-6 space-y-8">
+<!-- Amount Highlight -->
+<div class="text-center p-6 bg-primary/5 rounded-2xl border border-primary/10">
+<p class="text-sm font-medium text-slate-500 mb-1">Payment Amount</p>
+<h3 class="text-4xl font-black text-slate-900">$12,390.50</h3>
+<div class="mt-3 inline-flex items-center gap-2 bg-white px-3 py-1 rounded-full text-[10px] font-bold text-slate-600 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                        CLEARED &amp; VERIFIED
+                    </div>
+</div>
+<!-- Transaction Details Grid -->
+<div class="grid grid-cols-2 gap-y-6 gap-x-4">
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">Date</p>
+<p class="text-sm font-medium">August 02, 2023</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">Time</p>
+<p class="text-sm font-medium">10:45 AM</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">Vendor</p>
+<p class="text-sm font-medium">Global Soil Solutions</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">Method</p>
+<div class="flex items-center gap-1">
+<span class="material-icons text-xs text-slate-400">credit_card</span>
+<p class="text-sm font-medium">Corporate Visa (**** 2405)</p>
+</div>
+</div>
+</div>
+<hr class="border-slate-100"/>
+<!-- Receipt Image Section -->
+<div>
+<div class="flex items-center justify-between mb-3">
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Digital Receipt</p>
+<button class="text-primary text-[10px] font-bold hover:underline">RE-UPLOAD</button>
+</div>
+<div class="relative aspect-[3/4] bg-slate-50 rounded-xl overflow-hidden border-2 border-dashed border-slate-200 group">
+<img class="w-full h-full object-cover opacity-60 mix-blend-multiply transition-transform group-hover:scale-105" data-alt="Digital scan of a paper purchase receipt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1SDDw7gLBXFjXZTCzh9QKN5_x8oYZ1gAhdKh25S-rpA7WFh45-Wb22JltBd93cd4Yk28BWa2HPTj2cIVzFihtPHWC1_40-YgwpRWogTucGq8t2fKqNfBxgxfCkHpTu_nBpnzi3JqeebdKNJHD4alIZT1Sk6Gub0xfdklE4w-gM3D8p-qoDrhdZ5WPrnNsK43Mpms9pwnIc_Ki2VA7Ki1LtI5WpwdFRq4B3Ho-6Y9-fWsS2KGKI-0l9ixzdjCu6ceomoYlyzFfkCQI"/>
+<div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+<span class="material-icons text-3xl text-slate-400 mb-2">receipt_long</span>
+<span class="text-xs font-bold text-slate-500">Click to expand scan</span>
+</div>
+</div>
+</div>
+<!-- Notes Section -->
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">Notes</p>
+<div class="bg-slate-50 p-4 rounded-lg italic text-sm text-slate-600 border border-slate-100">
+                        "Emergency purchase for North field fertilization. Soil quality report suggested nitrogen deficit. Delivery arrived ahead of schedule."
+                    </div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="p-6 border-t border-primary/10 flex gap-3">
+<button class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors">
+<span class="material-icons text-sm">download</span>
+                    PDF Receipt
+                </button>
+<button class="flex-1 py-3 bg-primary text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-icons text-sm">edit</span>
+                    Edit Record
+                </button>
+</div>
+</div>
+</div>
+</body></html>

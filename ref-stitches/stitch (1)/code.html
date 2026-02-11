@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Machinery Management List</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec13",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102210",
+                        "neutral-light": "#f1f5f1",
+                        "neutral-dark": "#1a2e1a",
+                        "border-light": "#e2e8f0",
+                        "border-dark": "#2d3f2d",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-display">
+<!-- Header Bar -->
+<header class="h-16 border-b border-border-light dark:border-border-dark bg-white dark:bg-neutral-dark px-6 flex items-center justify-between sticky top-0 z-40">
+<div class="flex items-center gap-4">
+<div class="flex items-center text-sm text-slate-500 dark:text-slate-400">
+<span>Farm Management</span>
+<span class="material-icons text-sm mx-2">chevron_right</span>
+<span class="font-semibold text-slate-900 dark:text-white">Machinery</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-100 dark:bg-background-dark border-none rounded-lg text-sm focus:ring-2 focus:ring-primary w-64 transition-all" placeholder="Search equipment..." type="text"/>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-slate-900 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
+<span class="material-icons text-sm">add</span>
+<span>Add Machine</span>
+</button>
+</div>
+</header>
+<main class="flex-1 flex relative overflow-hidden">
+<!-- Main Content Area -->
+<div class="flex-1 p-6 overflow-y-auto custom-scrollbar">
+<!-- Filters & Tabs -->
+<div class="mb-6 flex items-center justify-between">
+<div class="flex bg-slate-200/50 dark:bg-neutral-dark p-1 rounded-lg">
+<button class="px-4 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-primary shadow-sm">All Assets</button>
+<button class="px-4 py-1.5 text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900">Active</button>
+<button class="px-4 py-1.5 text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900">Maintenance</button>
+<button class="px-4 py-1.5 text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900">Idle</button>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-border-light dark:border-border-dark rounded-lg text-sm font-medium bg-white dark:bg-neutral-dark hover:bg-slate-50">
+<span class="material-icons text-base">filter_list</span>
+                        Filters
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 border border-border-light dark:border-border-dark rounded-lg text-sm font-medium bg-white dark:bg-neutral-dark hover:bg-slate-50">
+<span class="material-icons text-base">file_download</span>
+                        Export
+                    </button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="bg-white dark:bg-neutral-dark border border-border-light dark:border-border-dark rounded-xl overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-background-dark/50 border-b border-border-light dark:border-border-dark">
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500 tracking-wider">Machine Name</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500 tracking-wider">Status</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500 tracking-wider">Last Service</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500 tracking-wider">Fuel Level</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500 tracking-wider">Engine Hours</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500 tracking-wider"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-light dark:divide-border-dark">
+<!-- Row 1 (Selected/Active) -->
+<tr class="hover:bg-primary/5 cursor-pointer bg-primary/10 transition-colors border-l-4 border-l-primary">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="Modern green tractor in a field" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpR8eH47aHdY-apsJg-f1HRd9IZhP05mAvt90UxERurzQSgIZsV473ptt1w_FtCNwD_5FuyMrbp1ia4iRKH46FDN3j9ORFgEQdznuhjV5VPoyoxYB-W2Je6QpNv0CgbP5i1tOlqJ9CySKFi-huqDbsI2UsyE-KfxyCZd8Qe875bp-fhIjmgv2--eW_R_jIdBx_yT0FnMfjcc3Tr9z5Ww7UHXflw566giELZEJRnD2Ndt1ChwD1ccvkq-SgQ3Uaqjbh7d2sVO9_7ygc"/>
+</div>
+<div>
+<p class="font-semibold text-slate-900 dark:text-white">John Deere 8R 370</p>
+<p class="text-xs text-slate-500">SN: JD-8R-2023-991</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-emerald-700 dark:text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-2"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">Oct 12, 2023</td>
+<td class="px-6 py-4">
+<div class="w-full max-w-[120px]">
+<div class="flex justify-between text-[10px] mb-1">
+<span>78%</span>
+</div>
+<div class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full">
+<div class="h-full bg-primary rounded-full" style="width: 78%"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">1,240 hrs</td>
+<td class="px-6 py-4 text-right">
+<span class="material-icons text-slate-400">chevron_right</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-background-dark/30 cursor-pointer transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="Red agricultural combine harvester" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANKlb0RWCtq9ZCmUlwhleiu9YXCF0C1LfPeJSEcnJ76tPqM-ugcFm3-C3eIkGZeryubbbhMlHN4B2fvf47-S_RbnzxtTIyJoMA3-oha4Eq0-_GXpL4_O26p2PDBcTIJGPjmkhywl1IxaOuZA90FPXEkPgHDf_iBQOuTS7CTN2Hd6oCm5fxn0ILtbfZugnH6Y_GoYuQIiLmhnjh8Z1qxS32fD_YHmfSnFlxkrAGZnEcMxO8bxFUK4OcU_P5n-sfRua_wDlgPHXsnXzS"/>
+</div>
+<div>
+<p class="font-semibold text-slate-900 dark:text-white">Case IH Magnum 340</p>
+<p class="text-xs text-slate-500">SN: CIH-M3-2022-442</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2"></span>
+                                    Maintenance
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">Scheduled: Nov 5</td>
+<td class="px-6 py-4">
+<div class="w-full max-w-[120px]">
+<div class="flex justify-between text-[10px] mb-1">
+<span>32%</span>
+</div>
+<div class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full">
+<div class="h-full bg-amber-500 rounded-full" style="width: 32%"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">2,105 hrs</td>
+<td class="px-6 py-4 text-right">
+<span class="material-icons text-slate-400">chevron_right</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-background-dark/30 cursor-pointer transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="Yellow harvesting machine" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBA3h9WrYAyHrl-l0OudfxQ9gZf9CTqVVdfI0AbrVnukGPwc3GXgDAfu7X5SHrCrFF_BxyFGCD8Txl9nfkvsjq5KaCMtWPqLXmrAJgiwB4r7Bo6cARLr9omA9_bG1WGfxaTSg7uhWwbE5s_AV9VNONIwhBUknN5gUhMZ2NAwF44A9dtMYy4ZH22Lewo0twlDW6mQkMwSbqyt8jRo9u0mXGwbJG45SnzjpEb0d2Nfv1mwn7OMlOtqHHuxg323pX93b3HkKbfdVcN-JLY"/>
+</div>
+<div>
+<p class="font-semibold text-slate-900 dark:text-white">Claas Lexion 8000</p>
+<p class="text-xs text-slate-500">SN: CL-LX-2023-112</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-emerald-700 dark:text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-2"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">Sep 28, 2023</td>
+<td class="px-6 py-4">
+<div class="w-full max-w-[120px]">
+<div class="flex justify-between text-[10px] mb-1">
+<span>95%</span>
+</div>
+<div class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full">
+<div class="h-full bg-primary rounded-full" style="width: 95%"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">890 hrs</td>
+<td class="px-6 py-4 text-right">
+<span class="material-icons text-slate-400">chevron_right</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-background-dark/30 cursor-pointer transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="Blue industrial agricultural tractor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUZirdRXpHFHrC6qPgsLuvUTiRcavLTpf656n11Kmkcp-95L1wfs_LJPglyA-L6Ao0w9vxmCEh2cH7H_MYh2np5zfVKVt7fhJoed-irbNL2wh0tZTZOmF2rihmF4LxOvZcrXAf1uFm1tL1IyX38Qsj8-b0PRBmlxjcCTiemijE3YLolGpnKJYMcjB0suvBvg19Euk6P0coCQgfGz4miPxzoQ76oHBy9w1AEPE8sfM_jqyiGvm6J_Acal1TyJsg_5sbAt0jIMMIiA_B"/>
+</div>
+<div>
+<p class="font-semibold text-slate-900 dark:text-white">New Holland T7</p>
+<p class="text-xs text-slate-500">SN: NH-T7-2021-005</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-2"></span>
+                                    Out of Order
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">Pending Parts</td>
+<td class="px-6 py-4">
+<div class="w-full max-w-[120px]">
+<div class="flex justify-between text-[10px] mb-1">
+<span>12%</span>
+</div>
+<div class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full">
+<div class="h-full bg-red-500 rounded-full" style="width: 12%"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">3,420 hrs</td>
+<td class="px-6 py-4 text-right">
+<span class="material-icons text-slate-400">chevron_right</span>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="px-6 py-4 bg-slate-50 dark:bg-background-dark/50 border-t border-border-light dark:border-border-dark flex items-center justify-between text-sm text-slate-500">
+<span>Showing 4 of 28 machines</span>
+<div class="flex items-center gap-2">
+<button class="p-1 hover:bg-slate-200 dark:hover:bg-neutral-dark rounded">
+<span class="material-icons text-lg">chevron_left</span>
+</button>
+<button class="p-1 hover:bg-slate-200 dark:hover:bg-neutral-dark rounded">
+<span class="material-icons text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right-Side Detail Drawer -->
+<aside class="w-[450px] bg-white dark:bg-neutral-dark border-l border-border-light dark:border-border-dark flex flex-col shadow-2xl z-30">
+<div class="p-6 border-b border-border-light dark:border-border-dark flex items-center justify-between">
+<h2 class="text-xl font-bold text-slate-900 dark:text-white">Machine Details</h2>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-background-dark rounded-lg text-slate-500">
+<span class="material-icons">edit</span>
+</button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-background-dark rounded-lg text-slate-500">
+<span class="material-icons">close</span>
+</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+<!-- Image Header -->
+<div class="relative w-full aspect-video rounded-xl overflow-hidden mb-6 group">
+<img class="w-full h-full object-cover" data-alt="John Deere 8R 370 in action" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCf9_DD7Q_zOmMrdBX9f_0-jTfhVLme0l8V1l_b7lsC7d2n4-6wJBQaRfMYIMnhbANLtHgbaif1yRd5gGbFgHYsfQpqVTLmT8kW4onp6EtqUryw5AQCuYqm3yPeq2sQGcIWlCuBudTA9QQum6V2s1noVmjjtXJ5JA-XXeKpYy8Wpju_DFhMFDPH0JxnT03RWmkH2nlFXLxDB8-0utFjJ40V-rsP4IHGZwecsP7KFkMbwmpDUCKrl5ibV6riMhD5RjdwRNDoX32u78_"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+<div class="text-white">
+<p class="text-sm opacity-80 uppercase tracking-widest font-semibold">Current Operator</p>
+<p class="font-bold text-lg">David Henderson</p>
+</div>
+</div>
+</div>
+<!-- Basic Specs -->
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div class="p-4 bg-slate-50 dark:bg-background-dark/30 rounded-lg">
+<p class="text-xs text-slate-500 uppercase font-bold mb-1">Manufacturer</p>
+<p class="font-semibold">John Deere</p>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-background-dark/30 rounded-lg">
+<p class="text-xs text-slate-500 uppercase font-bold mb-1">Model Year</p>
+<p class="font-semibold">2023</p>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-background-dark/30 rounded-lg">
+<p class="text-xs text-slate-500 uppercase font-bold mb-1">Horsepower</p>
+<p class="font-semibold">370 HP</p>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-background-dark/30 rounded-lg">
+<p class="text-xs text-slate-500 uppercase font-bold mb-1">Fuel Type</p>
+<p class="font-semibold">Diesel / DEF</p>
+</div>
+</div>
+<!-- Live Monitoring -->
+<div class="mb-8">
+<h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Real-time Stats</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between mb-1.5">
+<span class="text-sm font-medium">Fuel Reservoir</span>
+<span class="text-sm font-bold">78% (320L)</span>
+</div>
+<div class="w-full h-2 bg-slate-100 dark:bg-background-dark rounded-full">
+<div class="h-full bg-primary rounded-full" style="width: 78%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-1.5">
+<span class="text-sm font-medium">Engine Load</span>
+<span class="text-sm font-bold">45%</span>
+</div>
+<div class="w-full h-2 bg-slate-100 dark:bg-background-dark rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 rounded-full" style="width: 45%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Maintenance History -->
+<div>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Maintenance History</h3>
+<button class="text-xs font-bold text-primary hover:underline">View All</button>
+</div>
+<div class="space-y-4">
+<div class="flex gap-4 relative">
+<div class="flex-none flex flex-col items-center">
+<div class="w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-primary/20"></div>
+<div class="w-px h-full bg-border-light dark:bg-border-dark mt-2"></div>
+</div>
+<div class="pb-4">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Scheduled Oil Change</p>
+<p class="text-xs text-slate-500">Completed on Oct 12, 2023</p>
+<p class="text-xs text-slate-600 dark:text-slate-400 mt-2 italic">Filter replaced, synthetic oil blend used.</p>
+</div>
+</div>
+<div class="flex gap-4 relative">
+<div class="flex-none flex flex-col items-center">
+<div class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
+<div class="w-px h-full bg-border-light dark:bg-border-dark mt-2"></div>
+</div>
+<div class="pb-4">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Tire Pressure Check</p>
+<p class="text-xs text-slate-500">Completed on Sep 05, 2023</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex-none flex flex-col items-center">
+<div class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">New Delivery Inspection</p>
+<p class="text-xs text-slate-500">Completed on Aug 20, 2023</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-border-light dark:border-border-dark bg-slate-50 dark:bg-background-dark/50">
+<button class="w-full bg-slate-900 dark:bg-primary text-white dark:text-slate-900 font-bold py-3 rounded-lg hover:opacity-90 transition-opacity">
+                    Schedule Maintenance
+                </button>
+</div>
+</aside>
+</main>
+<!-- Map Trigger Float (Context: Integrated Resource Management) -->
+<div class="fixed bottom-6 right-6 z-50">
+<button class="flex items-center gap-3 px-6 py-4 bg-slate-900 text-white rounded-full shadow-2xl border-4 border-white dark:border-neutral-dark hover:scale-105 transition-transform">
+<span class="material-icons">map</span>
+<span class="font-bold">Switch to Map View</span>
+</button>
+</div>
+</body></html>

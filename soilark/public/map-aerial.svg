@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feBlend in="SourceGraphic" mode="multiply"/>
+    </filter>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2d5016"/>
+      <stop offset="50%" stop-color="#1a3a0a"/>
+      <stop offset="100%" stop-color="#2d4a1a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Base -->
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+
+  <!-- Field patches - irregular shapes suggesting real farmland -->
+  <!-- Large pasture areas -->
+  <polygon points="0,0 380,0 350,180 200,220 0,200" fill="#3a6b25" opacity="0.7"/>
+  <polygon points="400,0 750,0 780,160 620,200 380,180" fill="#4a7a30" opacity="0.6"/>
+  <polygon points="770,0 1100,0 1120,190 950,220 800,170" fill="#2d5a1a" opacity="0.7"/>
+  <polygon points="1120,0 1500,0 1520,150 1350,210 1100,180" fill="#3d6c28" opacity="0.65"/>
+  <polygon points="1520,0 1920,0 1920,200 1700,230 1500,160" fill="#4a7a30" opacity="0.6"/>
+
+  <!-- Arable fields (ploughed pattern) -->
+  <polygon points="50,220 340,200 380,420 320,480 60,450" fill="#5a8a35" opacity="0.6"/>
+  <polygon points="360,210 620,190 680,380 600,440 340,430" fill="#6b9940" opacity="0.55"/>
+  <polygon points="650,220 950,200 1000,410 880,460 640,400" fill="#4d7a2d" opacity="0.65"/>
+  <polygon points="980,210 1350,180 1380,350 1250,420 960,380" fill="#5a8a35" opacity="0.6"/>
+  <polygon points="1380,200 1700,170 1750,380 1600,430 1360,370" fill="#6b9940" opacity="0.55"/>
+  <polygon points="1720,220 1920,200 1920,440 1850,460 1700,400" fill="#3d6c28" opacity="0.65"/>
+
+  <!-- Woodland areas -->
+  <polygon points="0,460 180,440 220,620 160,680 0,650" fill="#1a4010" opacity="0.8"/>
+  <polygon points="1750,440 1920,450 1920,680 1850,700 1730,630" fill="#1a4010" opacity="0.8"/>
+
+  <!-- Central fields -->
+  <polygon points="200,460 500,430 540,650 460,700 180,670" fill="#5a8a35" opacity="0.6"/>
+  <polygon points="520,440 800,420 850,600 780,680 500,660" fill="#7aaa4a" opacity="0.5"/>
+  <polygon points="820,430 1150,400 1200,580 1100,660 800,620" fill="#4d7a2d" opacity="0.65"/>
+  <polygon points="1170,410 1500,380 1550,580 1450,640 1150,600" fill="#5a8a35" opacity="0.6"/>
+  <polygon points="1520,400 1730,420 1770,630 1680,680 1500,620" fill="#6b9940" opacity="0.55"/>
+
+  <!-- Lower fields -->
+  <polygon points="0,680 300,670 340,850 260,900 0,880" fill="#4d7a2d" opacity="0.65"/>
+  <polygon points="320,690 600,670 640,840 560,900 300,870" fill="#5a8a35" opacity="0.6"/>
+  <polygon points="620,680 920,660 960,830 880,890 600,860" fill="#7aaa4a" opacity="0.5"/>
+  <polygon points="940,670 1250,640 1300,820 1200,880 920,850" fill="#3d6c28" opacity="0.65"/>
+  <polygon points="1270,650 1600,630 1640,810 1560,870 1250,840" fill="#5a8a35" opacity="0.6"/>
+  <polygon points="1620,660 1920,680 1920,880 1820,890 1600,830" fill="#4d7a2d" opacity="0.65"/>
+
+  <!-- Bottom strip -->
+  <polygon points="0,900 400,880 440,1080 0,1080" fill="#6b9940" opacity="0.55"/>
+  <polygon points="420,890 800,870 840,1080 400,1080" fill="#3d6c28" opacity="0.65"/>
+  <polygon points="820,880 1200,860 1240,1080 800,1080" fill="#5a8a35" opacity="0.6"/>
+  <polygon points="1220,870 1600,860 1640,1080 1200,1080" fill="#4d7a2d" opacity="0.65"/>
+  <polygon points="1620,860 1920,880 1920,1080 1600,1080" fill="#6b9940" opacity="0.55"/>
+
+  <!-- Hedgerows / field boundaries -->
+  <line x1="350" y1="0" x2="340" y2="480" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="620" y1="0" x2="600" y2="440" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="950" y1="0" x2="880" y2="460" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="1350" y1="0" x2="1250" y2="420" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="1700" y1="0" x2="1600" y2="430" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+
+  <line x1="180" y1="440" x2="160" y2="680" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="500" y1="430" x2="460" y2="700" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="800" y1="420" x2="780" y2="680" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="1150" y1="400" x2="1100" y2="660" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="1500" y1="380" x2="1450" y2="640" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="1730" y1="420" x2="1680" y2="680" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+
+  <line x1="300" y1="670" x2="260" y2="900" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="600" y1="670" x2="560" y2="900" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="920" y1="660" x2="880" y2="890" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="1250" y1="640" x2="1200" y2="880" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+  <line x1="1600" y1="630" x2="1560" y2="870" stroke="#1a3a0a" stroke-width="3" opacity="0.5"/>
+
+  <!-- Horizontal boundaries -->
+  <line x1="0" y1="210" x2="1920" y2="190" stroke="#1a3a0a" stroke-width="2.5" opacity="0.4"/>
+  <line x1="0" y1="450" x2="1920" y2="420" stroke="#1a3a0a" stroke-width="2.5" opacity="0.4"/>
+  <line x1="0" y1="680" x2="1920" y2="660" stroke="#1a3a0a" stroke-width="2.5" opacity="0.4"/>
+  <line x1="0" y1="890" x2="1920" y2="870" stroke="#1a3a0a" stroke-width="2.5" opacity="0.4"/>
+
+  <!-- Roads -->
+  <path d="M 0 540 Q 480 520, 960 530 Q 1440 540, 1920 520" stroke="#8a7a60" stroke-width="6" fill="none" opacity="0.4"/>
+  <path d="M 960 0 Q 970 270, 960 530 Q 950 800, 940 1080" stroke="#8a7a60" stroke-width="5" fill="none" opacity="0.35"/>
+
+  <!-- Farm buildings cluster -->
+  <rect x="920" y="500" width="40" height="30" fill="#8a7a60" opacity="0.6" rx="2"/>
+  <rect x="970" y="510" width="25" height="20" fill="#7a6a50" opacity="0.6" rx="2"/>
+  <rect x="935" y="540" width="35" height="18" fill="#8a7a60" opacity="0.5" rx="2"/>
+
+  <!-- Tree clusters in woodland -->
+  <circle cx="80" cy="550" r="12" fill="#0d3008" opacity="0.6"/>
+  <circle cx="110" cy="530" r="10" fill="#0d3008" opacity="0.6"/>
+  <circle cx="60" cy="580" r="14" fill="#0d3008" opacity="0.6"/>
+  <circle cx="140" cy="560" r="11" fill="#0d3008" opacity="0.6"/>
+  <circle cx="100" cy="600" r="13" fill="#0d3008" opacity="0.6"/>
+  <circle cx="150" cy="610" r="10" fill="#0d3008" opacity="0.6"/>
+
+  <circle cx="1800" cy="530" r="12" fill="#0d3008" opacity="0.6"/>
+  <circle cx="1830" cy="560" r="14" fill="#0d3008" opacity="0.6"/>
+  <circle cx="1860" cy="520" r="10" fill="#0d3008" opacity="0.6"/>
+  <circle cx="1780" cy="580" r="11" fill="#0d3008" opacity="0.6"/>
+  <circle cx="1850" cy="600" r="13" fill="#0d3008" opacity="0.6"/>
+
+  <!-- Water feature (brook) -->
+  <path d="M 1920 350 Q 1800 380, 1650 400 Q 1500 430, 1350 460 Q 1200 490, 1050 520 Q 950 540, 900 560 Q 800 600, 650 640 Q 500 680, 350 720 Q 200 760, 0 800" stroke="#4a8ab0" stroke-width="4" fill="none" opacity="0.4"/>
+
+  <!-- Subtle texture overlay -->
+  <rect width="1920" height="1080" fill="url(#sky)" opacity="0.1"/>
+</svg>

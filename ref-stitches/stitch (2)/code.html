@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Staff Directory &amp; Details | Farm Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec13",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102210",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #13ec1340; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #13ec13; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Navigation Bar -->
+<nav class="bg-white dark:bg-slate-900 border-b border-primary/20 h-16 flex items-center justify-between px-6 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="bg-primary p-2 rounded-lg">
+<span class="material-icons text-black">agriculture</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">AgriCore <span class="text-primary">Staff</span></h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<input class="bg-background-light dark:bg-slate-800 border-none rounded-lg pl-10 pr-4 py-2 w-64 focus:ring-2 focus:ring-primary transition-all text-sm" placeholder="Search staff or tasks..." type="text"/>
+<span class="material-icons absolute left-3 top-2.5 text-slate-400 text-sm">search</span>
+</div>
+<button class="flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity">
+<span class="material-icons text-sm">person_add</span>
+                Add Staff
+            </button>
+<div class="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border-2 border-primary/30">
+<img class="w-full h-full object-cover" data-alt="User profile avatar of the administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfZkBwR1KQKBgCziIuFvJZgLFfXulT-lNScdLa1BrgrbIHUsKnCCEWLqQow9VWyHIqXdLNLNJ-Oi_WwUIthQ3orGK2FQE0Dwto_qrd6aTbhx4wefYi4kr3_AXZZwjwQvwMAgDeU8Oo6peq-jWgGksXZ7ijaHQMEf2GZ78w3V9EKjTmQq5iaFgT1_aIbfGPDTLSLSzJ_G7BZB0ZJs6PqBmW53yKbllJY0u6S_g4TLKtWXPZRFBdX6Cnet8ddbcZcXwQ5sCtNLF7Bv4a"/>
+</div>
+</div>
+</nav>
+<main class="flex-1 flex overflow-hidden">
+<!-- Sidebar Navigation (Optional/Mini) -->
+<aside class="w-20 bg-white dark:bg-slate-900 border-r border-primary/10 flex flex-col items-center py-6 gap-8">
+<button class="p-3 rounded-xl text-slate-400 hover:bg-primary/10 hover:text-primary transition-all">
+<span class="material-icons">dashboard</span>
+</button>
+<button class="p-3 rounded-xl bg-primary text-black shadow-lg shadow-primary/20">
+<span class="material-icons">groups</span>
+</button>
+<button class="p-3 rounded-xl text-slate-400 hover:bg-primary/10 hover:text-primary transition-all">
+<span class="material-icons">map</span>
+</button>
+<button class="p-3 rounded-xl text-slate-400 hover:bg-primary/10 hover:text-primary transition-all">
+<span class="material-icons">inventory_2</span>
+</button>
+<div class="mt-auto">
+<button class="p-3 rounded-xl text-slate-400 hover:bg-primary/10 hover:text-primary transition-all">
+<span class="material-icons">settings</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area: Split View -->
+<div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+<!-- Staff List Section -->
+<section class="w-full md:w-2/5 lg:w-1/3 flex flex-col bg-background-light dark:bg-background-dark border-r border-primary/10">
+<div class="p-4 border-b border-primary/10 flex items-center justify-between">
+<h2 class="font-bold text-lg">Directory <span class="text-slate-400 font-normal text-sm ml-2">24 Total</span></h2>
+<div class="flex gap-1">
+<button class="p-1 hover:bg-primary/10 rounded"><span class="material-icons text-slate-500">filter_list</span></button>
+<button class="p-1 hover:bg-primary/10 rounded"><span class="material-icons text-slate-500">sort</span></button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
+<!-- Staff Card Active -->
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border-l-4 border-primary shadow-sm cursor-pointer ring-1 ring-primary/20">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Staff portrait of Samuel Green, Site Manager" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8azdPR3VEFOLTgDyN4Y9HjQNgmbfdXvPT9f3Zd_-nv3VRaglH2NGex31PaMPJV7HBcGdGQjjFcR-aaU7KGujXB8EaIpOH7abkf1khVHQcWFQE6h_kS1MDFuUka-VXaUtS4gEPgpN76YYbbJVxpEN2b10u0wMXYWA2CgaYM41qOB9dN9noRUbuGY7Cme8hGuKbjhHJ9cucBhPLZucKoHD8a6sUpBwqRwwv-8rEE5Uc1PQin-K7AgchDziWaqe-4_fQOUWK8YnCaM8Z"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-primary border-2 border-white dark:border-slate-800 rounded-full"></div>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-bold text-sm truncate">Samuel Green</h3>
+<p class="text-xs text-slate-500 truncate">Site Manager • Admin</p>
+</div>
+<div class="text-right">
+<span class="inline-block px-2 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold">FIELD 04</span>
+</div>
+</div>
+</div>
+<!-- Staff Card -->
+<div class="bg-white dark:bg-slate-800/50 p-4 rounded-xl border-l-4 border-transparent hover:border-primary/50 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Staff portrait of Elena Rodriguez, Agronomist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMqVMV_Zhu-lhi4BxMy_8eJ-vxQjXAQJcziu75b5EtnvrneX3LWe6eMLUJ8RUBOVg6zsdpjdCCW6YIB5LuZ7Q-S1CAC-4FSew8rYwHpCKKuEi6N0jzUgFrGDH3ov9WgsUvTbBT_fiBS58OttbvJHXdHSnbCa_Xmejf6_xj86x1sxQuhA-KYkgiBqcse0jqfar9mOsColwpVipAZeEdpyb24Pl2CCphDaspbSW7I54kDMPLGtULjl3Q-tec3WeELkKxNY2IDBSvjsvl"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-primary border-2 border-white dark:border-slate-800 rounded-full"></div>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-bold text-sm truncate">Elena Rodriguez</h3>
+<p class="text-xs text-slate-500 truncate">Agronomist • R&amp;D</p>
+</div>
+<div class="text-right">
+<span class="inline-block px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 text-[10px] font-bold uppercase tracking-wider">Lab</span>
+</div>
+</div>
+</div>
+<!-- Staff Card -->
+<div class="bg-white dark:bg-slate-800/50 p-4 rounded-xl border-l-4 border-transparent hover:border-primary/50 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Staff portrait of Marcus Thorne, Equipment Operator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSbvW-0X3alyh141dPZIhdJtjzl2jyy1oi_TD_q9C0_FEKIO1Fzr4i0ziDYabUr8Gs6RDj-uitgB2Pwy0f6bw05t0qA9xMqPom35Rcsl6TYDmFlpKJ5Lwp4s0-7QagfUgPh0mX5so53a82Te2ff6_UBkhVFA9s9WiVLs9Nsu7wqHND3ZtsZRMZE_5uok__T1_6Yg8GtzjLya5xX-I1GK64asx2hqY_ont8wdLPrhRUyDbzEr0IGTeF3oTnHGA4F3G2-oMTveNNswz7"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-slate-300 border-2 border-white dark:border-slate-800 rounded-full"></div>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-bold text-sm truncate">Marcus Thorne</h3>
+<p class="text-xs text-slate-500 truncate">Equipment Operator • Logistics</p>
+</div>
+<div class="text-right">
+<span class="inline-block px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 text-[10px] font-bold uppercase tracking-wider">Break</span>
+</div>
+</div>
+</div>
+<!-- Staff Card -->
+<div class="bg-white dark:bg-slate-800/50 p-4 rounded-xl border-l-4 border-transparent hover:border-primary/50 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Staff portrait of Clara Smith, Harvester" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5VOt3a0X87kK-NZ0Y0WAg6Ep7IljsaKrK3NeWKada1fN1oVTrlSC93wsmzl_vp2j9yjYiOhbUNsTWpwuCZYlfTgZIOGjLhFk8bG-UJY8MRIWhSnqluHE68ZOqoP8yEXbB0QD_K0b46NZcd4st8LRtCCSXxUOhgssm7VCIQtAX4TNuDNE9maufua-Ln2slz5QPD77VKd-wwK4FWlQAKY6KVTFZl3TDoxq9g2Kc-GsHW3BJe_iIPUXJs4HT8JU-Wge1jGnZdABN3PHK"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-primary border-2 border-white dark:border-slate-800 rounded-full"></div>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-bold text-sm truncate">Clara Smith</h3>
+<p class="text-xs text-slate-500 truncate">Harvester • Operations</p>
+</div>
+<div class="text-right">
+<span class="inline-block px-2 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">Field 12</span>
+</div>
+</div>
+</div>
+<!-- More cards for density -->
+<div class="bg-white dark:bg-slate-800/50 p-4 rounded-xl border-l-4 border-transparent hover:border-primary/50 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Staff portrait of Julian Voss, Mechanic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD81cSi_cuA8qifOTshuQWpkV6mR5C3vZLV6ZCtjUFTPbIscWqGy_DouvGbCqI3idzpQv827GZzNgkGor96pQVFDB58E--BmLXcSr0TOGbbYOfo0ifrIDWSGxzML7Ix8E0PHDsTXr4OjfI8Vx7m24zpm08zuFzLd2T9ajyH98-gkPCOpYFQzVBp9AxoBGERIcUFNH90SngU5bjNAuotagU31WifYTZdnneqIbDsWB_ZcoJ2THw5lU07sShVPrglY0yXIfnFWFrzWOo7"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-slate-300 border-2 border-white dark:border-slate-800 rounded-full"></div>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-bold text-sm truncate">Julian Voss</h3>
+<p class="text-xs text-slate-500 truncate">Mechanic • Maintenance</p>
+</div>
+<div class="text-right">
+<span class="inline-block px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 text-[10px] font-bold uppercase tracking-wider">Garage</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Staff Detail Section -->
+<section class="flex-1 flex flex-col bg-white dark:bg-slate-900 overflow-y-auto custom-scrollbar">
+<!-- Detail Header -->
+<div class="p-8 border-b border-primary/10">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+<div class="flex items-center gap-6">
+<img class="w-24 h-24 rounded-2xl object-cover ring-4 ring-primary/20" data-alt="Large detailed portrait of Samuel Green" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlx8XvDKdwdU1VD8jTT1YxIgUs6H3DjTZYgYsTea4JSzmMALLfBEMID0X0TRmNgKarzIKP2UXrjkbE8s3rKjt9imGvNc_iGtChNw0PKIVokF_1iYJceXniViReEenlYO1j6auwlqxLMjPqLQd1GLtNYWTcXVubS-fH9OIu1pKRiKFdT5ETpJ_iq3gTsrsTyXcPCjV_kQ_NJ6S12XsT1gR8zkcp_rgEMDE2YDivuRHLo5J8lu06redMRzgTpLlQu8UE1SnlL5U8O6jO"/>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h2 class="text-3xl font-bold">Samuel Green</h2>
+<span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase">Active Now</span>
+</div>
+<p class="text-slate-500 flex items-center gap-2">
+<span class="material-icons text-base">work</span> Site Manager 
+                                    <span class="mx-2">•</span>
+<span class="material-icons text-base">email</span> sam.green@agricore.com
+                                </p>
+<div class="mt-4 flex gap-3">
+<button class="bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+<span class="material-icons text-sm">edit</span> Edit Profile
+                                    </button>
+<button class="bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+<span class="material-icons text-sm">map</span> Show on Map
+                                    </button>
+<button class="bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors">
+<span class="material-icons text-sm">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 lg:grid-cols-1 gap-3">
+<div class="bg-background-light dark:bg-slate-800 p-4 rounded-xl flex items-center gap-4 min-w-[200px]">
+<div class="bg-primary/20 p-2 rounded-lg text-primary">
+<span class="material-icons">schedule</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-500 font-bold uppercase">Weekly Hours</p>
+<p class="text-xl font-bold">42.5 hrs</p>
+</div>
+</div>
+<div class="bg-background-light dark:bg-slate-800 p-4 rounded-xl flex items-center gap-4 min-w-[200px]">
+<div class="bg-primary/20 p-2 rounded-lg text-primary">
+<span class="material-icons">bolt</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-500 font-bold uppercase">Efficiency Rate</p>
+<p class="text-xl font-bold">94%</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Detail Content Tabs -->
+<div class="px-8 pt-6">
+<div class="flex gap-8 border-b border-slate-100 dark:border-slate-800">
+<button class="pb-4 border-b-2 border-primary text-primary font-bold text-sm">TASK HISTORY</button>
+<button class="pb-4 border-b-2 border-transparent text-slate-400 font-medium text-sm hover:text-slate-600 transition-colors">PERFORMANCE</button>
+<button class="pb-4 border-b-2 border-transparent text-slate-400 font-medium text-sm hover:text-slate-600 transition-colors">EQUIPMENT</button>
+<button class="pb-4 border-b-2 border-transparent text-slate-400 font-medium text-sm hover:text-slate-600 transition-colors">DOCUMENTS</button>
+</div>
+</div>
+<!-- Activity / History Table -->
+<div class="p-8">
+<div class="bg-white dark:bg-slate-900 border border-primary/10 rounded-xl overflow-hidden shadow-sm">
+<table class="w-full text-left">
+<thead class="bg-background-light dark:bg-slate-800">
+<tr>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase">Task Details</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase">Location</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase">Duration</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase">Status</th>
+<th class="px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Irrigation System Calibration</span>
+<span class="text-xs text-slate-500">Scheduled maintenance check</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-icons text-primary text-xs">location_on</span>
+<span class="text-sm font-medium">North Plot (Field 04)</span>
+</div>
+</td>
+<td class="px-6 py-4 font-mono text-sm">02:15:00</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 text-[10px] font-bold">IN PROGRESS</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-icons text-slate-400 hover:text-primary transition-colors opacity-0 group-hover:opacity-100">chevron_right</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Soil Sampling</span>
+<span class="text-xs text-slate-500">Quarterly nutrient analysis</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-icons text-primary text-xs">location_on</span>
+<span class="text-sm font-medium">West Field 09</span>
+</div>
+</td>
+<td class="px-6 py-4 font-mono text-sm">04:30:00</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded bg-primary/10 text-primary text-[10px] font-bold">COMPLETED</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-icons text-slate-400 hover:text-primary transition-colors opacity-0 group-hover:opacity-100">chevron_right</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Pest Control Deployment</span>
+<span class="text-xs text-slate-500">Biological agent distribution</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-icons text-primary text-xs">location_on</span>
+<span class="text-sm font-medium">Main Greenhouse</span>
+</div>
+</td>
+<td class="px-6 py-4 font-mono text-sm">03:45:00</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded bg-primary/10 text-primary text-[10px] font-bold">COMPLETED</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-icons text-slate-400 hover:text-primary transition-colors opacity-0 group-hover:opacity-100">chevron_right</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="p-4 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800 flex justify-center">
+<button class="text-xs font-bold text-primary hover:underline">VIEW ALL HISTORICAL DATA</button>
+</div>
+</div>
+<!-- Additional Metrics Summary -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-primary/10">
+<h4 class="text-xs font-bold text-slate-500 uppercase mb-4">Safety Score</h4>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-bold">100</span>
+<span class="text-slate-400 text-sm mb-1">/ 100</span>
+</div>
+<div class="mt-4 w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-full"></div>
+</div>
+<p class="mt-2 text-xs text-slate-500">No safety incidents reported this year.</p>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-primary/10">
+<h4 class="text-xs font-bold text-slate-500 uppercase mb-4">Attendance Rate</h4>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-bold">98.2</span>
+<span class="text-slate-400 text-sm mb-1">%</span>
+</div>
+<div class="mt-4 w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[98%]"></div>
+</div>
+<p class="mt-2 text-xs text-slate-500">Superior attendance vs. department avg (92%).</p>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-primary/10">
+<h4 class="text-xs font-bold text-slate-500 uppercase mb-4">Certifications</h4>
+<div class="space-y-2 mt-2">
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium">Havy Machinery Oper.</span>
+<span class="material-icons text-primary text-sm">verified</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium">Bio-Hazard Mgmt</span>
+<span class="material-icons text-primary text-sm">verified</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium">Advanced Agronomy</span>
+<span class="material-icons text-slate-300 text-sm">circle</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Map Preview Modal Placeholder (Hidden logic, but styled) -->
+<div class="hidden fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm items-center justify-center p-12">
+<div class="bg-white dark:bg-slate-900 w-full max-w-4xl h-full rounded-2xl shadow-2xl flex flex-col">
+<div class="p-6 border-b border-primary/10 flex justify-between items-center">
+<h3 class="text-xl font-bold">Live Tracking: Samuel Green</h3>
+<button class="material-icons text-slate-500 hover:text-black dark:hover:text-white">close</button>
+</div>
+<div class="flex-1 relative">
+<img class="w-full h-full object-cover" data-alt="Satellite map view of farmlands with tracking marker" data-location="Salinas Valley" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHfy99sg-y6rx008C3dj28eG9Nc2Z5FEqdXPtvi2KQExjbXVmz2OWIeBsPR7xXthFGAhbbw4qdbAndv_CFiQ7JJBC3lnU63I4gPk8AG5ehzGZPzgNNx5hREBWp12VzUZGkpxZw4QQVz0plFlzRYsoNJ5S-0f6pHSfL9aHS3g2rIHo-8JkL_PR0AGDyXzclBK9tpZjh5xDUOVqsUNFIM60zFf17WPSLRQzSAkbn6Ts8eP3tJKBt9-2VpcUnTljeWld_ioxBZoF72JJr"/>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+<div class="relative">
+<div class="absolute -inset-4 bg-primary/30 rounded-full animate-ping"></div>
+<div class="w-8 h-8 bg-primary rounded-full border-4 border-white shadow-lg flex items-center justify-center">
+<span class="material-icons text-xs text-black">person</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-slate-800 flex justify-between items-center">
+<p class="text-sm text-slate-500">Current Position: <span class="font-bold text-slate-900 dark:text-white">36.6777° N, 121.6555° W</span></p>
+<div class="flex gap-2">
+<button class="bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm">Contact Radio</button>
+</div>
+</div>
+</div>
+</div>
+</body></html>
