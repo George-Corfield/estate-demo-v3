@@ -1,9 +1,13 @@
 import { CATEGORY_COLORS } from '../../constants/colors'
 
-export default function FieldOverlay({ field, isHighlighted, isSelected, onClick }) {
+export default function FieldOverlay({ field, isHighlighted, isWhiteHighlighted, isSelected, onClick }) {
   const colors = CATEGORY_COLORS[field.category] || CATEGORY_COLORS.Arable
   const pos = field.mapPosition
-  const active = isHighlighted || isSelected
+  const active = isHighlighted || isSelected || isWhiteHighlighted
+
+  const bgColor = isWhiteHighlighted ? 'rgba(255,255,255,0.45)' : active ? `${colors.bg}40` : `${colors.bg}18`
+  const borderColor = isWhiteHighlighted ? 'rgba(255,255,255,0.9)' : active ? colors.border : `${colors.border}80`
+  const shadow = isWhiteHighlighted ? '0 0 20px rgba(255,255,255,0.5)' : active ? `0 0 20px ${colors.bg}40` : 'none'
 
   return (
     <button
@@ -14,12 +18,12 @@ export default function FieldOverlay({ field, isHighlighted, isSelected, onClick
         left: `${pos.left}%`,
         width: `${pos.width}%`,
         height: `${pos.height}%`,
-        backgroundColor: active ? `${colors.bg}40` : `${colors.bg}18`,
-        border: `2px solid ${active ? colors.border : `${colors.border}80`}`,
+        backgroundColor: bgColor,
+        border: `2px solid ${borderColor}`,
         borderRadius: '6px',
         transform: active ? 'scale(1.02)' : 'scale(1)',
         zIndex: active ? 10 : 1,
-        boxShadow: active ? `0 0 20px ${colors.bg}40` : 'none',
+        boxShadow: shadow,
       }}
     >
       {/* Field name label */}

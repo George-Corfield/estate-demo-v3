@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import { formatRelativeDate } from '../../utils/dates'
 import { PriorityBadge, StatusBadge } from '../../components/shared/Badge'
@@ -7,6 +8,7 @@ import FieldEditForm from './FieldEditForm'
 export default function FieldOverviewTab({ field }) {
   const { tasks } = useApp()
   const [editing, setEditing] = useState(false)
+  const navigate = useNavigate()
 
   const linkedTasks = tasks.filter(t => t.fieldIds.includes(field.id))
 
@@ -30,7 +32,7 @@ export default function FieldOverviewTab({ field }) {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <PropItem label="Category" value={field.category} />
-          <PropItem label="Size" value={`${field.sizeAcres} acres (${field.sizeHectares} ha)`} />
+          <PropItem label="Size" value={`${field.sizeHectares} ha`} />
           <PropItem label="Soil Type" value={field.soilType} />
           <PropItem label="Drainage" value={field.drainage} />
           <PropItem label="Current Crop" value={field.currentCrop || '—'} />
@@ -58,7 +60,11 @@ export default function FieldOverviewTab({ field }) {
         ) : (
           <div className="space-y-2">
             {linkedTasks.map(task => (
-              <div key={task.id} className="p-3 bg-slate-50 rounded-lg border border-slate-100">
+              <button
+                key={task.id}
+                onClick={() => navigate('/tasks', { state: { openTaskId: task.id } })}
+                className="w-full text-left p-3 bg-slate-50 rounded-lg border border-slate-100 hover:border-primary/30 hover:bg-primary/5 transition-all cursor-pointer"
+              >
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-sm font-medium text-slate-800">{task.name}</p>
                   <PriorityBadge priority={task.priority} />
@@ -73,7 +79,7 @@ export default function FieldOverviewTab({ field }) {
                     Assigned: {task.assignedTo.join(', ')}
                   </p>
                 )}
-              </div>
+              </button>
             ))}
           </div>
         )}

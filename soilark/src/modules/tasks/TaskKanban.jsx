@@ -21,22 +21,23 @@ export default function TaskKanban({ filters, onTaskClick }) {
   }, [tasks, filters])
 
   return (
-    <div className="flex gap-3 p-4 overflow-x-auto min-h-0">
+    <div className="flex flex-col gap-6 p-4">
       {COLUMNS.map(col => {
         const columnTasks = filtered.filter(t => t.status === col.id)
         return (
-          <div key={col.id} className="min-w-[180px] flex-1 flex flex-col">
-            {/* Column header */}
+          <div key={col.id}>
+            {/* Section header */}
             <div className="flex items-center gap-2 mb-3 px-1">
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: col.color }} />
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: col.color }} />
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{col.label}</span>
               <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-bold">
                 {columnTasks.length}
               </span>
+              <div className="flex-1 h-px bg-slate-100 ml-2" />
             </div>
 
             {/* Cards */}
-            <div className="space-y-2 flex-1">
+            <div className="space-y-2">
               {columnTasks.map(task => (
                 <TaskCard key={task.id} task={task} onClick={() => onTaskClick(task.id)} />
               ))}

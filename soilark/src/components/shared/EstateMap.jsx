@@ -3,6 +3,7 @@ import FieldOverlay from './FieldOverlay'
 
 export default function EstateMap({
   highlightedFieldId,
+  highlightedFieldIds = [],
   selectedFieldIds = [],
   onFieldClick,
   interactive = true,
@@ -30,6 +31,7 @@ export default function EstateMap({
           key={field.id}
           field={field}
           isHighlighted={highlightedFieldId === field.id}
+          isWhiteHighlighted={highlightedFieldIds.includes(field.id)}
           isSelected={selectedFieldIds.includes(field.id)}
           onClick={interactive ? onFieldClick : undefined}
         />

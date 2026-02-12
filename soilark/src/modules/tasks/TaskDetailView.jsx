@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import { formatRelativeDate, formatShortDate } from '../../utils/dates'
 import { PriorityBadge, StatusBadge } from '../../components/shared/Badge'
@@ -21,6 +22,7 @@ export default function TaskDetailView({ taskId, onBack }) {
   const { tasks, fields, moveTask, addComment, showToast } = useApp()
   const [activeTab, setActiveTab] = useState('details')
   const [newComment, setNewComment] = useState('')
+  const navigate = useNavigate()
 
   const task = useMemo(() => tasks.find(t => t.id === taskId), [tasks, taskId])
 
@@ -114,9 +116,13 @@ export default function TaskDetailView({ taskId, onBack }) {
               </h3>
               <div className="space-y-1">
                 {taskFields.map(f => (
-                  <div key={f.id} className="text-sm text-slate-700 py-1 px-3 bg-slate-50 rounded">
-                    {f.name} — {f.sizeAcres} acres
-                  </div>
+                  <button
+                    key={f.id}
+                    onClick={() => navigate('/fields', { state: { openFieldId: f.id } })}
+                    className="w-full text-left text-sm text-slate-700 py-1 px-3 bg-slate-50 rounded hover:bg-primary/5 hover:text-primary transition-colors cursor-pointer"
+                  >
+                    {f.name} — {f.sizeHectares} ha
+                  </button>
                 ))}
               </div>
             </div>

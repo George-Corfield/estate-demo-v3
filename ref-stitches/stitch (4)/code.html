@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Slick Calendar &amp; Agenda Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec13",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102210",
+                        "event-task": "#dcfce7",
+                        "event-service": "#fef3c7",
+                        "event-reminder": "#dbeafe",
+                        "sidebar-bg": "#062817"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: auto repeat(5, 1fr);
+        }
+        .agenda-panel {
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="bg-[#f0f2f0] dark:bg-background-dark font-display text-slate-800 dark:text-slate-100 overflow-hidden">
+<div class="flex h-screen w-full">
+<aside class="w-16 flex flex-col items-center py-6 bg-emerald-950 text-white z-50 border-r border-emerald-900 shrink-0">
+<div class="mb-10 text-primary">
+<span class="material-symbols-outlined text-3xl">eco</span>
+</div>
+<nav class="flex flex-col gap-8 flex-1">
+<a class="p-2 text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">map</span>
+</a>
+<a class="p-2 bg-primary/20 text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+</a>
+<a class="p-2 text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">insert_chart_outlined</span>
+</a>
+<a class="p-2 text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">agriculture</span>
+</a>
+<a class="p-2 text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-6">
+<a class="p-2 text-white/60 hover:text-white" href="#">
+<span class="material-symbols-outlined">settings</span>
+</a>
+<div class="w-8 h-8 rounded-full bg-primary/30 border border-primary/50 flex items-center justify-center overflow-hidden">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9iWSSFYWhGoCQeJsXL5Y6xzx3k-28bkvRYsqn3gHa9u39hKJw1I1wdYSR1ve0IhhaGU7dXhN-JYT1cMScgz_kZHuaxDIC9zqg8C4wH0EFSFZ7KCnpJYvQWos-nWHgRo-sWfl1yqSVEQGiZ1bAXwDLwxogC1hHwPUI33x4rbX5hMcfh6pde-t2ipl22FvZ-BzV3o4UjnqnMptyuaCyrmwVt1gvL_UNVCcK4_ZRfABvOVFFoMZuQYCr2hG6Q2pwJugwia5NvMfouz5j"/>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-hidden bg-white">
+<header class="p-6 flex items-center justify-between border-b border-slate-100">
+<div class="flex items-center gap-4">
+<div class="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1">
+<button class="p-1.5 hover:bg-white rounded-md transition-all">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<h2 class="px-4 font-bold text-slate-800">December 2025</h2>
+<button class="p-1.5 hover:bg-white rounded-md transition-all">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<button class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-100 transition-colors">Today</button>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex gap-2 items-center px-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" type="checkbox"/>
+<span class="text-xs font-medium text-slate-600">Tasks</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer ml-2">
+<input checked="" class="rounded border-slate-300 text-amber-600 focus:ring-amber-500" type="checkbox"/>
+<span class="text-xs font-medium text-slate-600">Services</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer ml-2">
+<input checked="" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500" type="checkbox"/>
+<span class="text-xs font-medium text-slate-600">Events</span>
+</label>
+</div>
+<button class="flex items-center gap-2 bg-emerald-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-800 transition-colors">
+<span class="material-symbols-outlined text-lg">add</span>
+                        New Event
+                    </button>
+</div>
+</header>
+<div class="flex-1 p-6 overflow-auto">
+<div class="h-full min-h-[700px] border border-slate-200 rounded-2xl overflow-hidden flex flex-col bg-slate-50/50">
+<div class="grid grid-cols-7 border-b border-slate-200 bg-slate-50/80">
+<div class="py-3 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">Mon</div>
+<div class="py-3 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">Tue</div>
+<div class="py-3 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">Wed</div>
+<div class="py-3 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">Thu</div>
+<div class="py-3 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">Fri</div>
+<div class="py-3 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">Sat</div>
+<div class="py-3 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">Sun</div>
+</div>
+<div class="grid grid-cols-7 flex-1">
+<div class="bg-white border-r border-b border-slate-200 p-2 min-h-[120px]">
+<span class="text-xs font-bold text-slate-400">1</span>
+<div class="mt-1 flex flex-col gap-1">
+<div class="px-2 py-1 bg-event-task text-[9px] font-bold text-emerald-800 rounded uppercase">Fix Fence</div>
+</div>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">2</span>
+<div class="mt-1 flex flex-col gap-1">
+<div class="px-2 py-1 bg-event-task text-[9px] font-bold text-emerald-800 rounded uppercase">Staff Rota (6)</div>
+</div>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">3</span>
+<div class="mt-1 flex flex-col gap-1">
+<div class="px-2 py-1 bg-event-task text-[9px] font-bold text-emerald-800 rounded uppercase">Irrigation Check</div>
+</div>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">4</span>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">5</span>
+<div class="mt-1 flex flex-col gap-1">
+<div class="px-2 py-1 bg-event-task text-[9px] font-bold text-emerald-800 rounded uppercase">Fertilizer - South</div>
+</div>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">6</span>
+</div>
+<div class="bg-white border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">7</span>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">8</span>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">9</span>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">10</span>
+<div class="mt-1 flex flex-col gap-1">
+<div class="px-2 py-1 bg-event-service text-[9px] font-bold text-amber-800 rounded uppercase">Tractor Service</div>
+</div>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2 ring-2 ring-primary ring-inset z-10">
+<span class="text-xs font-bold text-emerald-600">11</span>
+<div class="mt-1 flex flex-col gap-1">
+<div class="px-2 py-1 bg-event-reminder text-[9px] font-bold text-blue-800 rounded uppercase">Planning Meeting</div>
+<div class="px-2 py-1 bg-event-task text-[9px] font-bold text-emerald-800 rounded uppercase">Feed Delivery</div>
+<div class="text-[8px] text-slate-400 px-1 font-medium">+1 more</div>
+</div>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">12</span>
+<div class="mt-1 flex flex-col gap-1">
+<div class="px-2 py-1 bg-event-task text-[9px] font-bold text-emerald-800 rounded uppercase">Water Check</div>
+</div>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">13</span>
+</div>
+<div class="bg-white border-b border-slate-200 p-2">
+<span class="text-xs font-bold text-slate-400">14</span>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">15</span>
+<div class="mt-1"><div class="px-2 py-1 bg-event-reminder text-[9px] font-bold text-blue-800 rounded uppercase">Vet Visit</div></div>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">16</span></div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">17</span></div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">18</span>
+<div class="mt-1"><div class="px-2 py-1 bg-event-task text-[9px] font-bold text-emerald-800 rounded uppercase">Soil Testing</div></div>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">19</span></div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">20</span>
+<div class="mt-1"><div class="px-2 py-1 bg-event-service text-[9px] font-bold text-amber-800 rounded uppercase">Harvester Service</div></div>
+</div>
+<div class="bg-white border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">21</span></div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">22</span></div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">23</span>
+<div class="mt-1"><div class="px-2 py-1 bg-event-task text-[9px] font-bold text-emerald-800 rounded uppercase">Order Supplies</div></div>
+</div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">24</span></div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">25</span></div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">26</span></div>
+<div class="bg-white border-r border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">27</span>
+<div class="mt-1"><div class="px-2 py-1 bg-event-reminder text-[9px] font-bold text-blue-800 rounded uppercase">Stakeholder Meeting</div></div>
+</div>
+<div class="bg-white border-b border-slate-200 p-2"><span class="text-xs font-bold text-slate-400">28</span></div>
+</div>
+</div>
+</div>
+</main>
+<aside class="w-80 agenda-panel border-l border-slate-200 flex flex-col shrink-0">
+<div class="p-6 flex-1 overflow-y-auto">
+<div class="flex items-center justify-between mb-6">
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Agenda</p>
+<h3 class="text-lg font-bold text-slate-900">Thu, 11 December</h3>
+</div>
+<span class="text-[10px] bg-slate-200 text-slate-600 px-2 py-1 rounded font-bold uppercase">Dec 11</span>
+</div>
+<div class="space-y-6 relative before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100">
+<div class="relative pl-8">
+<div class="absolute left-0 top-1.5 w-6 h-6 bg-white border-2 border-blue-500 rounded-full flex items-center justify-center z-10">
+<div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+</div>
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-bold text-slate-400">10:30</span>
+<span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+</div>
+<h4 class="text-sm font-bold text-slate-800">Planning Meeting</h4>
+<p class="text-xs text-slate-500">Main Office</p>
+<div class="flex mt-2 -space-x-1.5">
+<div class="w-6 h-6 rounded-full bg-emerald-700 border-2 border-white flex items-center justify-center text-[8px] text-white font-bold uppercase">JS</div>
+<div class="w-6 h-6 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center text-[8px] text-white font-bold uppercase">MY</div>
+<div class="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[8px] text-slate-600 font-bold uppercase">+1</div>
+</div>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1.5 w-6 h-6 bg-white border-2 border-emerald-500 rounded-full flex items-center justify-center z-10">
+<div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+</div>
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-bold text-slate-400">14:00</span>
+</div>
+<h4 class="text-sm font-bold text-slate-800">Feed Delivery</h4>
+<p class="text-xs text-slate-500">Terminal 2, Gate B</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1.5 w-6 h-6 bg-white border-2 border-emerald-500 rounded-full flex items-center justify-center z-10">
+<div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+</div>
+<h4 class="text-sm font-bold text-slate-800">Staff Rota (7)</h4>
+</div>
+</div>
+<div class="mt-12 pt-12 border-t border-slate-200">
+<div class="flex items-center justify-between mb-6">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Up Next</p>
+<span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase">1 Event</span>
+</div>
+<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+<div class="flex items-start gap-3">
+<div class="w-1.5 self-stretch bg-emerald-500 rounded-full"></div>
+<div>
+<h4 class="text-sm font-bold text-slate-800">Water Check</h4>
+<p class="text-xs text-slate-500 mt-1">All Sectors • 09:00 Tomorrow</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-slate-200 bg-white">
+<button class="w-full bg-emerald-800 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-900 transition-colors">
+<span class="material-symbols-outlined text-lg">add</span>
+                    Add Event
+                </button>
+</div>
+</aside>
+</div>
+
+</body></html>

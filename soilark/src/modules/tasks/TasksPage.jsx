@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useApp } from '../../context/AppContext'
 import TaskFilterBar from './TaskFilterBar'
 import TaskKanban from './TaskKanban'
 import TaskDetailView from './TaskDetailView'
@@ -14,12 +15,24 @@ export default function TasksPage() {
   const [filters, setFilters] = useState({ priority: 'all', type: 'all', field: 'all' })
   const [selectedFieldIds, setSelectedFieldIds] = useState([])
   const [dueDate, setDueDate] = useState('')
+  const { tasks } = useApp()
   const location = useLocation()
   const navigate = useNavigate()
+
+  const detailTaskFieldIds = useMemo(() => {
+    if (activeView !== 'detail' || !selectedTaskId) return []
+    const task = tasks.find(t => t.id === selectedTaskId)
+    return task ? task.fieldIds : []
+  }, [activeView, selectedTaskId, tasks])
 
   useEffect(() => {
     if (location.state?.createTask) {
       setActiveView('create')
+      navigate('.', { replace: true, state: {} })
+    }
+    if (location.state?.openTaskId) {
+      setSelectedTaskId(location.state.openTaskId)
+      setActiveView('detail')
       navigate('.', { replace: true, state: {} })
     }
   }, [location.state, navigate])
@@ -44,7 +57,7 @@ export default function TasksPage() {
   return (
     <div className="flex h-full">
       {/* Left panel */}
-      <div className="w-[420px] min-w-[380px] max-w-[520px] border-r border-slate-200 bg-white flex flex-col overflow-hidden shrink-0">
+      <div className="w-[480px] min-w-[420px] max-w-[560px] border-r border-slate-200 bg-white flex flex-col overflow-hidden shrink-0">
         {activeView === 'kanban' && (
           <>
             <TaskFilterBar
@@ -91,6 +104,7 @@ export default function TasksPage() {
         {rightView === 'map' ? (
           <EstateMap
             selectedFieldIds={activeView === 'create' ? selectedFieldIds : []}
+            highlightedFieldIds={detailTaskFieldIds}
             onFieldClick={handleFieldToggle}
           />
         ) : (

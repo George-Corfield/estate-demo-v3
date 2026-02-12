@@ -31,7 +31,7 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
     return Object.entries(cats).map(([name, items]) => ({
       name,
       fields: items,
-      totalAcres: items.reduce((sum, f) => sum + f.sizeAcres, 0),
+      totalHectares: items.reduce((sum, f) => sum + f.sizeHectares, 0),
     }))
   }, [fields])
 
@@ -50,11 +50,11 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
 
   const toggleCategory = (name) => {
     setExpandedCategories(prev =>
-      prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]
+      prev.includes(name) ? [] : [name]
     )
   }
 
-  const totalAcres = fields.reduce((sum, f) => sum + f.sizeAcres, 0)
+  const totalHectares = fields.reduce((sum, f) => sum + f.sizeHectares, 0)
 
   return (
     <div className="flex flex-col h-full">
@@ -102,7 +102,7 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-slate-400">{cat.totalAcres.toFixed(1)} acres</span>
+                  <span className="text-xs text-slate-400">{cat.totalHectares.toFixed(1)} ha</span>
                   <span className="material-icons text-slate-400 text-sm">
                     {expanded ? 'expand_less' : 'expand_more'}
                   </span>
@@ -119,7 +119,7 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
                     >
                       <div className="flex justify-between items-start">
                         <h4 className="text-sm font-semibold text-slate-800">{field.name}</h4>
-                        <span className="text-xs text-slate-400">{field.sizeAcres} acres</span>
+                        <span className="text-xs text-slate-400">{field.sizeHectares} ha</span>
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
                         {field.currentCrop || field.livestock || 'No current use'}
@@ -137,7 +137,7 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
       <div className="p-4 bg-slate-50 border-t border-slate-100">
         <div className="flex items-center justify-between text-xs text-slate-500">
           <span>Total Area</span>
-          <span className="font-bold text-slate-800">{totalAcres.toFixed(1)} acres</span>
+          <span className="font-bold text-slate-800">{totalHectares.toFixed(1)} ha</span>
         </div>
       </div>
     </div>

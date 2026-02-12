@@ -10,7 +10,7 @@ export default function FieldEditForm({ field, onCancel, onSave }) {
   const [form, setForm] = useState({
     name: field.name,
     category: field.category,
-    sizeAcres: field.sizeAcres,
+    sizeHectares: field.sizeHectares,
     soilType: field.soilType,
     drainage: field.drainage,
     currentCrop: field.currentCrop || '',
@@ -22,8 +22,8 @@ export default function FieldEditForm({ field, onCancel, onSave }) {
     e.preventDefault()
     updateField(field.id, {
       ...form,
-      sizeAcres: parseFloat(form.sizeAcres),
-      sizeHectares: Math.round(parseFloat(form.sizeAcres) * 0.4047 * 10) / 10,
+      sizeHectares: parseFloat(form.sizeHectares),
+      sizeAcres: Math.round(parseFloat(form.sizeHectares) / 0.4047 * 10) / 10,
     })
     showToast(`${form.name} updated`)
     onSave()
@@ -45,8 +45,8 @@ export default function FieldEditForm({ field, onCancel, onSave }) {
             {CATEGORIES.map(c => <option key={c}>{c}</option>)}
           </select>
         </FormField>
-        <FormField label="Size (acres)">
-          <input type="number" step="0.1" value={form.sizeAcres} onChange={e => update('sizeAcres', e.target.value)} className="input-field" />
+        <FormField label="Size (ha)">
+          <input type="number" step="0.1" value={form.sizeHectares} onChange={e => update('sizeHectares', e.target.value)} className="input-field" />
         </FormField>
       </div>
 
