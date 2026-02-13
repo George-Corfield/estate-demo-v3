@@ -24,7 +24,7 @@ export function aggregateEvents(fields, tasks, customEvents = []) {
         id: `field-${activity.id}`,
         date: activity.date,
         title: activity.title,
-        type: 'field',
+        type: 'task',
         fieldName: field.name,
         user: activity.user,
         details: activity.details,

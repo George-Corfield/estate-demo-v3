@@ -12,10 +12,34 @@ export const PRIORITY_COLORS = {
 }
 
 export const EVENT_TYPE_COLORS = {
-  task: '#3b82f6',
-  field: '#22c55e',
-  service: '#a855f7',
-  custom: '#6366f1',
+  task: '#22c55e',
+  service: '#f59e0b',
+  appointment: '#3b82f6',
+  event: '#6366f1',
+  reminder: '#f59e0b',
+}
+
+export const EVENT_TYPE_BG = {
+  task: { bg: '#dcfce7', text: '#166534' },
+  service: { bg: '#fef3c7', text: '#92400e' },
+  appointment: { bg: '#dbeafe', text: '#1e40af' },
+  event: { bg: '#e0e7ff', text: '#3730a3' },
+  reminder: { bg: '#fef3c7', text: '#92400e' },
+}
+
+export const EVENT_FILTER_COLORS = {
+  task: { dot: '#22c55e', label: 'Tasks' },
+  service: { dot: '#f59e0b', label: 'Services' },
+  event: { dot: '#3b82f6', label: 'Events' },
+}
+
+// Maps every event type to its filter group
+export const EVENT_TYPE_TO_FILTER = {
+  task: 'task',
+  service: 'service',
+  appointment: 'event',
+  event: 'event',
+  reminder: 'event',
 }
 
 export const STATUS_COLORS = {

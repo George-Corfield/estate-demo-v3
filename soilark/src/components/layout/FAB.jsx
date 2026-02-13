@@ -22,7 +22,7 @@ export default function FAB() {
         navigate('/fields', { state: { addNote: true } })
         break
       case 'calendar':
-        navigate('/', { state: { openCalendar: true } })
+        navigate('/', { state: { openCalendar: true, addEvent: true } })
         break
       default:
         break

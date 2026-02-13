@@ -5,12 +5,14 @@ import Calendar from '../../components/shared/Calendar'
 
 export default function OverviewPage() {
   const [view, setView] = useState('map')
+  const [addEvent, setAddEvent] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
 
   useEffect(() => {
     if (location.state?.openCalendar) {
       setView('calendar')
+      setAddEvent(!!location.state?.addEvent)
       navigate('.', { replace: true, state: {} })
     }
   }, [location.state, navigate])
@@ -19,26 +21,31 @@ export default function OverviewPage() {
     navigate('/fields', { state: { openFieldId: field.id } })
   }
 
+  const toggleView = () => {
+    setView(view === 'map' ? 'calendar' : 'map')
+    setAddEvent(false)
+  }
+
   return (
     <div className="relative w-full h-full">
       {view === 'map' ? (
         <EstateMap onFieldClick={handleFieldClick} />
       ) : (
-        <Calendar />
+        <Calendar onToggleView={toggleView} initialAddEvent={addEvent} />
       )}
 
-      {/* View toggle */}
-      <div className="absolute top-4 right-4 z-20">
-        <button
-          onClick={() => setView(view === 'map' ? 'calendar' : 'map')}
-          className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-white transition-colors"
-        >
-          <span className="material-icons text-base">
-            {view === 'map' ? 'calendar_month' : 'map'}
-          </span>
-          Switch to {view === 'map' ? 'Calendar' : 'Map'}
-        </button>
-      </div>
+      {/* View toggle - only shown on map view; calendar has its own toggle in the header */}
+      {view === 'map' && (
+        <div className="absolute top-4 right-4 z-20">
+          <button
+            onClick={toggleView}
+            className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-white transition-colors"
+          >
+            <span className="material-icons text-base">calendar_month</span>
+            Switch to Calendar
+          </button>
+        </div>
+      )}
 
       {/* Weather widget (map view only) */}
       {view === 'map' && (

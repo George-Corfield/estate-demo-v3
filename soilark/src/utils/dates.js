@@ -1,5 +1,6 @@
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const DAYS_SHORT_MON = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -52,15 +53,23 @@ export function isOverdue(dateStr) {
   return target < now
 }
 
-export function getMonthDays(year, month) {
+export function getMonthDays(year, month, startOnMonday = false) {
   const firstDay = new Date(year, month, 1).getDay()
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const daysInPrevMonth = new Date(year, month, 0).getDate()
 
   const days = []
 
-  // Previous month padding
-  for (let i = firstDay - 1; i >= 0; i--) {
+  // Calculate padding for previous month
+  let padCount
+  if (startOnMonday) {
+    // Monday=0 offset: Sun(0)->6, Mon(1)->0, Tue(2)->1, ...
+    padCount = (firstDay + 6) % 7
+  } else {
+    padCount = firstDay
+  }
+
+  for (let i = padCount - 1; i >= 0; i--) {
     days.push({
       date: new Date(year, month - 1, daysInPrevMonth - i),
       isCurrentMonth: false,
@@ -75,8 +84,9 @@ export function getMonthDays(year, month) {
     })
   }
 
-  // Next month padding
-  const remaining = 42 - days.length
+  // Next month padding (fill to 5 or 6 rows)
+  const targetLength = days.length > 35 ? 42 : 35
+  const remaining = targetLength - days.length
   for (let i = 1; i <= remaining; i++) {
     days.push({
       date: new Date(year, month + 1, i),
@@ -103,4 +113,4 @@ export function formatDateKey(date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-export { MONTHS, MONTHS_SHORT, DAYS_SHORT }
+export { MONTHS, MONTHS_SHORT, DAYS_SHORT, DAYS_SHORT_MON }
