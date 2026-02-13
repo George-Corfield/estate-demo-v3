@@ -1,13 +1,14 @@
 import { createContext, useContext, useReducer, useCallback } from 'react'
 import { initialFields } from '../data/fields'
 import { initialTasks } from '../data/tasks'
+import { initialEvents } from '../data/events'
 
 const AppContext = createContext(null)
 
 const initialState = {
   fields: initialFields,
   tasks: initialTasks,
-  customEvents: [],
+  customEvents: initialEvents,
   toasts: [],
 }
 

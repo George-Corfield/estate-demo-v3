@@ -23,8 +23,8 @@ export const EVENT_TYPE_BG = {
   task: { bg: '#dcfce7', text: '#166534' },
   service: { bg: '#fef3c7', text: '#92400e' },
   appointment: { bg: '#dbeafe', text: '#1e40af' },
-  event: { bg: '#e0e7ff', text: '#3730a3' },
-  reminder: { bg: '#fef3c7', text: '#92400e' },
+  event: { bg: '#dbeafe', text: '#1e40af' },
+  reminder: { bg: '#dbeafe', text: '#1e40af' },
 }
 
 export const EVENT_FILTER_COLORS = {
