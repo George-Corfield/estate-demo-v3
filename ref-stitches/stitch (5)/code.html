@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Equipment Detail &amp; Telemetry</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary-earth: #4d5d3f;
+            --primary-accent: #8da47e;
+            --bg-canvas: #fdfdfb;
+            --sidebar-width: 40%;
+            --detail-width: 60%;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4d5d3f",
+                        "earth-50": "#f7f8f6",
+                        "earth-100": "#edf0eb",
+                        "earth-200": "#dce1d8",
+                        "earth-800": "#2d3527",
+                        "background-light": "#fdfdfb",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light text-slate-900 min-h-screen flex flex-col font-display overflow-hidden">
+<header class="h-16 border-b border-earth-200 bg-white px-8 flex items-center justify-between z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm">agriculture</span>
+</div>
+<span class="font-bold tracking-tight text-lg">AGRI<span class="text-primary">CORE</span></span>
+</div>
+<nav class="flex items-center gap-6 text-sm font-medium text-slate-500">
+<a class="hover:text-primary" href="#">Dashboard</a>
+<a class="text-primary border-b-2 border-primary py-5" href="#">Machinery</a>
+<a class="hover:text-primary" href="#">Fields</a>
+<a class="hover:text-primary" href="#">Operations</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-400 hover:text-slate-600">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-earth-200 flex items-center justify-center overflow-hidden">
+<img alt="User" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5xVdQVoyljVmOtjyhDq12vnsSpjmNhE-hMAK9X47fNOurtKEDDrIj5exaw2t1pHGK-pv_M4lpEBZ2ccuPMRZ8B-q0xM8HjsKAKCCHOyaQda1cnbIg5Wb_al6GvbSMPJ-kO7RRz3P6mmgLJrS3srOlg06eq17sBfrDjrURfFCzjltinUR1ZuFJQ7Mgy1qQxgQQrSA2JwCpq4gNUdWdSFxJ6CUPsF6m2L69YMtXzp6LfCi_-LTT9bICe3PObNCVW7wamGqLla-xHT0e"/>
+</div>
+</div>
+</header>
+<main class="flex-1 flex overflow-hidden">
+<section class="w-[var(--sidebar-width)] border-r border-earth-200 bg-earth-50/50 flex flex-col overflow-hidden">
+<div class="p-6 border-b border-earth-200 bg-white">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-earth-100 border-none rounded-lg text-sm focus:ring-1 focus:ring-primary/50" placeholder="Search fleet..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<div class="p-4 mx-3 my-2 bg-white rounded-xl border border-primary/20 shadow-sm flex items-center gap-4 cursor-pointer ring-1 ring-primary/10">
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Tractor" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpR8eH47aHdY-apsJg-f1HRd9IZhP05mAvt90UxERurzQSgIZsV473ptt1w_FtCNwD_5FuyMrbp1ia4iRKH46FDN3j9ORFgEQdznuhjV5VPoyoxYB-W2Je6QpNv0CgbP5i1tOlqJ9CySKFi-huqDbsI2UsyE-KfxyCZd8Qe875bp-fhIjmgv2--eW_R_jIdBx_yT0FnMfjcc3Tr9z5Ww7UHXflw566giELZEJRnD2Ndt1ChwD1ccvkq-SgQ3Uaqjbh7d2sVO9_7ygc"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-bold text-slate-900 truncate">John Deere 8R 370</h4>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase">Active</span>
+</div>
+<p class="text-xs text-slate-500 mb-2">SN: JD-8R-2023-991</p>
+<div class="w-full h-1 bg-slate-100 rounded-full">
+<div class="w-[78%] h-full bg-primary rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="p-4 mx-3 my-2 bg-transparent hover:bg-white rounded-xl transition-colors flex items-center gap-4 cursor-pointer">
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 opacity-80">
+<img alt="Harvester" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANKlb0RWCtq9ZCmUlwhleiu9YXCF0C1LfPeJSEcnJ76tPqM-ugcFm3-C3eIkGZeryubbbhMlHN4B2fvf47-S_RbnzxtTIyJoMA3-oha4Eq0-_GXpL4_O26p2PDBcTIJGPjmkhywl1IxaOuZA90FPXEkPgHDf_iBQOuTS7CTN2Hd6oCm5fxn0ILtbfZugnH6Y_GoYuQIiLmhnjh8Z1qxS32fD_YHmfSnFlxkrAGZnEcMxO8bxFUK4OcU_P5n-sfRua_wDlgPHXsnXzS"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-bold text-slate-700 truncate">Case IH Magnum 340</h4>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 uppercase">Service</span>
+</div>
+<p class="text-xs text-slate-500">SN: CIH-M3-2022-442</p>
+</div>
+</div>
+<div class="p-4 mx-3 my-2 bg-transparent hover:bg-white rounded-xl transition-colors flex items-center gap-4 cursor-pointer">
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 opacity-80">
+<img alt="Machine" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBA3h9WrYAyHrl-l0OudfxQ9gZf9CTqVVdfI0AbrVnukGPwc3GXgDAfu7X5SHrCrFF_BxyFGCD8Txl9nfkvsjq5KaCMtWPqLXmrAJgiwB4r7Bo6cARLr9omA9_bG1WGfxaTSg7uhWwbE5s_AV9VNONIwhBUknN5gUhMZ2NAwF44A9dtMYy4ZH22Lewo0twlDW6mQkMwSbqyt8jRo9u0mXGwbJG45SnzjpEb0d2Nfv1mwn7OMlOtqHHuxg323pX93b3HkKbfdVcN-JLY"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-bold text-slate-700 truncate">Claas Lexion 8000</h4>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase">Active</span>
+</div>
+<p class="text-xs text-slate-500">SN: CL-LX-2023-112</p>
+</div>
+</div>
+</div>
+</section>
+<section class="w-[var(--detail-width)] bg-white overflow-y-auto custom-scrollbar">
+<div class="relative h-80 w-full overflow-hidden">
+<img alt="John Deere 8R 370" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCf9_DD7Q_zOmMrdBX9f_0-jTfhVLme0l8V1l_b7lsC7d2n4-6wJBQaRfMYIMnhbANLtHgbaif1yRd5gGbFgHYsfQpqVTLmT8kW4onp6EtqUryw5AQCuYqm3yPeq2sQGcIWlCuBudTA9QQum6V2s1noVmjjtXJ5JA-XXeKpYy8Wpju_DFhMFDPH0JxnT03RWmkH2nlFXLxDB8-0utFjJ40V-rsP4IHGZwecsP7KFkMbwmpDUCKrl5ibV6riMhD5RjdwRNDoX32u78_"/>
+<div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-10 w-full flex items-end justify-between">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="px-3 py-1 bg-primary text-white text-[11px] font-bold uppercase tracking-widest rounded">Premium Series</span>
+<span class="flex items-center gap-1 text-white/80 text-xs">
+<span class="material-symbols-outlined text-sm text-green-400">farsight_digital</span>
+                            Live Telemetry Connected
+                        </span>
+</div>
+<h1 class="text-4xl font-bold text-white tracking-tight">John Deere 8R 370</h1>
+<p class="text-white/70 text-sm mt-1 uppercase tracking-wider font-medium">Heavy Duty Articulated Tractor</p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-3 bg-white hover:bg-earth-50 text-slate-900 font-bold rounded-lg transition-colors flex items-center gap-2 shadow-lg">
+<span class="material-symbols-outlined text-lg text-primary">analytics</span>
+                        Full Logs
+                    </button>
+<button class="px-6 py-3 bg-primary hover:bg-earth-800 text-white font-bold rounded-lg transition-colors flex items-center gap-2 shadow-lg">
+<span class="material-symbols-outlined text-lg">event_available</span>
+                        Schedule Maintenance
+                    </button>
+</div>
+</div>
+</div>
+<div class="p-10 space-y-12">
+<div>
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">sensors</span>
+                        Real-time Telemetry
+                    </h3>
+<span class="text-xs font-medium text-slate-400">Updated: Just now</span>
+</div>
+<div class="grid grid-cols-2 gap-8">
+<div class="p-6 rounded-2xl border border-earth-200 bg-earth-50/30">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Fuel Reservoir</p>
+<p class="text-2xl font-bold text-slate-900 mt-1">320L <span class="text-sm font-normal text-slate-500">/ 410L</span></p>
+</div>
+<span class="material-symbols-outlined text-primary p-2 bg-white rounded-lg border border-earth-100 shadow-sm">local_gas_station</span>
+</div>
+<div class="w-full h-3 bg-earth-200 rounded-full overflow-hidden">
+<div class="w-[78%] h-full bg-primary rounded-full relative">
+<div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+</div>
+</div>
+<div class="flex justify-between mt-3">
+<span class="text-[11px] font-bold text-primary">78% LEVEL</span>
+<span class="text-[11px] font-medium text-slate-400">Est. 14h operation left</span>
+</div>
+</div>
+<div class="p-6 rounded-2xl border border-earth-200 bg-earth-50/30">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Engine Load</p>
+<p class="text-2xl font-bold text-slate-900 mt-1">45% <span class="text-sm font-normal text-slate-500">Utilization</span></p>
+</div>
+<span class="material-symbols-outlined text-primary p-2 bg-white rounded-lg border border-earth-100 shadow-sm">precision_manufacturing</span>
+</div>
+<div class="w-full h-3 bg-earth-200 rounded-full overflow-hidden">
+<div class="w-[45%] h-full bg-amber-500 rounded-full"></div>
+</div>
+<div class="flex justify-between mt-3">
+<span class="text-[11px] font-bold text-amber-600">OPTIMAL RANGE</span>
+<span class="text-[11px] font-medium text-slate-400">1,240 Total Hours</span>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-6">
+<div class="flex flex-col gap-6 col-span-2">
+<h3 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary">settings_input_component</span>
+                        Performance Specs
+                    </h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-5 border border-earth-100 rounded-xl bg-white shadow-sm flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-earth-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-600">bolt</span>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400">Horsepower</p>
+<p class="font-bold text-slate-800">370 HP</p>
+</div>
+</div>
+<div class="p-5 border border-earth-100 rounded-xl bg-white shadow-sm flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-earth-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-600">speed</span>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400">Max Speed</p>
+<p class="font-bold text-slate-800">50 km/h</p>
+</div>
+</div>
+<div class="p-5 border border-earth-100 rounded-xl bg-white shadow-sm flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-earth-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-600">satellite_alt</span>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400">GPS System</p>
+<p class="font-bold text-slate-800">StarFire™ RTK</p>
+</div>
+</div>
+<div class="p-5 border border-earth-100 rounded-xl bg-white shadow-sm flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-earth-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-600">fluid_balance</span>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400">Emission Standard</p>
+<p class="font-bold text-slate-800">Stage V / Tier 4</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-earth-800 rounded-2xl p-6 text-white self-start">
+<p class="text-xs font-bold text-earth-200 uppercase tracking-widest mb-4">Current Operator</p>
+<div class="flex items-center gap-4 mb-6">
+<img alt="Operator" class="w-12 h-12 rounded-full bg-earth-200 border-2 border-primary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGETRacRIiDsnuKnDfu3mEEYUDXEJ_DaBggbMJvKZBG3sfqsgtR_yCgD4bPAvzrVN3RJ2Ve1XwoGRY6j5ZCTRXyc8aCKK7IstVNcZSnti9F2oW5Bm9hki42Pnut9h4HA1vzGy4doLM8W6iw3ctpMyfOO9UlOsnld9EQZPiNZCm3iR7F8kY_bb3xiKavvAWnM_-NyIV5CTGTpaIuO5djQFYhrbD45oM5JAtrQZsCUyX_GMLtde6HsaoHLcYvof5fDRkCHkPh1hQyzdb"/>
+<div>
+<p class="font-bold">David Henderson</p>
+<p class="text-xs text-earth-200">ID: OP-4429</p>
+</div>
+</div>
+<button class="w-full py-2 bg-white/10 hover:bg-white/20 rounded text-sm font-medium transition-colors border border-white/10">
+                        Contact Operator
+                    </button>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history</span>
+                        Service Record
+                    </h3>
+<button class="text-sm font-bold text-primary hover:underline">Download Report</button>
+</div>
+<div class="relative pl-8 space-y-10 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-earth-200">
+<div class="relative">
+<div class="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-primary border-4 border-white"></div>
+<div>
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-bold text-slate-900">Annual Comprehensive Service</h4>
+<span class="text-xs font-bold text-slate-400">Oct 12, 2023</span>
+</div>
+<p class="text-sm text-slate-600">Full synthetic oil replacement, air &amp; fuel filter exchange, hydraulic system pressure testing. Calibration of StarFire GPS receiver performed.</p>
+<div class="flex gap-2 mt-3">
+<span class="px-2 py-1 bg-earth-50 rounded text-[10px] font-bold text-slate-500 border border-earth-100">ENGINE</span>
+<span class="px-2 py-1 bg-earth-50 rounded text-[10px] font-bold text-slate-500 border border-earth-100">HYDRAULICS</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-earth-200 border-4 border-white"></div>
+<div>
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-bold text-slate-900">Tire Rotation &amp; Pressure Alignment</h4>
+<span class="text-xs font-bold text-slate-400">Sep 05, 2023</span>
+</div>
+<p class="text-sm text-slate-600">Front axial alignment checked. Corrected ballast distribution for upcoming tilling season.</p>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-earth-200 border-4 border-white"></div>
+<div>
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-bold text-slate-900">Delivery Inspection (PDI)</h4>
+<span class="text-xs font-bold text-slate-400">Aug 20, 2023</span>
+</div>
+<p class="text-sm text-slate-600">Post-delivery standard verification. All systems green. Unit commissioned for service.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="h-20"></div>
+</div>
+</section>
+</main>
+<div class="fixed bottom-8 right-8 flex gap-4">
+<button class="flex items-center gap-3 px-6 py-4 bg-white text-slate-900 rounded-full shadow-2xl border border-earth-200 hover:scale-105 transition-transform group">
+<span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">map</span>
+<span class="font-bold">Spatial View</span>
+</button>
+</div>
+
+</body></html>

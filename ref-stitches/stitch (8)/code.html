@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Machinery Management List View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4a5d4e", // Earthy Moss Green
+                        "accent": "#d4a373", // Earthy Sand
+                        "alert": "#bc4749", // Muted Red Alert
+                        "background-light": "#fdfcfb",
+                        "background-dark": "#1a1c1a",
+                        "surface": "#ffffff",
+                        "surface-dark": "#242624",
+                        "border-light": "#e5e7eb",
+                        "border-dark": "#323532",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body { @apply bg-background-light text-slate-800 font-display antialiased; }
+            .dark body { @apply bg-background-dark text-slate-100; }
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .table-row-hover:hover {
+            @apply bg-slate-50/80 dark:bg-slate-800/40 cursor-pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<header class="h-16 border-b border-border-light dark:border-border-dark bg-white dark:bg-surface-dark px-8 flex items-center justify-between sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl">agriculture</span>
+</div>
+<span class="font-bold text-xl tracking-tight">AgriCore</span>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Overview</a>
+<a class="text-sm font-bold text-primary border-b-2 border-primary py-5" href="#">Machinery</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Fields</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center overflow-hidden">
+<span class="text-xs font-bold text-accent">JD</span>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-[1600px] mx-auto w-full p-8 space-y-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-border-light dark:border-border-dark shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">inventory_2</span>
+</div>
+<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">+2 this year</span>
+</div>
+<p class="text-sm text-slate-500 font-medium">Total Equipment</p>
+<h3 class="text-2xl font-bold mt-1">42 Units</h3>
+</div>
+<div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-border-light dark:border-border-dark shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">payments</span>
+</div>
+</div>
+<p class="text-sm text-slate-500 font-medium">Total Asset Value</p>
+<h3 class="text-2xl font-bold mt-1">$3,420,000</h3>
+</div>
+<div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border-2 border-alert/20 dark:border-alert/40 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2">
+<span class="flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-alert opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-alert"></span>
+</span>
+</div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-alert/10 rounded-lg">
+<span class="material-symbols-outlined text-alert">build_circle</span>
+</div>
+</div>
+<p class="text-sm text-slate-500 font-medium">Services Due</p>
+<h3 class="text-2xl font-bold mt-1 text-alert">3 Overdue</h3>
+</div>
+<div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-border-light dark:border-border-dark shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">analytics</span>
+</div>
+</div>
+<p class="text-sm text-slate-500 font-medium">Monthly Costs</p>
+<h3 class="text-2xl font-bold mt-1">$12,840</h3>
+</div>
+</div>
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+<div class="flex items-center gap-1 bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-xl w-fit">
+<button class="px-6 py-2 text-sm font-bold bg-white dark:bg-surface-dark text-primary shadow-sm rounded-lg">All Assets</button>
+<button class="px-6 py-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">Tractors</button>
+<button class="px-6 py-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">Mowers</button>
+<button class="px-6 py-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">Seeders</button>
+<button class="px-6 py-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">Vehicles</button>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors text-lg">search</span>
+<input class="pl-10 pr-4 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary w-72 shadow-sm transition-all" placeholder="Search inventory..." type="text"/>
+</div>
+<button class="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/10">
+<span class="material-symbols-outlined text-lg">add</span>
+                    Add Asset
+                </button>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-border-light dark:border-border-dark bg-slate-50/50 dark:bg-slate-800/30">
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">Thumbnail</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">Machine Name &amp; Serial</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">Type</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">Status</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400 text-right">Hours</th>
+<th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">Maintenance Progress</th>
+<th class="px-6 py-4 w-10"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-light dark:divide-border-dark">
+<tr class="table-row-hover transition-colors group">
+<td class="px-6 py-4">
+<div class="w-16 h-12 rounded-lg overflow-hidden border border-slate-100 dark:border-slate-700">
+<img alt="Machine" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpR8eH47aHdY-apsJg-f1HRd9IZhP05mAvt90UxERurzQSgIZsV473ptt1w_FtCNwD_5FuyMrbp1ia4iRKH46FDN3j9ORFgEQdznuhjV5VPoyoxYB-W2Je6QpNv0CgbP5i1tOlqJ9CySKFi-huqDbsI2UsyE-KfxyCZd8Qe875bp-fhIjmgv2--eW_R_jIdBx_yT0FnMfjcc3Tr9z5Ww7UHXflw566giELZEJRnD2Ndt1ChwD1ccvkq-SgQ3Uaqjbh7d2sVO9_7ygc"/>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-slate-100">John Deere 8R 370</span>
+<span class="text-xs text-slate-400">SN: JD-8R-2023-991</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-lg">agriculture</span>
+<span class="text-sm font-medium">Heavy Tractor</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">1,240 hrs</span>
+</td>
+<td class="px-6 py-4">
+<div class="w-48">
+<div class="flex justify-between items-center mb-1.5 text-[10px] font-bold uppercase text-slate-400">
+<span>Next Service</span>
+<span>84%</span>
+</div>
+<div class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 84%"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
+</td>
+</tr>
+<tr class="table-row-hover transition-colors group">
+<td class="px-6 py-4">
+<div class="w-16 h-12 rounded-lg overflow-hidden border border-slate-100 dark:border-slate-700">
+<img alt="Machine" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANKlb0RWCtq9ZCmUlwhleiu9YXCF0C1LfPeJSEcnJ76tPqM-ugcFm3-C3eIkGZeryubbbhMlHN4B2fvf47-S_RbnzxtTIyJoMA3-oha4Eq0-_GXpL4_O26p2PDBcTIJGPjmkhywl1IxaOuZA90FPXEkPgHDf_iBQOuTS7CTN2Hd6oCm5fxn0ILtbfZugnH6Y_GoYuQIiLmhnjh8Z1qxS32fD_YHmfSnFlxkrAGZnEcMxO8bxFUK4OcU_P5n-sfRua_wDlgPHXsnXzS"/>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-slate-100">Case IH Magnum 340</span>
+<span class="text-xs text-slate-400">SN: CIH-M3-2022-442</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-lg">agriculture</span>
+<span class="text-sm font-medium">Tractor</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-amber-500/10 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                    Maintenance
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">2,105 hrs</span>
+</td>
+<td class="px-6 py-4">
+<div class="w-48">
+<div class="flex justify-between items-center mb-1.5 text-[10px] font-bold uppercase text-alert">
+<span>Overdue</span>
+<span>100%</span>
+</div>
+<div class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-alert" style="width: 100%"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
+</td>
+</tr>
+<tr class="table-row-hover transition-colors group">
+<td class="px-6 py-4">
+<div class="w-16 h-12 rounded-lg overflow-hidden border border-slate-100 dark:border-slate-700">
+<img alt="Machine" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBA3h9WrYAyHrl-l0OudfxQ9gZf9CTqVVdfI0AbrVnukGPwc3GXgDAfu7X5SHrCrFF_BxyFGCD8Txl9nfkvsjq5KaCMtWPqLXmrAJgiwB4r7Bo6cARLr9omA9_bG1WGfxaTSg7uhWwbE5s_AV9VNONIwhBUknN5gUhMZ2NAwF44A9dtMYy4ZH22Lewo0twlDW6mQkMwSbqyt8jRo9u0mXGwbJG45SnzjpEb0d2Nfv1mwn7OMlOtqHHuxg323pX93b3HkKbfdVcN-JLY"/>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-slate-100">Claas Lexion 8000</span>
+<span class="text-xs text-slate-400">SN: CL-LX-2023-112</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-lg">settings_input_component</span>
+<span class="text-sm font-medium">Harvester</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">890 hrs</span>
+</td>
+<td class="px-6 py-4">
+<div class="w-48">
+<div class="flex justify-between items-center mb-1.5 text-[10px] font-bold uppercase text-slate-400">
+<span>Next Service</span>
+<span>45%</span>
+</div>
+<div class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 45%"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
+</td>
+</tr>
+<tr class="table-row-hover transition-colors group">
+<td class="px-6 py-4">
+<div class="w-16 h-12 rounded-lg overflow-hidden border border-slate-100 dark:border-slate-700">
+<img alt="Machine" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUZirdRXpHFHrC6qPgsLuvUTiRcavLTpf656n11Kmkcp-95L1wfs_LJPglyA-L6Ao0w9vxmCEh2cH7H_MYh2np5zfVKVt7fhJoed-irbNL2wh0tZTZOmF2rihmF4LxOvZcrXAf1uFm1tL1IyX38Qsj8-b0PRBmlxjcCTiemijE3YLolGpnKJYMcjB0suvBvg19Euk6P0coCQgfGz4miPxzoQ76oHBy9w1AEPE8sfM_jqyiGvm6J_Acal1TyJsg_5sbAt0jIMMIiA_B"/>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-slate-100">New Holland T7</span>
+<span class="text-xs text-slate-400">SN: NH-T7-2021-005</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-lg">agriculture</span>
+<span class="text-sm font-medium">Medium Tractor</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                    Idle
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">3,420 hrs</span>
+</td>
+<td class="px-6 py-4">
+<div class="w-48">
+<div class="flex justify-between items-center mb-1.5 text-[10px] font-bold uppercase text-alert">
+<span>Critical</span>
+<span>95%</span>
+</div>
+<div class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-alert" style="width: 95%"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 bg-slate-50/50 dark:bg-slate-800/30 border-t border-border-light dark:border-border-dark flex items-center justify-between">
+<span class="text-sm text-slate-500">Showing 4 of 42 assets</span>
+<div class="flex gap-2">
+<button class="p-2 border border-border-light dark:border-border-dark rounded-lg hover:bg-white dark:hover:bg-surface-dark transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+</button>
+<button class="p-2 border border-border-light dark:border-border-dark rounded-lg hover:bg-white dark:hover:bg-surface-dark transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<div class="fixed bottom-10 right-10 z-40">
+<button class="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 pl-6 pr-8 py-4 rounded-full shadow-2xl flex items-center gap-3 hover:scale-105 hover:shadow-primary/20 transition-all duration-300">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-bold tracking-wide">GRID VIEW</span>
+</button>
+</div>
+</main>
+
+</body></html>

@@ -33,6 +33,24 @@ export const EVENT_FILTER_COLORS = {
   event: { dot: '#3b82f6', label: 'Events' },
 }
 
+export const EVENT_SUBTYPE_ICONS = {
+  // Events
+  event:       'celebration',
+  reminder:    'notifications',
+  appointment: 'schedule',
+  // Services
+  service:     'build',
+  mot:         'directions_car',
+  // Tasks
+  task:        'task_alt',
+  planting:    'grass',
+  harvesting:  'agriculture',
+  fertilizing: 'science',
+  maintenance: 'handyman',
+  feeding:     'restaurant',
+  irrigation:  'water_drop',
+}
+
 // Maps every event type to its filter group
 export const EVENT_TYPE_TO_FILTER = {
   task: 'task',

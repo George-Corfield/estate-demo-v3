@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useApp } from '../../context/AppContext'
 import { getMonthDays, isToday, isSameDay, MONTHS, DAYS_SHORT_MON } from '../../utils/dates'
 import { aggregateEvents, getEventsForDate } from '../../utils/events'
-import { EVENT_TYPE_BG, EVENT_FILTER_COLORS, EVENT_TYPE_TO_FILTER } from '../../constants/colors'
+import { EVENT_TYPE_BG, EVENT_FILTER_COLORS, EVENT_TYPE_TO_FILTER, EVENT_SUBTYPE_ICONS } from '../../constants/colors'
 import CalendarDayPanel from './CalendarDayPanel'
 import NewEventPanel from './NewEventPanel'
 
@@ -216,9 +216,12 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                           return (
                             <div
                               key={event.id}
-                              className="px-2 py-1 text-[9px] font-bold rounded uppercase truncate"
+                              className="px-2 py-1 text-[9px] font-bold rounded uppercase truncate flex items-center gap-1"
                               style={{ backgroundColor: colors.bg, color: colors.text }}
                             >
+                              <span className="material-icons" style={{ fontSize: '11px' }}>
+                                {EVENT_SUBTYPE_ICONS[event.subType] || 'event'}
+                              </span>
                               {event.title}
                             </div>
                           )

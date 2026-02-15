@@ -2,10 +2,19 @@ import { formatGBP } from '../../utils/currency'
 
 export default function TaskTypeFields({ task }) {
   const tf = task.typeFields
-  if (!tf) {
+  if (!tf || Object.keys(tf).length === 0) {
     return <p className="text-sm text-slate-400">No type-specific fields for this task.</p>
   }
 
+  return (
+    <div className="space-y-6">
+      <TypeSpecificFields task={task} tf={tf} />
+      {tf.labourEnabled && <LabourFields tf={tf} />}
+    </div>
+  )
+}
+
+function TypeSpecificFields({ task, tf }) {
   switch (task.type) {
     case 'Fertilizing':
       return (
@@ -25,23 +34,7 @@ export default function TaskTypeFields({ task }) {
       )
 
     case 'Planting':
-      return (
-        <div className="space-y-4">
-          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Planting Details</h3>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Purpose" value={tf.purpose} />
-            <Field label="Planting Type" value={tf.plantingType} />
-            <Field label="Crop Mix" value={tf.cropMix} />
-            <Field label="Area" value={`${tf.area} ha`} />
-            <Field label="Seed Rate" value={`${tf.seedRate} ${tf.rateUnit}`} />
-            <Field label="Total Seeds" value={`${tf.totalSeeds} kg`} />
-            <Field label="Source" value={tf.source} />
-            <Field label="Price" value={formatGBP(tf.price)} />
-            <Field label="Total Cost" value={formatGBP(tf.totalCost)} />
-            <Field label="Method" value={tf.establishmentMethod} />
-          </div>
-        </div>
-      )
+      return <PlantingFields tf={tf} />
 
     case 'Harvesting':
       return (
@@ -90,11 +83,111 @@ export default function TaskTypeFields({ task }) {
   }
 }
 
-function Field({ label, value }) {
+function PlantingFields({ tf }) {
+  switch (tf.plantingSubtype) {
+    case 'Crop/Seed':
+      return (
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Crop / Seed Details</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Crop / Mix" value={tf.cropMix} />
+            <Field label="Area" value={`${tf.area} ha`} />
+            <Field label="Seed Rate" value={`${tf.rate} ${tf.rateUnit}`} />
+            <Field
+              label="Total Seed Required"
+              value={tf.rateUnit === 'kg/ha'
+                ? `${tf.totalSeedRequired?.toFixed(1)} kg`
+                : `${Math.round(tf.totalSeedRequired || 0).toLocaleString()} seeds`}
+            />
+            <Field label="Source" value={tf.seedSource} />
+            {tf.price != null && <Field label="Price" value={formatGBP(tf.price)} />}
+            {tf.totalSeedCost != null && <Field label="Total Seed Cost" value={formatGBP(tf.totalSeedCost)} />}
+            <Field label="Establishment Method" value={tf.establishmentMethod} />
+          </div>
+        </div>
+      )
+
+    case 'Hedges':
+      return (
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Hedge Details</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Hedge Plant" value={tf.hedgePlant} />
+            <Field label="Hedge Length" value={`${tf.hedgeLength?.toLocaleString()} m`} />
+            <Field label="Rows" value={tf.rows} />
+            <Field label="Plants / m" value={tf.plantsPerMetre} />
+            <Field label="Total Plants Required" value={tf.totalPlantsRequired?.toLocaleString()} />
+            <Field label="Protection" value={tf.hedgeProtection} />
+            <Field label="Plant Source" value={tf.plantSource} />
+            {tf.pricePerPlant != null && <Field label="Price per Plant" value={formatGBP(tf.pricePerPlant)} />}
+            {tf.totalPlantCost != null && <Field label="Total Plant Cost" value={formatGBP(tf.totalPlantCost)} />}
+          </div>
+        </div>
+      )
+
+    case 'Trees':
+      return (
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tree Details</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Tree Species" value={tf.treeSpecies} />
+            <Field label="Quantity" value={tf.quantity?.toLocaleString()} />
+            <Field label="Stock Type" value={tf.stockType} />
+            <Field label="Planting Pattern" value={tf.plantingPattern} />
+            <Field label="Protection" value={tf.treeProtection} />
+            <Field label="Source" value={tf.treeSource} />
+            {tf.pricePerTree != null && <Field label="Price per Tree" value={formatGBP(tf.pricePerTree)} />}
+            {tf.totalTreeCost != null && <Field label="Total Tree Cost" value={formatGBP(tf.totalTreeCost)} />}
+          </div>
+        </div>
+      )
+
+    default:
+      // Backwards compatibility — old planting tasks without subtypes
+      return (
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Planting Details</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {tf.purpose && <Field label="Purpose" value={tf.purpose} />}
+            {tf.plantingType && <Field label="Planting Type" value={tf.plantingType} />}
+            {tf.cropMix && <Field label="Crop Mix" value={tf.cropMix} />}
+            {tf.area != null && <Field label="Area" value={`${tf.area} ha`} />}
+            {tf.seedRate != null && <Field label="Seed Rate" value={`${tf.seedRate} ${tf.rateUnit || 'kg/ha'}`} />}
+            {tf.totalSeeds != null && <Field label="Total Seeds" value={`${tf.totalSeeds} kg`} />}
+            {tf.source && <Field label="Source" value={tf.source} />}
+            {tf.price != null && <Field label="Price" value={formatGBP(tf.price)} />}
+            {tf.totalCost != null && <Field label="Total Cost" value={formatGBP(tf.totalCost)} />}
+            {tf.establishmentMethod && <Field label="Method" value={tf.establishmentMethod} />}
+          </div>
+        </div>
+      )
+  }
+}
+
+function LabourFields({ tf }) {
+  return (
+    <div className="space-y-4">
+      <h3 className="text-xs font-bold text-blue-600 uppercase tracking-wider">Labour Details</h3>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Labour Type" value={tf.labourType} />
+        <Field label="Pricing Method" value={tf.labourPricingMethod} />
+        <Field label="Rate" value={formatGBP(tf.labourRate)} />
+        <Field
+          label={tf.labourPricingMethod === 'Per Tree' ? 'Trees' : tf.labourPricingMethod === 'Per Plant / Whip' ? 'Plants' : tf.labourPricingMethod === 'Per Hour' ? 'Hours' : 'Days'}
+          value={tf.labourLength?.toLocaleString()}
+        />
+        <Field label="Labour Cost" value={formatGBP(tf.labourCost)} />
+        <Field label="Total Task Cost" value={formatGBP(tf.totalTaskCost)} highlight />
+      </div>
+    </div>
+  )
+}
+
+function Field({ label, value, highlight }) {
   return (
     <div className="p-3 bg-slate-50 rounded-lg">
       <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">{label}</p>
-      <p className="text-sm font-medium text-slate-800">{value}</p>
+      <p className={`text-sm ${highlight ? 'font-bold text-slate-900' : 'font-medium text-slate-800'}`}>{value}</p>
     </div>
   )
 }

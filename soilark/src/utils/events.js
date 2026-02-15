@@ -10,6 +10,7 @@ export function aggregateEvents(fields, tasks, customEvents = []) {
         date: task.dueDate,
         title: task.name,
         type: 'task',
+        subType: task.type?.toLowerCase() || 'task',
         priority: task.priority,
         assignedTo: task.assignedTo,
         fieldIds: task.fieldIds,
@@ -25,6 +26,7 @@ export function aggregateEvents(fields, tasks, customEvents = []) {
         date: activity.date,
         title: activity.title,
         type: 'task',
+        subType: activity.type?.toLowerCase() || 'task',
         fieldName: field.name,
         user: activity.user,
         details: activity.details,
@@ -37,6 +39,7 @@ export function aggregateEvents(fields, tasks, customEvents = []) {
     events.push({
       ...evt,
       type: evt.type || 'custom',
+      subType: evt.type?.toLowerCase(),
     })
   })
 

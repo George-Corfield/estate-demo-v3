@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { formatDateKey, DAYS_SHORT, MONTHS } from '../../utils/dates'
 import { getEventsForDate } from '../../utils/events'
-import { EVENT_TYPE_COLORS } from '../../constants/colors'
+import { EVENT_TYPE_COLORS, EVENT_SUBTYPE_ICONS } from '../../constants/colors'
 import EventForm from './EventForm'
 
 function formatAgendaDate(date) {
@@ -72,6 +72,9 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
           </div>
         )}
 
+        {/* Today's Events header */}
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Today's Events</p>
+
         {/* Timeline events */}
         {dayEvents.length === 0 && !showForm ? (
           <div className="text-center py-12 text-slate-400">
@@ -89,7 +92,9 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
                     className="absolute left-0 top-1.5 w-6 h-6 bg-white border-2 rounded-full flex items-center justify-center z-10"
                     style={{ borderColor: dotColor }}
                   >
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: dotColor }} />
+                    <span className="material-icons" style={{ fontSize: '12px', color: dotColor }}>
+                      {EVENT_SUBTYPE_ICONS[event.subType] || 'event'}
+                    </span>
                   </div>
 
                   {/* Time */}
@@ -103,7 +108,12 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
                   )}
 
                   {/* Event content */}
-                  <h4 className="text-sm font-bold text-slate-800">{event.title}</h4>
+                  <h4 className="text-sm font-bold text-slate-800 flex items-center gap-1">
+                    <span className="material-icons" style={{ fontSize: '14px' }}>
+                      {EVENT_SUBTYPE_ICONS[event.subType] || 'event'}
+                    </span>
+                    {event.title}
+                  </h4>
                   {event.fieldName && (
                     <p className="text-xs text-slate-500">{event.fieldName}</p>
                   )}
@@ -139,7 +149,7 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
         {upNext.length > 0 && (
           <div className="mt-12 pt-12 border-t border-slate-200">
             <div className="flex items-center justify-between mb-6">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Up Next</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Coming Up</p>
               <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase">
                 {upNext.length} Event
               </span>
@@ -151,7 +161,12 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
                   <div className="flex items-start gap-3">
                     <div className="w-1.5 self-stretch rounded-full" style={{ backgroundColor: dotColor }} />
                     <div>
-                      <h4 className="text-sm font-bold text-slate-800">{event.title}</h4>
+                      <h4 className="text-sm font-bold text-slate-800 flex items-center gap-1">
+                        <span className="material-icons" style={{ fontSize: '14px', color: dotColor }}>
+                          {EVENT_SUBTYPE_ICONS[event.subType] || 'event'}
+                        </span>
+                        {event.title}
+                      </h4>
                       <p className="text-xs text-slate-500 mt-1">
                         {event.fieldName && `${event.fieldName} • `}
                         {getRelativeDay(event.date, date)}
