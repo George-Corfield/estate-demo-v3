@@ -2,6 +2,7 @@ import { createContext, useContext, useReducer, useCallback } from 'react'
 import { initialFields } from '../data/fields'
 import { initialTasks } from '../data/tasks'
 import { initialEvents } from '../data/events'
+import { initialMachinery } from '../data/machinery'
 
 const AppContext = createContext(null)
 
@@ -9,6 +10,7 @@ const initialState = {
   fields: initialFields,
   tasks: initialTasks,
   customEvents: initialEvents,
+  machinery: initialMachinery,
   toasts: [],
 }
 
@@ -63,6 +65,24 @@ function reducer(state, action) {
             : t
         ),
       }
+    case 'ADD_MACHINERY':
+      return { ...state, machinery: [...state.machinery, action.equipment] }
+    case 'UPDATE_MACHINERY':
+      return {
+        ...state,
+        machinery: state.machinery.map(m =>
+          m.id === action.id ? { ...m, ...action.updates } : m
+        ),
+      }
+    case 'ADD_SERVICE_RECORD':
+      return {
+        ...state,
+        machinery: state.machinery.map(m =>
+          m.id === action.equipmentId
+            ? { ...m, serviceHistory: [action.record, ...m.serviceHistory] }
+            : m
+        ),
+      }
     case 'ADD_CUSTOM_EVENT':
       return { ...state, customEvents: [...state.customEvents, action.event] }
     case 'SHOW_TOAST':
@@ -101,6 +121,18 @@ export function AppProvider({ children }) {
     dispatch({ type: 'ADD_COMMENT', taskId, comment })
   }, [])
 
+  const addMachinery = useCallback((equipment) => {
+    dispatch({ type: 'ADD_MACHINERY', equipment })
+  }, [])
+
+  const updateMachinery = useCallback((id, updates) => {
+    dispatch({ type: 'UPDATE_MACHINERY', id, updates })
+  }, [])
+
+  const addServiceRecord = useCallback((equipmentId, record) => {
+    dispatch({ type: 'ADD_SERVICE_RECORD', equipmentId, record })
+  }, [])
+
   const addCustomEvent = useCallback((event) => {
     dispatch({ type: 'ADD_CUSTOM_EVENT', event })
   }, [])
@@ -119,6 +151,9 @@ export function AppProvider({ children }) {
     updateTask,
     moveTask,
     addComment,
+    addMachinery,
+    updateMachinery,
+    addServiceRecord,
     addCustomEvent,
     showToast,
   }

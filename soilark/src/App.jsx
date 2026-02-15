@@ -4,6 +4,7 @@ import Shell from './components/layout/Shell'
 import OverviewPage from './modules/overview/OverviewPage'
 import FieldsPage from './modules/fields/FieldsPage'
 import TasksPage from './modules/tasks/TasksPage'
+import MachineryPage from './modules/machinery/MachineryPage'
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
             <Route index element={<OverviewPage />} />
             <Route path="fields" element={<FieldsPage />} />
             <Route path="tasks" element={<TasksPage />} />
+            <Route path="machinery" element={<MachineryPage />} />
           </Route>
         </Routes>
       </AppProvider>

@@ -19,7 +19,7 @@ const STATUS_FLOW = [
 ]
 
 export default function TaskDetailView({ taskId, onBack }) {
-  const { tasks, fields, moveTask, addComment, showToast } = useApp()
+  const { tasks, fields, machinery, moveTask, addComment, showToast } = useApp()
   const [activeTab, setActiveTab] = useState('details')
   const [newComment, setNewComment] = useState('')
   const navigate = useNavigate()
@@ -146,11 +146,26 @@ export default function TaskDetailView({ taskId, onBack }) {
             {task.assignedMachinery.length > 0 && (
               <div>
                 <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Machinery</h3>
-                {task.assignedMachinery.map(m => (
-                  <div key={m} className="text-sm text-slate-700 py-1 px-3 bg-slate-50 rounded">
-                    {m}
-                  </div>
-                ))}
+                <div className="space-y-1">
+                  {task.assignedMachinery.map(m => {
+                    const match = machinery.find(eq => eq.name === m)
+                    return match ? (
+                      <button
+                        key={m}
+                        onClick={() => navigate('/machinery', { state: { openEquipmentId: match.id } })}
+                        className="w-full text-left text-sm text-slate-700 py-1 px-3 bg-slate-50 rounded hover:bg-primary/5 hover:text-primary transition-colors cursor-pointer flex items-center gap-2"
+                      >
+                        <span className="material-icons text-sm text-slate-400">agriculture</span>
+                        {m}
+                      </button>
+                    ) : (
+                      <div key={m} className="text-sm text-slate-700 py-1 px-3 bg-slate-50 rounded flex items-center gap-2">
+                        <span className="material-icons text-sm text-slate-400">agriculture</span>
+                        {m}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             )}
           </div>
