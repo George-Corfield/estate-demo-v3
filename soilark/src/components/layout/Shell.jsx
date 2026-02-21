@@ -1,12 +1,11 @@
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
-import FAB from './FAB'
 import Toast from './Toast'
 
 export default function Shell() {
   return (
-    <div className="flex h-screen w-full bg-background-light overflow-hidden">
+    <div className="flex h-screen w-full overflow-hidden" style={{ background: 'var(--color-parchment-50)' }}>
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <TopBar />
@@ -14,7 +13,6 @@ export default function Shell() {
           <Outlet />
         </main>
       </div>
-      <FAB />
       <Toast />
     </div>
   )

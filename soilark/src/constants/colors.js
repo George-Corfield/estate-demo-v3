@@ -1,36 +1,51 @@
+// LandArk Design System palette tokens
+// LandArk "Lush & Sunlit" palette tokens
+const sage500 = '#56AB2F'      // Brighter, more "living" green
+const sage600 = '#3B7A1E'      // Deep forest for contrast
+const ochre400 = '#F2A900'     // Pure golden harvest
+const ochre300 = '#FFCC33'     // Sunlight/Daffodil yellow
+const earth400 = '#B57E5D'     // Warmer terracotta
+const earth500 = '#8B5A3C'     // Richer cocoa
+const parchment100 = '#F9F7F2' // Cleaner, whiter base
+const parchment200 = '#F0EAD6' // Less gray, more "cream"
+const parchment300 = '#E6DCC3' // Deeper tan without the "mud"
+const ink900 = '#1A1D16'       // Near-black with a hint of forest
+const vibrantBlue = '#4A90E2'  // Added for "Services" to break the brown/green monotony
+
 export const CATEGORY_COLORS = {
-  Arable: { bg: '#fcd34d', border: '#f59e0b', text: '#92400e' },
-  Pastoral: { bg: '#4ade80', border: '#22c55e', text: '#166534' },
-  Grassland: { bg: '#86efac', border: '#4ade80', text: '#166534' },
-  Forestry: { bg: '#6b7280', border: '#4b5563', text: '#1f2937' },
+  Arable: { bg: '#FFCC33', border: '#F2A900', text: '#1A1D16' },
+  Pastoral: { bg: '#56AB2F', border: '#3B7A1E', text: '#fff' },
+  Grassland: { bg: '#A3CF62', border: '#56AB2F', text: '#1A1D16' },
+  Forestry: { bg: '#8B5A3C', border: '#543A28', text: '#fff' },
 }
 
 export const PRIORITY_COLORS = {
-  high: { dot: '#ef4444', bg: '#fef2f2', text: '#991b1b' },
-  medium: { dot: '#f97316', bg: '#fff7ed', text: '#9a3412' },
-  low: { dot: '#3b82f6', bg: '#eff6ff', text: '#1e40af' },
+  high: { bg: ochre400, text: '#fff' },
+  medium: { bg: parchment300, text: earth500 },
+  low: { bg: parchment200, text: earth500 },
 }
 
 export const EVENT_TYPE_COLORS = {
-  task: '#22c55e',
-  service: '#f59e0b',
-  appointment: '#3b82f6',
-  event: '#6366f1',
-  reminder: '#f59e0b',
+  task: sage500,
+  service: ochre400,
+  appointment: earth400,
+  event: earth400,
+  reminder: ochre300,
 }
 
 export const EVENT_TYPE_BG = {
-  task: { bg: '#dcfce7', text: '#166534' },
-  service: { bg: '#fef3c7', text: '#92400e' },
-  appointment: { bg: '#dbeafe', text: '#1e40af' },
-  event: { bg: '#dbeafe', text: '#1e40af' },
-  reminder: { bg: '#dbeafe', text: '#1e40af' },
+  // Using light tints instead of just parchment
+  task: { bg: '#EBF5E8', text: '#3B7A1E' },      // Light green tint
+  service: { bg: '#FEF6E5', text: '#D49A20' },   // Light gold tint
+  appointment: { bg: '#F6F1EE', text: '#8B5A3C' }, // Light earth tint
+  event: { bg: '#F6F1EE', text: '#8B5A3C' },
+  reminder: { bg: '#FEF6E5', text: '#D49A20' },
 }
 
 export const EVENT_FILTER_COLORS = {
-  task: { dot: '#22c55e', label: 'Tasks' },
-  service: { dot: '#f59e0b', label: 'Services' },
-  event: { dot: '#3b82f6', label: 'Events' },
+  task: { dot: sage500, label: 'Tasks' },
+  service: { dot: ochre400, label: 'Services' },
+  event: { dot: earth400, label: 'Events' },
 }
 
 export const EVENT_SUBTYPE_ICONS = {
@@ -61,7 +76,7 @@ export const EVENT_TYPE_TO_FILTER = {
 }
 
 export const STATUS_COLORS = {
-  todo: { bg: '#f1f5f9', text: '#475569', label: 'To Do' },
-  inProgress: { bg: '#dbeafe', text: '#1e40af', label: 'In Progress' },
-  done: { bg: '#dcfce7', text: '#166534', label: 'Done' },
+  todo: { bg: parchment300, text: earth500, label: 'To Do' },
+  inProgress: { bg: sage500, text: '#fff', label: 'In Progress' },
+  done: { bg: sage500, text: '#fff', label: 'Done' },
 }

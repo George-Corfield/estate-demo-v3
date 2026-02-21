@@ -26,9 +26,34 @@ import {
 const TASK_TYPES = ['Planting', 'Harvesting', 'Fertilizing', 'Maintenance', 'Feeding', 'Irrigation']
 const PRIORITIES = ['low', 'medium', 'high']
 
-const inputClass = 'mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none'
-const labelClass = 'text-xs font-semibold text-slate-500 uppercase'
-const readOnlyClass = 'mt-1 w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-sm text-slate-700 font-medium'
+const toggleActiveStyle = {
+  background: 'rgba(78,140,53,0.15)',
+  color: 'var(--color-sage-500)',
+  border: '1px solid rgba(78,140,53,0.3)',
+}
+const toggleInactiveStyle = {
+  background: 'var(--color-parchment-50)',
+  color: 'var(--color-earth-500)',
+  border: '1px solid var(--color-parchment-300)',
+}
+const toggleBaseStyle = {
+  padding: '6px 12px',
+  borderRadius: 'var(--radius-sm)',
+  fontSize: 12,
+  fontFamily: 'var(--font-body)',
+  fontWeight: 500,
+  cursor: 'pointer',
+  transition: 'all 120ms ease',
+}
+
+const chipActiveStyle = {
+  ...toggleBaseStyle,
+  ...toggleActiveStyle,
+}
+const chipInactiveStyle = {
+  ...toggleBaseStyle,
+  ...toggleInactiveStyle,
+}
 
 export default function TaskCreateForm({
   selectedFieldIds,
@@ -275,717 +300,690 @@ export default function TaskCreateForm({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-slate-900">New Task</h2>
-        <button onClick={onCancel} className="p-1 hover:bg-slate-100 rounded">
-          <span className="material-icons text-slate-400">close</span>
+      <div style={{ padding: 16, borderBottom: '1px solid var(--color-parchment-300)' }} className="flex items-center justify-between">
+        <h2 className="text-heading-3" style={{ color: 'var(--color-ink-900)', margin: 0 }}>New Task</h2>
+        <button onClick={onCancel} className="btn btn-ghost" style={{ padding: 4 }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-earth-400)' }}>close</span>
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-4">
-        {/* Name */}
-        <div>
-          <label className={labelClass}>Task Name *</label>
-          <input
-            type="text"
-            value={form.name}
-            onChange={e => update('name', e.target.value)}
-            placeholder="e.g. Apply Spring Fertiliser"
-            className={inputClass}
-            required
-          />
-        </div>
-
-        {/* Type */}
-        <div>
-          <label className={labelClass}>Task Type *</label>
-          <select
-            value={form.type}
-            onChange={e => handleTypeChange(e.target.value)}
-            className={inputClass}
-            required
-          >
-            <option value="">Select type...</option>
-            {TASK_TYPES.map(t => <option key={t}>{t}</option>)}
-          </select>
-        </div>
-
-        {/* Planting Subtype */}
-        {form.type === 'Planting' && (
+      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto custom-scrollbar" style={{ padding: 20 }}>
+        <div className="flex flex-col gap-4">
+          {/* Name */}
           <div>
-            <label className={labelClass}>Planting Type *</label>
-            <div className="flex gap-2 mt-1">
-              {PLANTING_SUBTYPES.map(s => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => handlePlantingSubtypeChange(s)}
-                  className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
-                    plantingSubtype === s
-                      ? 'bg-primary/20 text-primary border border-primary/30'
-                      : 'bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  {s}
-                </button>
+            <label className="form-label">Task Name *</label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={e => update('name', e.target.value)}
+              placeholder="e.g. Apply Spring Fertiliser"
+              className="form-input"
+              required
+            />
+          </div>
+
+          {/* Type */}
+          <div>
+            <label className="form-label">Task Type *</label>
+            <select
+              value={form.type}
+              onChange={e => handleTypeChange(e.target.value)}
+              className="form-select"
+              required
+            >
+              <option value="">Select type...</option>
+              {TASK_TYPES.map(t => <option key={t}>{t}</option>)}
+            </select>
+          </div>
+
+          {/* Planting Subtype */}
+          {form.type === 'Planting' && (
+            <div>
+              <label className="form-label">Planting Type *</label>
+              <div className="flex gap-2 mt-1">
+                {PLANTING_SUBTYPES.map(s => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => handlePlantingSubtypeChange(s)}
+                    style={{ ...toggleBaseStyle, flex: 1, padding: '6px 12px', ...(plantingSubtype === s ? toggleActiveStyle : toggleInactiveStyle) }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Fields */}
+          <div>
+            <label className="form-label">
+              Fields * <span style={{ color: 'var(--color-earth-400)', textTransform: 'none' }}>(click map or select below)</span>
+            </label>
+            {selectedFieldIds.length > 0 && (
+              <div className="flex flex-wrap gap-1" style={{ marginTop: 4, marginBottom: 8 }}>
+                {selectedFieldIds.map(id => {
+                  const f = fields.find(ff => ff.id === id)
+                  return f ? (
+                    <span key={id} className="badge badge-healthy" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      {f.name}
+                      <button type="button" onClick={() => toggleField(id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'inherit', lineHeight: 1 }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 12 }}>close</span>
+                      </button>
+                    </span>
+                  ) : null
+                })}
+              </div>
+            )}
+            <div style={{ maxHeight: 144, overflowY: 'auto', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-sm)' }}>
+              {fields.map(f => (
+                <label key={f.id} className="flex items-center gap-2" style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--color-parchment-200)', fontSize: 13, fontFamily: 'var(--font-body)', color: 'var(--color-earth-600)' }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedFieldIds.includes(f.id)}
+                    onChange={() => toggleField(f.id)}
+                  />
+                  <span>{f.name}</span>
+                  <span className="text-data" style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-earth-400)' }}>{f.category}</span>
+                </label>
               ))}
             </div>
           </div>
-        )}
 
-        {/* Fields */}
-        <div>
-          <label className={labelClass}>
-            Fields * <span className="text-slate-400 normal-case">(click map or select below)</span>
-          </label>
-          {selectedFieldIds.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-1 mb-2">
-              {selectedFieldIds.map(id => {
-                const f = fields.find(ff => ff.id === id)
-                return f ? (
-                  <span key={id} className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                    {f.name}
-                    <button type="button" onClick={() => toggleField(id)} className="hover:text-red-500">
-                      <span className="material-icons text-xs">close</span>
-                    </button>
-                  </span>
-                ) : null
-              })}
-            </div>
-          )}
-          <div className="max-h-36 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100">
-            {fields.map(f => (
-              <label key={f.id} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 cursor-pointer text-sm">
-                <input
-                  type="checkbox"
-                  checked={selectedFieldIds.includes(f.id)}
-                  onChange={() => toggleField(f.id)}
-                  className="rounded border-slate-300 text-primary focus:ring-primary/30"
-                />
-                <span className="text-slate-700">{f.name}</span>
-                <span className="text-xs text-slate-400 ml-auto">{f.category}</span>
-              </label>
-            ))}
-          </div>
-        </div>
+          {/* ── Crop/Seed Fields ── */}
+          {form.type === 'Planting' && plantingSubtype === 'Crop/Seed' && (
+            <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}>
+              <h3 className="text-label" style={{ color: 'var(--color-sage-600)' }}>Crop / Seed Details</h3>
 
-        {/* ── Crop/Seed Fields ── */}
-        {form.type === 'Planting' && plantingSubtype === 'Crop/Seed' && (
-          <div className="space-y-4 p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
-            <h3 className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Crop / Seed Details</h3>
-
-            {/* Crop/Mix */}
-            <div>
-              <label className={labelClass}>Crop / Mix *</label>
-              <select value={cropMix} onChange={e => setCropMix(e.target.value)} className={inputClass} required>
-                <option value="">Select crop...</option>
-                {CROP_OPTIONS.map(c => <option key={c}>{c}</option>)}
-                <option value="Other">Other (custom)</option>
-              </select>
-              {cropMix === 'Other' && (
-                <input
-                  type="text"
-                  value={customCropMix}
-                  onChange={e => setCustomCropMix(e.target.value)}
-                  placeholder="Enter custom crop or mix..."
-                  className={inputClass + ' mt-2'}
-                  required
-                />
-              )}
-            </div>
-
-            {/* Area */}
-            <div>
-              <label className={labelClass}>Area (ha)</label>
-              <div className={readOnlyClass}>{totalAreaHa.toFixed(1)} ha</div>
-            </div>
-
-            {/* Rate */}
-            <div>
-              <label className={labelClass}>Seed Rate *</label>
-              <div className="flex gap-2 mt-1">
-                <input
-                  type="number"
-                  value={rate}
-                  onChange={e => setRate(e.target.value)}
-                  placeholder="Rate"
-                  className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
-                  min="0"
-                  step="any"
-                  required
-                />
-                <div className="flex rounded-lg border border-slate-200 overflow-hidden">
-                  {SEED_RATE_UNITS.map(u => (
-                    <button
-                      key={u}
-                      type="button"
-                      onClick={() => setRateUnit(u)}
-                      className={`px-3 py-2 text-xs font-medium transition-colors ${
-                        rateUnit === u
-                          ? 'bg-primary/20 text-primary'
-                          : 'bg-white text-slate-500 hover:bg-slate-50'
-                      }`}
-                    >
-                      {u}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Total Seed Required */}
-            <div>
-              <label className={labelClass}>Total Seed Required</label>
-              <div className={readOnlyClass}>
-                {rateUnit === 'kg/ha'
-                  ? `${totalSeedRequired.toFixed(1)} kg`
-                  : `${Math.round(totalSeedRequired).toLocaleString()} seeds`}
-              </div>
-            </div>
-
-            {/* Seed Source */}
-            <div>
-              <label className={labelClass}>Seed Source *</label>
-              <select value={seedSource} onChange={e => setSeedSource(e.target.value)} className={inputClass} required>
-                <option value="">Select source...</option>
-                {SEED_SOURCES.map(s => <option key={s}>{s}</option>)}
-              </select>
-            </div>
-
-            {/* Price */}
-            {seedSource && (
               <div>
-                <label className={labelClass}>
-                  {seedSource === 'Bought' ? 'Price' : 'Cost'}
-                  {rateUnit === 'seeds/m²' ? ' per seed' : ' per tonne'}
-                  <span className="text-slate-400 normal-case ml-1">(optional)</span>
-                </label>
-                <div className="relative mt-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">£</span>
+                <label className="form-label">Crop / Mix *</label>
+                <select value={cropMix} onChange={e => setCropMix(e.target.value)} className="form-select" required>
+                  <option value="">Select crop...</option>
+                  {CROP_OPTIONS.map(c => <option key={c}>{c}</option>)}
+                  <option value="Other">Other (custom)</option>
+                </select>
+                {cropMix === 'Other' && (
+                  <input
+                    type="text"
+                    value={customCropMix}
+                    onChange={e => setCustomCropMix(e.target.value)}
+                    placeholder="Enter custom crop or mix..."
+                    className="form-input"
+                    style={{ marginTop: 8 }}
+                    required
+                  />
+                )}
+              </div>
+
+              <div>
+                <label className="form-label">Area (ha)</label>
+                <ReadOnlyField>{totalAreaHa.toFixed(1)} ha</ReadOnlyField>
+              </div>
+
+              <div>
+                <label className="form-label">Seed Rate *</label>
+                <div className="flex gap-2" style={{ marginTop: 4 }}>
                   <input
                     type="number"
-                    value={seedPrice}
-                    onChange={e => setSeedPrice(e.target.value)}
-                    placeholder="0.00"
-                    className="w-full pl-7 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
+                    value={rate}
+                    onChange={e => setRate(e.target.value)}
+                    placeholder="Rate"
+                    className="form-input"
+                    style={{ flex: 1 }}
                     min="0"
                     step="any"
+                    required
                   />
-                </div>
-              </div>
-            )}
-
-            {/* Total Seed Cost */}
-            {totalSeedCost > 0 && (
-              <div>
-                <label className={labelClass}>Total Seed Cost</label>
-                <div className={readOnlyClass}>{formatGBP(totalSeedCost)}</div>
-              </div>
-            )}
-
-            {/* Establishment Method */}
-            <div>
-              <label className={labelClass}>Establishment Method *</label>
-              <select value={establishmentMethod} onChange={e => setEstablishmentMethod(e.target.value)} className={inputClass} required>
-                <option value="">Select method...</option>
-                {ESTABLISHMENT_METHODS.map(m => <option key={m}>{m}</option>)}
-              </select>
-            </div>
-          </div>
-        )}
-
-        {/* ── Hedges Fields ── */}
-        {form.type === 'Planting' && plantingSubtype === 'Hedges' && (
-          <div className="space-y-4 p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
-            <h3 className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Hedge Details</h3>
-
-            {/* Hedge Plant */}
-            <div>
-              <label className={labelClass}>Hedge Plant *</label>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {HEDGE_PLANTS.map(p => (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() => setHedgePlant(p)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      hedgePlant === p
-                        ? 'bg-primary/20 text-primary border border-primary/30'
-                        : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
-                    }`}
-                  >
-                    {p}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setHedgePlant('Other')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    hedgePlant === 'Other'
-                      ? 'bg-primary/20 text-primary border border-primary/30'
-                      : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  Other
-                </button>
-              </div>
-              {hedgePlant === 'Other' && (
-                <input
-                  type="text"
-                  value={customHedgePlant}
-                  onChange={e => setCustomHedgePlant(e.target.value)}
-                  placeholder="Enter hedge plant..."
-                  className={inputClass + ' mt-2'}
-                  required
-                />
-              )}
-            </div>
-
-            {/* Hedge Length */}
-            <div>
-              <label className={labelClass}>Hedge Length (m)</label>
-              <div className={readOnlyClass}>{Math.round(hedgeLength).toLocaleString()} m</div>
-            </div>
-
-            {/* Rows */}
-            <div>
-              <label className={labelClass}>Rows *</label>
-              <div className="flex gap-2 mt-1">
-                {HEDGE_ROWS.map(r => (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => setHedgeRows(r)}
-                    className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
-                      hedgeRows === r
-                        ? 'bg-primary/20 text-primary border border-primary/30'
-                        : 'bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    {r}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Plants/m */}
-            <div>
-              <label className={labelClass}>Plants per Metre *</label>
-              <input
-                type="number"
-                value={plantsPerMetre}
-                onChange={e => setPlantsPerMetre(e.target.value)}
-                placeholder="e.g. 6"
-                className={inputClass}
-                min="0"
-                step="any"
-                required
-              />
-            </div>
-
-            {/* Total Plants Required */}
-            <div>
-              <label className={labelClass}>Total Plants Required</label>
-              <div className={readOnlyClass}>{totalPlantsRequired.toLocaleString()}</div>
-            </div>
-
-            {/* Protection */}
-            <div>
-              <label className={labelClass}>Protection *</label>
-              <select value={hedgeProtection} onChange={e => setHedgeProtection(e.target.value)} className={inputClass} required>
-                <option value="">Select protection...</option>
-                {HEDGE_PROTECTION.map(p => <option key={p}>{p}</option>)}
-              </select>
-            </div>
-
-            {/* Plant Source */}
-            <div>
-              <label className={labelClass}>Plant Source *</label>
-              <div className="flex gap-2 mt-1">
-                {HEDGE_SOURCES.map(s => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => { setPlantSource(s); if (s !== 'Bought') setPricePerPlant('') }}
-                    className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
-                      plantSource === s
-                        ? 'bg-primary/20 text-primary border border-primary/30'
-                        : 'bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Price per Plant */}
-            {plantSource === 'Bought' && (
-              <div>
-                <label className={labelClass}>
-                  Price per Plant <span className="text-slate-400 normal-case">(optional)</span>
-                </label>
-                <div className="relative mt-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">£</span>
-                  <input
-                    type="number"
-                    value={pricePerPlant}
-                    onChange={e => setPricePerPlant(e.target.value)}
-                    placeholder="0.00"
-                    className="w-full pl-7 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
-                    min="0"
-                    step="any"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Total Plant Cost */}
-            {totalPlantCost > 0 && (
-              <div>
-                <label className={labelClass}>Total Plant Cost</label>
-                <div className={readOnlyClass}>{formatGBP(totalPlantCost)}</div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── Trees Fields ── */}
-        {form.type === 'Planting' && plantingSubtype === 'Trees' && (
-          <div className="space-y-4 p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
-            <h3 className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Tree Details</h3>
-
-            {/* Tree Species */}
-            <div>
-              <label className={labelClass}>Tree Species *</label>
-              <div className="flex flex-wrap gap-2 mt-1 max-h-36 overflow-y-auto">
-                {TREE_SPECIES.map(s => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setTreeSpecies(s)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      treeSpecies === s
-                        ? 'bg-primary/20 text-primary border border-primary/30'
-                        : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setTreeSpecies('Other')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    treeSpecies === 'Other'
-                      ? 'bg-primary/20 text-primary border border-primary/30'
-                      : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  Other
-                </button>
-              </div>
-              {treeSpecies === 'Other' && (
-                <input
-                  type="text"
-                  value={customTreeSpecies}
-                  onChange={e => setCustomTreeSpecies(e.target.value)}
-                  placeholder="Enter tree species..."
-                  className={inputClass + ' mt-2'}
-                  required
-                />
-              )}
-            </div>
-
-            {/* Quantity */}
-            <div>
-              <label className={labelClass}>Quantity (number of trees) *</label>
-              <input
-                type="number"
-                value={treeQuantity}
-                onChange={e => setTreeQuantity(e.target.value)}
-                placeholder="e.g. 500"
-                className={inputClass}
-                min="1"
-                required
-              />
-            </div>
-
-            {/* Stock Type */}
-            <div>
-              <label className={labelClass}>Stock Type *</label>
-              <select value={stockType} onChange={e => setStockType(e.target.value)} className={inputClass} required>
-                <option value="">Select stock type...</option>
-                {TREE_STOCK_TYPES.map(t => <option key={t}>{t}</option>)}
-              </select>
-            </div>
-
-            {/* Planting Pattern */}
-            <div>
-              <label className={labelClass}>Planting Pattern *</label>
-              <select value={plantingPattern} onChange={e => setPlantingPattern(e.target.value)} className={inputClass} required>
-                <option value="">Select pattern...</option>
-                {TREE_PATTERNS.map(p => <option key={p}>{p}</option>)}
-              </select>
-            </div>
-
-            {/* Protection */}
-            <div>
-              <label className={labelClass}>Protection *</label>
-              <select value={treeProtection} onChange={e => setTreeProtection(e.target.value)} className={inputClass} required>
-                <option value="">Select protection...</option>
-                {TREE_PROTECTION.map(p => <option key={p}>{p}</option>)}
-              </select>
-            </div>
-
-            {/* Source */}
-            <div>
-              <label className={labelClass}>Source *</label>
-              <div className="flex gap-2 mt-1">
-                {TREE_SOURCES.map(s => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => { setTreeSource(s); if (s !== 'Bought') setPricePerTree('') }}
-                    className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
-                      treeSource === s
-                        ? 'bg-primary/20 text-primary border border-primary/30'
-                        : 'bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Price per Tree */}
-            {treeSource === 'Bought' && (
-              <div>
-                <label className={labelClass}>
-                  Price per Tree <span className="text-slate-400 normal-case">(optional)</span>
-                </label>
-                <div className="relative mt-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">£</span>
-                  <input
-                    type="number"
-                    value={pricePerTree}
-                    onChange={e => setPricePerTree(e.target.value)}
-                    placeholder="0.00"
-                    className="w-full pl-7 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
-                    min="0"
-                    step="any"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Total Tree Cost */}
-            {totalTreeCost > 0 && (
-              <div>
-                <label className={labelClass}>Total Tree Cost</label>
-                <div className={readOnlyClass}>{formatGBP(totalTreeCost)}</div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── Labour Toggle ── */}
-        {form.type && (
-          <div className="space-y-4">
-            <label className="flex items-center gap-3 cursor-pointer group">
-              <div
-                onClick={() => { setLabourEnabled(!labourEnabled); if (labourEnabled) { setLabourType(''); setLabourPricingMethod(''); setLabourRate(''); setLabourLength('') } }}
-                className={`relative w-10 h-5 rounded-full transition-colors ${labourEnabled ? 'bg-primary' : 'bg-slate-300'}`}
-              >
-                <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${labourEnabled ? 'translate-x-5' : ''}`} />
-              </div>
-              <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900">Add Labour Costs</span>
-            </label>
-
-            {labourEnabled && (
-              <div className="space-y-4 p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
-                <h3 className="text-xs font-bold text-blue-700 uppercase tracking-wider">Labour Details</h3>
-
-                {/* Labour Type */}
-                <div>
-                  <label className={labelClass}>Labour Type *</label>
-                  <div className="flex gap-2 mt-1">
-                    {LABOUR_TYPES.map(t => (
+                  <div className="flex" style={{ borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-parchment-300)', overflow: 'hidden' }}>
+                    {SEED_RATE_UNITS.map(u => (
                       <button
-                        key={t}
+                        key={u}
                         type="button"
-                        onClick={() => setLabourType(t)}
-                        className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
-                          labourType === t
-                            ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                            : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
-                        }`}
+                        onClick={() => setRateUnit(u)}
+                        style={{
+                          padding: '6px 12px',
+                          fontSize: 12,
+                          fontFamily: 'var(--font-body)',
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                          transition: 'all 120ms ease',
+                          border: 'none',
+                          ...(rateUnit === u
+                            ? { background: 'rgba(78,140,53,0.15)', color: 'var(--color-sage-500)' }
+                            : { background: 'var(--color-parchment-50)', color: 'var(--color-earth-500)' }),
+                        }}
                       >
-                        {t}
+                        {u}
                       </button>
                     ))}
                   </div>
                 </div>
+              </div>
 
-                {/* Pricing Method */}
+              <div>
+                <label className="form-label">Total Seed Required</label>
+                <ReadOnlyField>
+                  {rateUnit === 'kg/ha'
+                    ? `${totalSeedRequired.toFixed(1)} kg`
+                    : `${Math.round(totalSeedRequired).toLocaleString()} seeds`}
+                </ReadOnlyField>
+              </div>
+
+              <div>
+                <label className="form-label">Seed Source *</label>
+                <select value={seedSource} onChange={e => setSeedSource(e.target.value)} className="form-select" required>
+                  <option value="">Select source...</option>
+                  {SEED_SOURCES.map(s => <option key={s}>{s}</option>)}
+                </select>
+              </div>
+
+              {seedSource && (
                 <div>
-                  <label className={labelClass}>Pricing Method *</label>
-                  <select value={labourPricingMethod} onChange={e => setLabourPricingMethod(e.target.value)} className={inputClass} required>
-                    <option value="">Select method...</option>
-                    {labourPricingOptions.map(m => <option key={m}>{m}</option>)}
-                  </select>
+                  <label className="form-label">
+                    {seedSource === 'Bought' ? 'Price' : 'Cost'}
+                    {rateUnit === 'seeds/m²' ? ' per seed' : ' per tonne'}
+                    <span style={{ color: 'var(--color-earth-400)', textTransform: 'none', marginLeft: 4 }}>(optional)</span>
+                  </label>
+                  <div style={{ position: 'relative', marginTop: 4 }}>
+                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-earth-400)', fontSize: 13 }}>£</span>
+                    <input
+                      type="number"
+                      value={seedPrice}
+                      onChange={e => setSeedPrice(e.target.value)}
+                      placeholder="0.00"
+                      className="form-input"
+                      style={{ paddingLeft: 28 }}
+                      min="0"
+                      step="any"
+                    />
+                  </div>
                 </div>
+              )}
 
-                {/* Rate */}
-                {labourPricingMethod && (
-                  <div>
-                    <label className={labelClass}>
-                      Rate ({labourPricingMethod === 'Per Hour' ? '£/hour' : labourPricingMethod === 'Per Day' ? '£/day' : labourPricingMethod === 'Per Tree' ? '£/tree' : '£/plant'}) *
-                    </label>
-                    <div className="relative mt-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">£</span>
-                      <input
-                        type="number"
-                        value={labourRate}
-                        onChange={e => setLabourRate(e.target.value)}
-                        placeholder="0.00"
-                        className="w-full pl-7 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
-                        min="0"
-                        step="any"
-                        required
-                      />
-                    </div>
-                  </div>
-                )}
+              {totalSeedCost > 0 && (
+                <div>
+                  <label className="form-label">Total Seed Cost</label>
+                  <ReadOnlyField>{formatGBP(totalSeedCost)}</ReadOnlyField>
+                </div>
+              )}
 
-                {/* Length/Quantity */}
-                {labourPricingMethod && (
-                  <div>
-                    <label className={labelClass}>
-                      {labourPricingMethod === 'Per Hour' ? 'Hours' : labourPricingMethod === 'Per Day' ? 'Days' : labourPricingMethod === 'Per Tree' ? 'Number of Trees' : 'Number of Plants'} *
-                    </label>
-                    {labourPricingMethod === 'Per Tree' || labourPricingMethod === 'Per Plant / Whip' ? (
-                      <div className={readOnlyClass}>{effectiveLabourLength.toLocaleString()}</div>
-                    ) : (
-                      <input
-                        type="number"
-                        value={labourLength}
-                        onChange={e => setLabourLength(e.target.value)}
-                        placeholder="e.g. 5"
-                        className={inputClass}
-                        min="0"
-                        step="any"
-                        required
-                      />
-                    )}
-                  </div>
-                )}
+              <div>
+                <label className="form-label">Establishment Method *</label>
+                <select value={establishmentMethod} onChange={e => setEstablishmentMethod(e.target.value)} className="form-select" required>
+                  <option value="">Select method...</option>
+                  {ESTABLISHMENT_METHODS.map(m => <option key={m}>{m}</option>)}
+                </select>
+              </div>
+            </div>
+          )}
 
-                {/* Labour Cost */}
-                {labourCost > 0 && (
-                  <div>
-                    <label className={labelClass}>Labour Cost</label>
-                    <div className={readOnlyClass}>{formatGBP(labourCost)}</div>
-                  </div>
-                )}
+          {/* ── Hedges Fields ── */}
+          {form.type === 'Planting' && plantingSubtype === 'Hedges' && (
+            <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}>
+              <h3 className="text-label" style={{ color: 'var(--color-sage-600)' }}>Hedge Details</h3>
 
-                {/* Total Task Cost */}
-                {totalTaskCost > 0 && (
-                  <div>
-                    <label className={labelClass}>Total Task Cost</label>
-                    <div className={readOnlyClass + ' font-bold'}>{formatGBP(totalTaskCost)}</div>
-                  </div>
+              <div>
+                <label className="form-label">Hedge Plant *</label>
+                <div className="flex flex-wrap gap-2" style={{ marginTop: 4 }}>
+                  {HEDGE_PLANTS.map(p => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => setHedgePlant(p)}
+                      style={hedgePlant === p ? chipActiveStyle : chipInactiveStyle}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setHedgePlant('Other')}
+                    style={hedgePlant === 'Other' ? chipActiveStyle : chipInactiveStyle}
+                  >
+                    Other
+                  </button>
+                </div>
+                {hedgePlant === 'Other' && (
+                  <input
+                    type="text"
+                    value={customHedgePlant}
+                    onChange={e => setCustomHedgePlant(e.target.value)}
+                    placeholder="Enter hedge plant..."
+                    className="form-input"
+                    style={{ marginTop: 8 }}
+                    required
+                  />
                 )}
               </div>
-            )}
-          </div>
-        )}
 
-        {/* Description */}
-        <div>
-          <label className={labelClass}>Description</label>
-          <textarea
-            value={form.description}
-            onChange={e => update('description', e.target.value)}
-            placeholder="Optional details..."
-            rows={3}
-            className={inputClass + ' resize-none'}
-          />
-        </div>
+              <div>
+                <label className="form-label">Hedge Length (m)</label>
+                <ReadOnlyField>{Math.round(hedgeLength).toLocaleString()} m</ReadOnlyField>
+              </div>
 
-        {/* Due Date */}
-        <div>
-          <label className={labelClass}>
-            Due Date * <span className="text-slate-400 normal-case">(or click calendar)</span>
-          </label>
-          <input
-            type="date"
-            value={dueDate}
-            onChange={e => setDueDate(e.target.value)}
-            onFocus={onFocusDate}
-            className={inputClass}
-            required
-          />
-        </div>
+              <div>
+                <label className="form-label">Rows *</label>
+                <div className="flex gap-2" style={{ marginTop: 4 }}>
+                  {HEDGE_ROWS.map(r => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setHedgeRows(r)}
+                      style={{ ...toggleBaseStyle, flex: 1, ...(hedgeRows === r ? toggleActiveStyle : toggleInactiveStyle) }}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-        {/* Priority */}
-        <div>
-          <label className={labelClass}>Priority</label>
-          <div className="flex gap-2 mt-1">
-            {PRIORITIES.map(p => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => update('priority', p)}
-                className={`flex-1 py-2 rounded-lg text-xs font-medium capitalize transition-colors ${
-                  form.priority === p
-                    ? 'bg-primary/20 text-primary border border-primary/30'
-                    : 'bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Staff */}
-        <div>
-          <label className={labelClass}>Assign Staff</label>
-          <div className="max-h-36 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100 mt-1">
-            {initialStaff.map(s => (
-              <label key={s.id} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 cursor-pointer text-sm">
+              <div>
+                <label className="form-label">Plants per Metre *</label>
                 <input
-                  type="checkbox"
-                  checked={form.assignedTo.includes(s.name)}
-                  onChange={() => toggleStaff(s.name)}
-                  className="rounded border-slate-300 text-primary focus:ring-primary/30"
+                  type="number"
+                  value={plantsPerMetre}
+                  onChange={e => setPlantsPerMetre(e.target.value)}
+                  placeholder="e.g. 6"
+                  className="form-input"
+                  min="0"
+                  step="any"
+                  required
                 />
-                <span className="text-slate-700">{s.name}</span>
-                <span className="text-xs text-slate-400 ml-auto">{s.role}</span>
-              </label>
-            ))}
-          </div>
-        </div>
+              </div>
 
-        {/* Submit */}
-        <div className="flex gap-2 pt-2 pb-4">
-          <button
-            type="submit"
-            className="flex-1 py-2.5 bg-primary text-emerald-950 text-sm font-bold rounded-lg hover:bg-primary-dark transition-colors"
-          >
-            Create Task
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2.5 bg-slate-100 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-200 transition-colors"
-          >
-            Cancel
-          </button>
+              <div>
+                <label className="form-label">Total Plants Required</label>
+                <ReadOnlyField>{totalPlantsRequired.toLocaleString()}</ReadOnlyField>
+              </div>
+
+              <div>
+                <label className="form-label">Protection *</label>
+                <select value={hedgeProtection} onChange={e => setHedgeProtection(e.target.value)} className="form-select" required>
+                  <option value="">Select protection...</option>
+                  {HEDGE_PROTECTION.map(p => <option key={p}>{p}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">Plant Source *</label>
+                <div className="flex gap-2" style={{ marginTop: 4 }}>
+                  {HEDGE_SOURCES.map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => { setPlantSource(s); if (s !== 'Bought') setPricePerPlant('') }}
+                      style={{ ...toggleBaseStyle, flex: 1, ...(plantSource === s ? toggleActiveStyle : toggleInactiveStyle) }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {plantSource === 'Bought' && (
+                <div>
+                  <label className="form-label">
+                    Price per Plant <span style={{ color: 'var(--color-earth-400)', textTransform: 'none' }}>(optional)</span>
+                  </label>
+                  <div style={{ position: 'relative', marginTop: 4 }}>
+                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-earth-400)', fontSize: 13 }}>£</span>
+                    <input
+                      type="number"
+                      value={pricePerPlant}
+                      onChange={e => setPricePerPlant(e.target.value)}
+                      placeholder="0.00"
+                      className="form-input"
+                      style={{ paddingLeft: 28 }}
+                      min="0"
+                      step="any"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {totalPlantCost > 0 && (
+                <div>
+                  <label className="form-label">Total Plant Cost</label>
+                  <ReadOnlyField>{formatGBP(totalPlantCost)}</ReadOnlyField>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Trees Fields ── */}
+          {form.type === 'Planting' && plantingSubtype === 'Trees' && (
+            <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}>
+              <h3 className="text-label" style={{ color: 'var(--color-sage-600)' }}>Tree Details</h3>
+
+              <div>
+                <label className="form-label">Tree Species *</label>
+                <div className="flex flex-wrap gap-2" style={{ marginTop: 4, maxHeight: 144, overflowY: 'auto' }}>
+                  {TREE_SPECIES.map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setTreeSpecies(s)}
+                      style={treeSpecies === s ? chipActiveStyle : chipInactiveStyle}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setTreeSpecies('Other')}
+                    style={treeSpecies === 'Other' ? chipActiveStyle : chipInactiveStyle}
+                  >
+                    Other
+                  </button>
+                </div>
+                {treeSpecies === 'Other' && (
+                  <input
+                    type="text"
+                    value={customTreeSpecies}
+                    onChange={e => setCustomTreeSpecies(e.target.value)}
+                    placeholder="Enter tree species..."
+                    className="form-input"
+                    style={{ marginTop: 8 }}
+                    required
+                  />
+                )}
+              </div>
+
+              <div>
+                <label className="form-label">Quantity (number of trees) *</label>
+                <input
+                  type="number"
+                  value={treeQuantity}
+                  onChange={e => setTreeQuantity(e.target.value)}
+                  placeholder="e.g. 500"
+                  className="form-input"
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Stock Type *</label>
+                <select value={stockType} onChange={e => setStockType(e.target.value)} className="form-select" required>
+                  <option value="">Select stock type...</option>
+                  {TREE_STOCK_TYPES.map(t => <option key={t}>{t}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">Planting Pattern *</label>
+                <select value={plantingPattern} onChange={e => setPlantingPattern(e.target.value)} className="form-select" required>
+                  <option value="">Select pattern...</option>
+                  {TREE_PATTERNS.map(p => <option key={p}>{p}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">Protection *</label>
+                <select value={treeProtection} onChange={e => setTreeProtection(e.target.value)} className="form-select" required>
+                  <option value="">Select protection...</option>
+                  {TREE_PROTECTION.map(p => <option key={p}>{p}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">Source *</label>
+                <div className="flex gap-2" style={{ marginTop: 4 }}>
+                  {TREE_SOURCES.map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => { setTreeSource(s); if (s !== 'Bought') setPricePerTree('') }}
+                      style={{ ...toggleBaseStyle, flex: 1, ...(treeSource === s ? toggleActiveStyle : toggleInactiveStyle) }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {treeSource === 'Bought' && (
+                <div>
+                  <label className="form-label">
+                    Price per Tree <span style={{ color: 'var(--color-earth-400)', textTransform: 'none' }}>(optional)</span>
+                  </label>
+                  <div style={{ position: 'relative', marginTop: 4 }}>
+                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-earth-400)', fontSize: 13 }}>£</span>
+                    <input
+                      type="number"
+                      value={pricePerTree}
+                      onChange={e => setPricePerTree(e.target.value)}
+                      placeholder="0.00"
+                      className="form-input"
+                      style={{ paddingLeft: 28 }}
+                      min="0"
+                      step="any"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {totalTreeCost > 0 && (
+                <div>
+                  <label className="form-label">Total Tree Cost</label>
+                  <ReadOnlyField>{formatGBP(totalTreeCost)}</ReadOnlyField>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Labour Toggle ── */}
+          {form.type && (
+            <div className="flex flex-col gap-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <div
+                  onClick={() => { setLabourEnabled(!labourEnabled); if (labourEnabled) { setLabourType(''); setLabourPricingMethod(''); setLabourRate(''); setLabourLength('') } }}
+                  style={{
+                    position: 'relative',
+                    width: 40,
+                    height: 20,
+                    borderRadius: 10,
+                    transition: 'background 120ms ease',
+                    background: labourEnabled ? 'var(--color-sage-500)' : 'var(--color-parchment-300)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{
+                    position: 'absolute',
+                    top: 2,
+                    left: labourEnabled ? 22 : 2,
+                    width: 16,
+                    height: 16,
+                    borderRadius: '50%',
+                    background: 'white',
+                    transition: 'left 120ms ease',
+                  }} />
+                </div>
+                <span className="text-body" style={{ fontWeight: 600, color: 'var(--color-earth-600)' }}>Add Labour Costs</span>
+              </label>
+
+              {labourEnabled && (
+                <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}>
+                  <h3 className="text-label" style={{ color: 'var(--color-earth-600)' }}>Labour Details</h3>
+
+                  <div>
+                    <label className="form-label">Labour Type *</label>
+                    <div className="flex gap-2" style={{ marginTop: 4 }}>
+                      {LABOUR_TYPES.map(t => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setLabourType(t)}
+                          style={{ ...toggleBaseStyle, flex: 1, ...(labourType === t ? toggleActiveStyle : toggleInactiveStyle) }}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="form-label">Pricing Method *</label>
+                    <select value={labourPricingMethod} onChange={e => setLabourPricingMethod(e.target.value)} className="form-select" required>
+                      <option value="">Select method...</option>
+                      {labourPricingOptions.map(m => <option key={m}>{m}</option>)}
+                    </select>
+                  </div>
+
+                  {labourPricingMethod && (
+                    <div>
+                      <label className="form-label">
+                        Rate ({labourPricingMethod === 'Per Hour' ? '£/hour' : labourPricingMethod === 'Per Day' ? '£/day' : labourPricingMethod === 'Per Tree' ? '£/tree' : '£/plant'}) *
+                      </label>
+                      <div style={{ position: 'relative', marginTop: 4 }}>
+                        <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-earth-400)', fontSize: 13 }}>£</span>
+                        <input
+                          type="number"
+                          value={labourRate}
+                          onChange={e => setLabourRate(e.target.value)}
+                          placeholder="0.00"
+                          className="form-input"
+                          style={{ paddingLeft: 28 }}
+                          min="0"
+                          step="any"
+                          required
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {labourPricingMethod && (
+                    <div>
+                      <label className="form-label">
+                        {labourPricingMethod === 'Per Hour' ? 'Hours' : labourPricingMethod === 'Per Day' ? 'Days' : labourPricingMethod === 'Per Tree' ? 'Number of Trees' : 'Number of Plants'} *
+                      </label>
+                      {labourPricingMethod === 'Per Tree' || labourPricingMethod === 'Per Plant / Whip' ? (
+                        <ReadOnlyField>{effectiveLabourLength.toLocaleString()}</ReadOnlyField>
+                      ) : (
+                        <input
+                          type="number"
+                          value={labourLength}
+                          onChange={e => setLabourLength(e.target.value)}
+                          placeholder="e.g. 5"
+                          className="form-input"
+                          min="0"
+                          step="any"
+                          required
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  {labourCost > 0 && (
+                    <div>
+                      <label className="form-label">Labour Cost</label>
+                      <ReadOnlyField>{formatGBP(labourCost)}</ReadOnlyField>
+                    </div>
+                  )}
+
+                  {totalTaskCost > 0 && (
+                    <div>
+                      <label className="form-label">Total Task Cost</label>
+                      <ReadOnlyField bold>{formatGBP(totalTaskCost)}</ReadOnlyField>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Description */}
+          <div>
+            <label className="form-label">Description</label>
+            <textarea
+              value={form.description}
+              onChange={e => update('description', e.target.value)}
+              placeholder="Optional details..."
+              rows={3}
+              className="form-textarea"
+            />
+          </div>
+
+          {/* Due Date */}
+          <div>
+            <label className="form-label">
+              Due Date * <span style={{ color: 'var(--color-earth-400)', textTransform: 'none' }}>(or click calendar)</span>
+            </label>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={e => setDueDate(e.target.value)}
+              onFocus={onFocusDate}
+              className="form-input"
+              required
+            />
+          </div>
+
+          {/* Priority */}
+          <div>
+            <label className="form-label">Priority</label>
+            <div className="flex gap-2" style={{ marginTop: 4 }}>
+              {PRIORITIES.map(p => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => update('priority', p)}
+                  style={{ ...toggleBaseStyle, flex: 1, textTransform: 'capitalize', ...(form.priority === p ? toggleActiveStyle : toggleInactiveStyle) }}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Staff */}
+          <div>
+            <label className="form-label">Assign Staff</label>
+            <div style={{ maxHeight: 144, overflowY: 'auto', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-sm)', marginTop: 4 }}>
+              {initialStaff.map(s => (
+                <label key={s.id} className="flex items-center gap-2" style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--color-parchment-200)', fontSize: 13, fontFamily: 'var(--font-body)', color: 'var(--color-earth-600)' }}>
+                  <input
+                    type="checkbox"
+                    checked={form.assignedTo.includes(s.name)}
+                    onChange={() => toggleStaff(s.name)}
+                  />
+                  <span>{s.name}</span>
+                  <span className="text-data" style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-earth-400)' }}>{s.role}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Submit */}
+          <div className="flex gap-2" style={{ paddingTop: 8, paddingBottom: 16 }}>
+            <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>
+              Create Task
+            </button>
+            <button type="button" onClick={onCancel} className="btn btn-secondary">
+              Cancel
+            </button>
+          </div>
         </div>
       </form>
+    </div>
+  )
+}
+
+function ReadOnlyField({ children, bold }) {
+  return (
+    <div
+      className="text-body"
+      style={{
+        marginTop: 4,
+        padding: '8px 12px',
+        background: 'var(--color-parchment-200)',
+        border: '1px solid var(--color-parchment-300)',
+        borderRadius: 'var(--radius-sm)',
+        color: 'var(--color-ink-900)',
+        fontWeight: bold ? 700 : 500,
+      }}
+    >
+      {children}
     </div>
   )
 }

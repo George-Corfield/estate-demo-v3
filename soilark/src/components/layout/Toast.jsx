@@ -6,30 +6,38 @@ export default function Toast() {
   if (toasts.length === 0) return null
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2">
+    <div
+      className="fixed z-[100] flex flex-col gap-2"
+      style={{ bottom: 24, right: 24 }}
+    >
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`px-6 py-3 rounded-lg shadow-lg text-sm font-medium flex items-center gap-2 animate-[slideDown_0.3s_ease-out] ${
-            toast.toastType === 'success'
-              ? 'bg-emerald-800 text-white'
-              : toast.toastType === 'error'
-              ? 'bg-red-600 text-white'
-              : 'bg-slate-800 text-white'
-          }`}
+          className="toast-enter flex items-center gap-2"
+          style={{
+            padding: '10px 16px',
+            background: 'var(--color-parchment-50)',
+            border: '1px solid var(--color-parchment-300)',
+            borderRadius: 'var(--radius-sm)',
+            fontFamily: 'var(--font-body)',
+            fontSize: 13,
+            color: 'var(--color-ink-900)',
+          }}
         >
-          <span className="material-icons text-base">
-            {toast.toastType === 'success' ? 'check_circle' : toast.toastType === 'error' ? 'error' : 'info'}
+          <span
+            className="material-symbols-outlined"
+            style={{
+              fontSize: 18,
+              color: toast.toastType === 'error'
+                ? 'var(--color-ochre-400)'
+                : 'var(--color-sage-500)',
+            }}
+          >
+            {toast.toastType === 'success' ? 'check_circle' : toast.toastType === 'error' ? 'warning' : 'info'}
           </span>
           {toast.message}
         </div>
       ))}
-      <style>{`
-        @keyframes slideDown {
-          from { opacity: 0; transform: translateY(-12px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   )
 }

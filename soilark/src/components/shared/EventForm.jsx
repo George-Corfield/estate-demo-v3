@@ -29,13 +29,13 @@ export default function EventForm({ date, onComplete }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 space-y-3">
+    <form onSubmit={handleSubmit} style={{ padding: 16 }} className="flex flex-col gap-3">
       <div>
-        <label className="text-xs font-semibold text-slate-500 uppercase">Type</label>
+        <label className="form-label">Type</label>
         <select
           value={form.type}
           onChange={e => setForm({ ...form, type: e.target.value })}
-          className="mt-1 w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
+          className="form-select"
         >
           <option value="appointment">Appointment</option>
           <option value="event">Event</option>
@@ -43,47 +43,40 @@ export default function EventForm({ date, onComplete }) {
         </select>
       </div>
       <div>
-        <label className="text-xs font-semibold text-slate-500 uppercase">Title</label>
+        <label className="form-label">Title</label>
         <input
           type="text"
           value={form.title}
           onChange={e => setForm({ ...form, title: e.target.value })}
           placeholder="Event title..."
-          className="mt-1 w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
+          className="form-input"
           required
         />
       </div>
       <div>
-        <label className="text-xs font-semibold text-slate-500 uppercase">Description</label>
+        <label className="form-label">Description</label>
         <textarea
           value={form.description}
           onChange={e => setForm({ ...form, description: e.target.value })}
           placeholder="Optional details..."
           rows={2}
-          className="mt-1 w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none resize-none"
+          className="form-textarea"
         />
       </div>
       <div>
-        <label className="text-xs font-semibold text-slate-500 uppercase">Time</label>
+        <label className="form-label">Time</label>
         <input
           type="time"
           value={form.time}
           onChange={e => setForm({ ...form, time: e.target.value })}
-          className="mt-1 w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
+          className="form-input"
         />
       </div>
-      <div className="flex gap-2 pt-1">
-        <button
-          type="submit"
-          className="flex-1 py-2 bg-primary text-emerald-950 text-sm font-bold rounded-lg hover:bg-primary-dark transition-colors"
-        >
+      <div className="flex gap-2" style={{ paddingTop: 4 }}>
+        <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>
           Create Event
         </button>
-        <button
-          type="button"
-          onClick={onComplete}
-          className="px-4 py-2 bg-slate-100 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-200 transition-colors"
-        >
+        <button type="button" onClick={onComplete} className="btn btn-secondary">
           Cancel
         </button>
       </div>

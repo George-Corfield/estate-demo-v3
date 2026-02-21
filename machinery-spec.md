@@ -14,15 +14,14 @@ The Machinery & Equipment module provides a centralised register of all estate m
 
 The machinery landing page displays summary statistics at the top:
 
-| Metric | Description |
-|---|---|
-| **Total Equipment** | Count of all registered items |
-| **Total Value** | Aggregate estimated current value of all equipment (index_fresh only) |
-| **Services Due** | Count of items where current hours ≥ next service due hours (or time-based equivalent) |
-| **In Maintenance** | Count of items with status "Maintenance" |
-| **Monthly Equipment Costs** | Aggregate running cost for the current month (index_fresh only) |
 
----
+| Metric              | Description                                                                             |
+| --------------------- | ----------------------------------------------------------------------------------------- |
+| **Total Equipment** | Count of all registered items                                                           |
+|                     |                                                                                         |
+| **Services Due**    | Count of items where current hours ≥ next service due hours (or time-based equivalent) |
+| **In Maintenance**  | Count of items with status "Maintenance"                                                |
+|                     |                                                                                         |
 
 ## 3. Equipment List View
 
@@ -36,20 +35,21 @@ The machinery landing page displays summary statistics at the top:
 
 Equipment is grouped into categories. Both versions support category-based tab filtering:
 
-| Category | Examples |
-|---|---|
-| Tractors | John Deere 6155R, Massey Ferguson 5713, New Holland T6.180, Case IH Puma 185, Fendt 516 Vario, Claas Arion 660 |
-| Mowers | Kuhn GMD 3150, JF FCT 900, Vicon Extra 432 |
-| Seeders / Drills | Vaderstad Rapid 400S, Amazone Cirrus 6003 |
-| Vehicles | Ford Ranger, Toyota Hilux, Land Rover Defender, Isuzu D-Max |
-| Combine Harvesters | Case IH Axial-Flow 7150 |
-| Fertilizer Spreaders | Amazone Centaur 6001 Super |
-| Forage Harvesters | Krone BiG X 1180 |
-| Other | Ploughs, balers, wrappers, hedge cutters, toppers, sprayers, trailers, telehandlers |
+
+| Category             | Examples                                                                                                       |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Tractors             | John Deere 6155R, Massey Ferguson 5713, New Holland T6.180, Case IH Puma 185, Fendt 516 Vario, Claas Arion 660 |
+| Mowers               | Kuhn GMD 3150, JF FCT 900, Vicon Extra 432                                                                     |
+| Seeders / Drills     | Vaderstad Rapid 400S, Amazone Cirrus 6003                                                                      |
+| Vehicles             | Ford Ranger, Toyota Hilux, Land Rover Defender, Isuzu D-Max                                                    |
+| Combine Harvesters   | Case IH Axial-Flow 7150                                                                                        |
+| Fertilizer Spreaders | Amazone Centaur 6001 Super                                                                                     |
+| Forage Harvesters    | Krone BiG X 1180                                                                                               |
+| Other                | Ploughs, balers, wrappers, hedge cutters, toppers, sprayers, trailers, telehandlers                            |
 
 ### 3.3 Equipment Card (List Item)
 
-Each item in the grid view displays:
+Each item displays:
 
 - Equipment icon (by category)
 - Equipment name
@@ -57,7 +57,7 @@ Each item in the grid view displays:
 - Year of manufacture
 - Current status badge (see §4.1)
 - Operating hours (where applicable)
-- Next service due indicator (hours or date-based)
+- Next service due indicator
 - Service due warning if overdue
 
 ### 3.4 Actions
@@ -72,13 +72,14 @@ Each item in the grid view displays:
 
 ### 4.1 Status Values
 
-| Status | Description |
-|---|---|
-| **Active / Available** | Equipment operational and ready for use |
-| **In Use** | Currently deployed on a task or in the field |
-| **In Barn / Stored** | Operational but not currently in active use (seasonal storage) |
-| **Maintenance** | Currently undergoing repair or servicing — unavailable |
-| **Sold** | No longer part of the fleet (historical record retained) |
+
+| Status          | Description                                                    |
+| ----------------- | ---------------------------------------------------------------- |
+| **Active**      | Equipment operational and ready for use                        |
+|                 |                                                                |
+| **Stored**      | Operational but not currently in active use (seasonal storage) |
+| **Maintenance** | Currently undergoing repair or servicing — unavailable        |
+| **Sold**        | No longer part of the fleet (historical record retained)       |
 
 ---
 
@@ -88,28 +89,29 @@ Clicking an equipment card opens a detail modal/page with tabbed sections.
 
 ### 5.1 Basic Info / Equipment Details
 
-| Field | Description |
-|---|---|
-| Equipment Name | Auto-generated from Make + Model, or user-defined |
+
+| Field           | Description                                           |
+| ----------------- | ------------------------------------------------------- |
+| Equipment Name  | Auto-generated from Make + Model, or user-defined     |
 | Category / Type | Equipment category (Tractor, Combine Harvester, etc.) |
-| Make | Manufacturer name |
-| Model | Model designation |
-| Year | Year of manufacture |
-| Serial Number | Manufacturer serial number |
-| Current Status | Active / In Use / Barn / Maintenance / Sold |
-| Fuel Type | Diesel, Petrol, N/A (for tractor-mounted implements) |
-| Location | Current physical location on the estate (e.g. Main Barn, Workshop, West Field) |
-| Assigned Operator | Staff member primarily responsible for operating this equipment |
-| Notes | Free-text notes field |
+| Make            | Manufacturer name                                     |
+| Model           | Model designation                                     |
+| Year            | Year of manufacture                                   |
+| Number Plate    | Number plate                                          |
+| Current Status  | Active / stored / Maintenance / Sold                 |
+| Fuel Type       | Diesel, Petrol, N/A (for tractor-mounted implements)  |
+|                 |                                                       |
+| Notes           | Free-text notes field                                 |
 
 ### 5.2 Purchase & Financial Information
 
-| Field | Description |
-|---|---|
-| Date Purchased | Date of acquisition |
-| Purchase Price | Original cost |
-| Purchased From | Dealer / supplier name |
-| Warranty Expiry | Warranty end date |
+
+| Field                   | Description                                          |
+| ------------------------- | ------------------------------------------------------ |
+| Date Purchased          | Date of acquisition                                  |
+| Purchase Price          | Original cost                                        |
+| Purchased From          | Dealer / supplier name                               |
+| Warranty Expiry         | Warranty end date                                    |
 | Estimated Current Value | Manually entered or calculated depreciation estimate |
 
 ### 5.3 Specifications
@@ -120,7 +122,7 @@ Dynamic key-value pairs that vary by equipment type. Examples include:
 - **Combine Harvesters**: Horsepower, grain tank capacity, cutting width, weight
 - **Spreaders**: Capacity, spread width, weight
 - **Forage Harvesters**: Horsepower, theoretical chop length, weight, fuel capacity
-- **Vehicles**: Number plate, mileage (rather than hours)
+- **Vehicles**: mileage (rather than hours)
 
 ### 5.4 Associated Tasks
 
@@ -136,12 +138,13 @@ Dynamic key-value pairs that vary by equipment type. Examples include:
 
 Users can configure service intervals per piece of equipment. Options include:
 
-| Interval Type | Description |
-|---|---|
+
+| Interval Type  | Description                                                                                        |
+| ---------------- | ---------------------------------------------------------------------------------------------------- |
 | **Hour-based** | Service every N operating hours (e.g. every 250, 500, or 600 hours) — user-configurable threshold |
-| **Annual** | Service every 12 months |
-| **Monthly** | Service every month |
-| **Day-based** | Service every N days (used for vehicles — e.g. every 90 days) |
+| **Annual**     | Service every 12 months                                                                            |
+| **Monthly**    | Service every month                                                                                |
+| **Day-based**  | Service every N days (used for vehicles — e.g. every 90 days)                                     |
 
 The system displays:
 
@@ -154,34 +157,30 @@ The system displays:
 
 Each service record contains:
 
-| Field | Description |
-|---|---|
-| Date | Date service was performed |
-| Hours at Service | Operating hours at time of service |
-| Service Type | Regular Service, Repair, Major Repair, Pre-Season Service, Post-Season Service, Emergency Repair |
-| Cost | Total cost of the service |
-| Technician | Who performed the work (internal staff member or external contractor) |
-| Next Due | When the next service is due (hours or date) |
-| Notes | Description of work performed |
+
+| Field        | Description                   |
+| -------------- | ------------------------------- |
+| Date         | Date service was performed    |
+|              |                               |
+| Service Type | Regular Service, Repair, MOT  |
+| Cost         | Total cost of the service     |
+|              |                               |
+|              |                               |
+| Notes        | Description of work performed |
 
 Users can add new service records via a "Record Service" form.
-
-### 6.3 Auto-Book Service Reminders
-
-Planned feature to automatically create calendar events when equipment approaches its service interval threshold. Configurable per machine.
-
----
 
 ## 7. Costs & Financials
 
 ### 7.1 Cost Summary (per equipment item)
 
-| Metric | Description |
-|---|---|
-| Total Lifetime Cost | Cumulative cost since acquisition |
-| Monthly Average | Average monthly running cost |
-| Annual Cost | Running cost for the current/last year |
-| Cost per Hour | Total cost ÷ total operating hours |
+
+| Metric              | Description                            |
+| --------------------- | ---------------------------------------- |
+| Total Lifetime Cost | Cumulative cost since acquisition      |
+| Monthly Average     | Average monthly running cost           |
+| Annual Cost         | Running cost for the current/last year |
+| Cost per Hour       | Total cost ÷ total operating hours    |
 
 ### 7.2 Cost Breakdown Categories
 
@@ -189,20 +188,12 @@ Planned feature to automatically create calendar events when equipment approache
 - Fuel (estimated from usage hours or linked fuel transactions)
 - Insurance (annual premium)
 
-### 7.3 Market Value Tracking
-
-- Purchase price
-- Current age
-- Total hours
-- Estimated current value (depreciation tracking)
-
 ---
 
 ## 8. Documents
 
 Each equipment item supports a document repository:
 
-- **Serial Plate Photo** — image capture with planned OCR scanning to auto-populate fields (serial number, model, weight, manufacturing date)
 - **Stored Documents** — upload and view files such as:
   - Purchase invoice
   - Owner's manual
@@ -225,13 +216,11 @@ Each equipment item supports a document repository:
 ### 9.2 Optional Fields
 
 - Serial Number
+- Number plate
 - Purchase Date
 - Purchase Cost
-- Estimated Current Value
 - Operating Hours
 - Fuel Type
-- Location (on estate)
-- Assigned Operator
 - Notes
 
 ### 9.3 Behaviour
@@ -247,10 +236,11 @@ Each equipment item supports a document repository:
 
 Machinery events appear on the estate-wide calendar with dedicated event types:
 
-| Calendar Event Type | Description |
-|---|---|
-| **Machinery Service** | Scheduled or upcoming service dates |
-| **MOT Dates** | MOT renewal dates for road-legal vehicles |
+
+| Calendar Event Type   | Description                               |
+| ----------------------- | ------------------------------------------- |
+| **Machinery Service** | Scheduled or upcoming service dates       |
+| **MOT Dates**         | MOT renewal dates for road-legal vehicles |
 
 Calendar supports filtering by:
 
@@ -280,11 +270,12 @@ Calendar supports filtering by:
 
 The task system includes a "Maintenance" task type with subtypes relevant to equipment:
 
-| Subtype | Additional Fields |
-|---|---|
-| Repair | Equipment (text) |
-| Servicing | Equipment, Service Type (Oil Change / Filter Change / Full Service / Greasing), Last Service Date |
-| Inspection | Equipment |
+
+| Subtype    | Additional Fields                                                                                 |
+| ------------ | --------------------------------------------------------------------------------------------------- |
+| Repair     | Equipment (text)                                                                                  |
+| Servicing  | Equipment, Service Type (Oil Change / Filter Change / Full Service / Greasing), Last Service Date |
+| Inspection | Equipment                                                                                         |
 
 ---
 
@@ -299,15 +290,13 @@ type / category     : enum (Tractor, Combine Harvester, Fertilizer Spreader, etc
 make                : string
 model               : string
 year                : integer
+numberPlate         : string
 serialNumber        : string
-status              : enum (Available, In Use, Maintenance, Barn/Stored, Sold)
+status              : enum (Available, Maintenance, Stored, Sold)
 hours               : number (operating hours)
 purchaseDate        : date
 purchasePrice       : currency
-currentValue        : currency
 fuelType            : string
-location            : string (on-estate location)
-assignedOperator    : string (staff member reference)
 lastServiceDate     : date
 nextServiceDue      : number (hours) or number (days)
 specifications      : key-value object (varies by type)
@@ -320,9 +309,8 @@ notes               : string
 
 ```
 date                : date
-type                : enum (Regular Service, Repair, Major Repair, Pre-Season, Post-Season, Emergency Repair)
+type                : enum (Regular Service, Repair, MOT)
 cost                : currency
-technician          : string
 notes               : string
 hoursAtService      : number (optional)
 ```

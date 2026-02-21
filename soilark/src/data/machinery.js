@@ -7,14 +7,13 @@ export const initialMachinery = [
     model: '6155R',
     year: 2021,
     serialNumber: 'JD-6R-2021-155',
-    status: 'In Use',
+    status: 'Active',
     hours: 1240,
     purchaseDate: '2021-03-15',
     purchasePrice: 95000,
     currentValue: 72000,
     fuelType: 'Diesel',
-    location: 'Home Field',
-    assignedOperator: 'David Jones',
+    numberPlate: '',
     lastServiceDate: '2025-10-12',
     nextServiceDue: 1500,
     specifications: {
@@ -77,14 +76,13 @@ export const initialMachinery = [
     model: 'Centaur 6001 Super',
     year: 2022,
     serialNumber: 'AZ-C6-2022-001',
-    status: 'Available',
+    status: 'Active',
     hours: 380,
     purchaseDate: '2022-02-10',
     purchasePrice: 42000,
     currentValue: 32000,
     fuelType: 'N/A',
-    location: 'Main Barn',
-    assignedOperator: 'David Jones',
+    numberPlate: '',
     lastServiceDate: '2025-11-05',
     nextServiceDue: 500,
     specifications: {
@@ -131,14 +129,13 @@ export const initialMachinery = [
     model: 'T7.270',
     year: 2019,
     serialNumber: 'NH-T7-2019-270',
-    status: 'Available',
+    status: 'Active',
     hours: 3420,
     purchaseDate: '2019-04-20',
     purchasePrice: 125000,
     currentValue: 78000,
     fuelType: 'Diesel',
-    location: 'Workshop',
-    assignedOperator: 'Mike Williams',
+    numberPlate: '',
     lastServiceDate: '2025-08-15',
     nextServiceDue: 3500,
     specifications: {
@@ -191,14 +188,13 @@ export const initialMachinery = [
     model: 'BiG X 1180',
     year: 2020,
     serialNumber: 'KR-BX-2020-118',
-    status: 'Barn/Stored',
+    status: 'Stored',
     hours: 890,
     purchaseDate: '2020-06-01',
     purchasePrice: 320000,
     currentValue: 210000,
     fuelType: 'Diesel',
-    location: 'Main Barn',
-    assignedOperator: 'David Jones',
+    numberPlate: '',
     lastServiceDate: '2025-09-28',
     nextServiceDue: 1000,
     specifications: {
@@ -254,8 +250,7 @@ export const initialMachinery = [
     purchasePrice: 185000,
     currentValue: 142000,
     fuelType: 'Diesel',
-    location: 'Workshop',
-    assignedOperator: 'Mike Williams',
+    numberPlate: '',
     lastServiceDate: '2025-11-01',
     nextServiceDue: 2100,
     specifications: {
@@ -307,14 +302,13 @@ export const initialMachinery = [
     model: 'Lexion 8000',
     year: 2023,
     serialNumber: 'CL-LX-2023-112',
-    status: 'Barn/Stored',
+    status: 'Stored',
     hours: 420,
     purchaseDate: '2023-05-01',
     purchasePrice: 380000,
     currentValue: 310000,
     fuelType: 'Diesel',
-    location: 'Main Barn',
-    assignedOperator: 'David Jones',
+    numberPlate: '',
     lastServiceDate: '2025-09-15',
     nextServiceDue: 500,
     specifications: {
@@ -369,19 +363,21 @@ export const EQUIPMENT_TYPES = [
 ]
 
 export const EQUIPMENT_STATUSES = [
-  'Available',
-  'In Use',
+  'Active',
+  'Stored',
   'Maintenance',
-  'Barn/Stored',
   'Sold',
 ]
 
 export const EQUIPMENT_CATEGORY_TABS = [
-  'All Assets',
+  'All',
   'Tractors',
   'Mowers',
-  'Seeders',
+  'Seeders/Drills',
   'Vehicles',
+  'Combines',
+  'Spreaders',
+  'Other',
 ]
 
 export const SERVICE_TYPES = [
@@ -394,9 +390,8 @@ export const SERVICE_TYPES = [
 ]
 
 export const MACHINERY_STATUS_COLORS = {
-  'Available': { bg: '#dcfce7', text: '#166534', dot: '#22c55e' },
-  'In Use': { bg: '#dbeafe', text: '#1e40af', dot: '#3b82f6' },
-  'Maintenance': { bg: '#fef3c7', text: '#92400e', dot: '#f59e0b' },
-  'Barn/Stored': { bg: '#f1f5f9', text: '#475569', dot: '#94a3b8' },
-  'Sold': { bg: '#fef2f2', text: '#991b1b', dot: '#ef4444' },
+  Active: 'badge-healthy',
+  Maintenance: 'badge-attention',
+  Stored: 'badge-neutral',
+  Sold: 'badge-neutral',
 }

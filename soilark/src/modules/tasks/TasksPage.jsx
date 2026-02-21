@@ -56,8 +56,8 @@ export default function TasksPage() {
 
   return (
     <div className="flex h-full">
-      {/* Left panel */}
-      <div className="w-[480px] min-w-[420px] max-w-[560px] border-r border-slate-200 bg-white flex flex-col overflow-hidden shrink-0">
+      {/* Left panel — 35% split */}
+      <div className="split-panel" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {activeView === 'kanban' && (
           <>
             <TaskFilterBar
@@ -99,7 +99,7 @@ export default function TasksPage() {
         )}
       </div>
 
-      {/* Right panel */}
+      {/* Right panel — 65% map */}
       <div className="flex-1 relative">
         {rightView === 'map' ? (
           <EstateMap
@@ -119,12 +119,13 @@ export default function TasksPage() {
         <div className="absolute top-4 right-4 z-20">
           <button
             onClick={() => setRightView(rightView === 'map' ? 'calendar' : 'map')}
-            className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-white transition-colors"
+            className="btn btn-secondary flex items-center gap-2"
+            style={{ background: 'var(--color-parchment-50)' }}
           >
-            <span className="material-icons text-base">
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
               {rightView === 'map' ? 'calendar_month' : 'map'}
             </span>
-            Switch to {rightView === 'map' ? 'Calendar' : 'Map'}
+            {rightView === 'map' ? 'Calendar' : 'Map'}
           </button>
         </div>
       </div>

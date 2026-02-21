@@ -47,93 +47,115 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
   }
 
   return (
-    <aside className="w-80 bg-slate-50/80 border-l border-slate-200 flex flex-col shrink-0 h-full">
+    <aside style={{ width: 320, background: 'var(--color-parchment-50)', borderLeft: '1px solid var(--color-parchment-300)', display: 'flex', flexDirection: 'column', flexShrink: 0, height: '100%' }}>
       {/* Agenda header */}
-      <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
-        <div className="flex items-center justify-between mb-6">
+      <div style={{ padding: 24, flex: 1, overflowY: 'auto' }} className="custom-scrollbar">
+        <div className="flex items-center justify-between" style={{ marginBottom: 24 }}>
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Agenda</p>
-            <h3 className="text-lg font-bold text-slate-900">{formatAgendaDate(date)}</h3>
+            <p className="text-label" style={{ color: 'var(--color-earth-400)' }}>Agenda</p>
+            <h3 className="text-heading-3" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{formatAgendaDate(date)}</h3>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] bg-slate-200 text-slate-600 px-2 py-1 rounded font-bold uppercase">
-              {formatAgendaDateShort(date)}
-            </span>
-            <button onClick={onClose} className="p-1 hover:bg-slate-200 rounded transition-colors">
-              <span className="material-icons text-slate-400 text-lg">close</span>
+            <span className="badge badge-neutral">{formatAgendaDateShort(date)}</span>
+            <button onClick={onClose} className="btn btn-ghost" style={{ padding: 4 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-400)' }}>close</span>
             </button>
           </div>
         </div>
 
         {/* Event form */}
         {showForm && (
-          <div className="mb-6 bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div style={{ marginBottom: 24, background: 'var(--color-parchment-100)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-parchment-300)', overflow: 'hidden' }}>
             <EventForm date={date} onComplete={handleFormComplete} />
           </div>
         )}
 
         {/* Today's Events header */}
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Today's Events</p>
+        <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 12 }}>Today's Events</p>
 
         {/* Timeline events */}
         {dayEvents.length === 0 && !showForm ? (
-          <div className="text-center py-12 text-slate-400">
-            <span className="material-icons text-3xl mb-2 block">event_busy</span>
-            <p className="text-sm">No events for this day</p>
+          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-earth-400)' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 32, marginBottom: 8, display: 'block' }}>event_busy</span>
+            <p className="text-body">No events for this day</p>
           </div>
         ) : (
-          <div className="space-y-6 relative before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100">
-            {dayEvents.map((event, idx) => {
-              const dotColor = EVENT_TYPE_COLORS[event.type] || '#3b82f6'
+          <div style={{ position: 'relative' }} className="flex flex-col gap-6">
+            <div style={{ position: 'absolute', left: 11, top: 8, bottom: 8, width: 2, background: 'var(--color-parchment-200)' }} />
+            {dayEvents.map((event) => {
+              const dotColor = EVENT_TYPE_COLORS[event.type] || 'var(--color-sage-500)'
               return (
-                <div key={event.id} className="relative pl-8">
+                <div key={event.id} style={{ position: 'relative', paddingLeft: 32 }}>
                   {/* Timeline dot */}
                   <div
-                    className="absolute left-0 top-1.5 w-6 h-6 bg-white border-2 rounded-full flex items-center justify-center z-10"
-                    style={{ borderColor: dotColor }}
+                    style={{
+                      position: 'absolute', left: 0, top: 6,
+                      width: 24, height: 24,
+                      background: 'var(--color-parchment-50)',
+                      border: `2px solid ${dotColor}`,
+                      borderRadius: '50%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      zIndex: 10,
+                    }}
                   >
-                    <span className="material-icons" style={{ fontSize: '12px', color: dotColor }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 12, color: dotColor }}>
                       {EVENT_SUBTYPE_ICONS[event.subType] || 'event'}
                     </span>
                   </div>
 
                   {/* Time */}
                   {event.time && (
-                    <div className="flex justify-between items-start mb-1">
-                      <span className="text-xs font-bold text-slate-400">{event.time}</span>
+                    <div className="flex justify-between items-start" style={{ marginBottom: 4 }}>
+                      <span className="text-label-small" style={{ color: 'var(--color-earth-400)' }}>{event.time}</span>
                       {event.priority === 'high' && (
-                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                        <span style={{ width: 6, height: 6, background: 'var(--color-ochre-500)', borderRadius: '50%' }} />
                       )}
                     </div>
                   )}
 
                   {/* Event content */}
-                  <h4 className="text-sm font-bold text-slate-800 flex items-center gap-1">
-                    <span className="material-icons" style={{ fontSize: '14px' }}>
+                  <h4 className="text-heading-4 flex items-center gap-1" style={{ color: 'var(--color-ink-900)', margin: 0 }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
                       {EVENT_SUBTYPE_ICONS[event.subType] || 'event'}
                     </span>
                     {event.title}
                   </h4>
                   {event.fieldName && (
-                    <p className="text-xs text-slate-500">{event.fieldName}</p>
+                    <p className="text-body-small" style={{ color: 'var(--color-earth-500)' }}>{event.fieldName}</p>
                   )}
                   {event.details && (
-                    <p className="text-xs text-slate-500 mt-0.5">{event.details}</p>
+                    <p className="text-body-small" style={{ color: 'var(--color-earth-500)', marginTop: 2 }}>{event.details}</p>
                   )}
 
                   {/* Assignees */}
                   {event.assignedTo && event.assignedTo.length > 0 && (
-                    <div className="flex mt-2 -space-x-1.5">
+                    <div className="flex" style={{ marginTop: 8, gap: -6 }}>
                       {event.assignedTo.slice(0, 2).map((person, pIdx) => (
                         <div
                           key={pIdx}
-                          className="w-6 h-6 rounded-full bg-emerald-700 border-2 border-white flex items-center justify-center text-[8px] text-white font-bold uppercase"
+                          style={{
+                            width: 24, height: 24, borderRadius: '50%',
+                            background: 'var(--color-sage-600)',
+                            border: '2px solid var(--color-parchment-50)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 8, color: 'white', fontWeight: 700, textTransform: 'uppercase',
+                            marginLeft: pIdx > 0 ? -6 : 0,
+                          }}
                         >
                           {person.split(' ').map(w => w[0]).join('')}
                         </div>
                       ))}
                       {event.assignedTo.length > 2 && (
-                        <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[8px] text-slate-600 font-bold">
+                        <div
+                          style={{
+                            width: 24, height: 24, borderRadius: '50%',
+                            background: 'var(--color-parchment-200)',
+                            border: '2px solid var(--color-parchment-50)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 8, color: 'var(--color-earth-600)', fontWeight: 700,
+                            marginLeft: -6,
+                          }}
+                        >
                           +{event.assignedTo.length - 2}
                         </div>
                       )}
@@ -147,28 +169,26 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
 
         {/* Up Next section */}
         {upNext.length > 0 && (
-          <div className="mt-12 pt-12 border-t border-slate-200">
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Coming Up</p>
-              <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase">
-                {upNext.length} Event
-              </span>
+          <div style={{ marginTop: 48, paddingTop: 48, borderTop: '1px solid var(--color-parchment-300)' }}>
+            <div className="flex items-center justify-between" style={{ marginBottom: 24 }}>
+              <p className="text-label" style={{ color: 'var(--color-earth-400)' }}>Coming Up</p>
+              <span className="badge badge-healthy">{upNext.length} Event</span>
             </div>
             {upNext.map(event => {
-              const dotColor = EVENT_TYPE_COLORS[event.type] || '#3b82f6'
+              const dotColor = EVENT_TYPE_COLORS[event.type] || 'var(--color-sage-500)'
               return (
-                <div key={event.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                <div key={event.id} className="card" style={{ padding: 16 }}>
                   <div className="flex items-start gap-3">
-                    <div className="w-1.5 self-stretch rounded-full" style={{ backgroundColor: dotColor }} />
+                    <div style={{ width: 6, alignSelf: 'stretch', borderRadius: 3, backgroundColor: dotColor }} />
                     <div>
-                      <h4 className="text-sm font-bold text-slate-800 flex items-center gap-1">
-                        <span className="material-icons" style={{ fontSize: '14px', color: dotColor }}>
+                      <h4 className="text-heading-4 flex items-center gap-1" style={{ color: 'var(--color-ink-900)', margin: 0 }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: dotColor }}>
                           {EVENT_SUBTYPE_ICONS[event.subType] || 'event'}
                         </span>
                         {event.title}
                       </h4>
-                      <p className="text-xs text-slate-500 mt-1">
-                        {event.fieldName && `${event.fieldName} • `}
+                      <p className="text-body-small" style={{ color: 'var(--color-earth-500)', marginTop: 4 }}>
+                        {event.fieldName && `${event.fieldName} \u00b7 `}
                         {getRelativeDay(event.date, date)}
                       </p>
                     </div>
@@ -181,12 +201,12 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
       </div>
 
       {/* Bottom Add Event button */}
-      <div className="p-6 border-t border-slate-200 bg-white">
+      <div style={{ padding: 24, borderTop: '1px solid var(--color-parchment-300)', background: 'var(--color-parchment-50)' }}>
         <button
           onClick={onAddEvent}
-          className="w-full bg-emerald-800 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-900 transition-colors"
+          className="btn btn-primary w-full flex items-center justify-center gap-2"
         >
-          <span className="material-icons text-lg">add</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>add</span>
           Add Event
         </button>
       </div>

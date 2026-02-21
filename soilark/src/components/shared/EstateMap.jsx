@@ -11,8 +11,8 @@ export default function EstateMap({
   const { fields } = useApp()
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-emerald-900">
-      {/* Map background - try JPG first, fall back to SVG */}
+    <div className="relative w-full h-full overflow-hidden" style={{ background: 'var(--color-ink-800)' }}>
+      {/* Map background */}
       <img
         src="/map-aerial.jpg"
         alt=""
@@ -22,8 +22,8 @@ export default function EstateMap({
           e.target.src = '/map-aerial.svg'
         }}
       />
-      {/* Subtle overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/30 via-transparent to-emerald-950/30" />
+      {/* Subtle overlay */}
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(30,34,24,0.25) 0%, transparent 50%, rgba(30,34,24,0.25) 100%)' }} />
 
       {/* Field overlays */}
       {fields.map((field) => (
@@ -38,17 +38,31 @@ export default function EstateMap({
       ))}
 
       {/* Map controls */}
-      <div className="absolute bottom-6 right-6 flex flex-col gap-2 z-20">
-        <div className="flex flex-col bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
-          <button className="p-2.5 hover:bg-slate-50 border-b border-slate-100">
-            <span className="material-icons text-slate-600 text-lg">add</span>
+      <div className="absolute flex flex-col gap-2 z-20" style={{ bottom: 16, right: 16 }}>
+        <div
+          className="flex flex-col overflow-hidden"
+          style={{
+            background: 'var(--color-parchment-50)',
+            border: '1px solid var(--color-parchment-300)',
+            borderRadius: 'var(--radius-sm)',
+          }}
+        >
+          <button className="p-2.5" style={{ borderBottom: '1px solid var(--color-parchment-300)' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-500)' }}>add</span>
           </button>
-          <button className="p-2.5 hover:bg-slate-50">
-            <span className="material-icons text-slate-600 text-lg">remove</span>
+          <button className="p-2.5">
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-500)' }}>remove</span>
           </button>
         </div>
-        <button className="p-2.5 bg-white rounded-xl shadow-lg border border-slate-200 hover:bg-slate-50">
-          <span className="material-icons text-slate-600 text-lg">my_location</span>
+        <button
+          className="p-2.5"
+          style={{
+            background: 'var(--color-parchment-50)',
+            border: '1px solid var(--color-parchment-300)',
+            borderRadius: 'var(--radius-sm)',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-500)' }}>my_location</span>
         </button>
       </div>
     </div>

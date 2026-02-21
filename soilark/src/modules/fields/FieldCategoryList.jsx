@@ -59,85 +59,115 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-5 border-b border-slate-100">
+      <div className="split-panel-header" style={{ height: 'auto', padding: 20, flexDirection: 'column', alignItems: 'stretch' }}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold flex items-center gap-2 text-slate-900">
-            <span className="material-icons text-primary">layers</span>
+          <h2 className="text-heading-3 flex items-center gap-2" style={{ color: 'var(--color-ink-900)', margin: 0 }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-sage-500)' }}>layers</span>
             Fields
           </h2>
-          <span className="text-xs text-slate-400">{fields.length} fields</span>
+          <span className="text-label" style={{ color: 'var(--color-earth-400)' }}>{fields.length} fields</span>
         </div>
         <div className="relative">
-          <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2" style={{ fontSize: 16, color: 'var(--color-earth-400)' }}>search</span>
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search fields..."
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
+            className="form-input"
+            style={{ paddingLeft: 36 }}
           />
         </div>
       </div>
 
       {/* Category list */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
-        {filteredCategories.map(cat => {
-          const colors = CATEGORY_COLORS[cat.name]
-          const expanded = expandedCategories.includes(cat.name)
-          return (
-            <div key={cat.name} className="rounded-lg border border-slate-100 overflow-hidden">
-              <button
-                onClick={() => toggleCategory(cat.name)}
-                className="w-full flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100 transition-colors"
+      <div className="flex-1 overflow-y-auto custom-scrollbar" style={{ padding: 16 }}>
+        <div className="flex flex-col gap-3">
+          {filteredCategories.map(cat => {
+            const colors = CATEGORY_COLORS[cat.name]
+            const expanded = expandedCategories.includes(cat.name)
+            return (
+              <div
+                key={cat.name}
+                className="overflow-hidden"
+                style={{ border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}
               >
-                <div className="flex items-center gap-3">
-                  <span className="material-icons" style={{ color: colors.border }}>
-                    {CATEGORY_ICONS[cat.name]}
-                  </span>
-                  <span className="font-semibold text-sm text-slate-800">
-                    {cat.name}
-                    <span className="text-xs font-normal text-slate-500 ml-2">
-                      ({cat.fields.length} fields)
+                <button
+                  onClick={() => toggleCategory(cat.name)}
+                  className="w-full flex items-center justify-between p-3"
+                  style={{
+                    background: 'var(--color-parchment-100)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'background 120ms ease',
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined" style={{ fontSize: 20, color: colors.border }}>
+                      {CATEGORY_ICONS[cat.name]}
                     </span>
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-slate-400">{cat.totalHectares.toFixed(1)} ha</span>
-                  <span className="material-icons text-slate-400 text-sm">
-                    {expanded ? 'expand_less' : 'expand_more'}
-                  </span>
-                </div>
-              </button>
+                    <span className="text-heading-4" style={{ color: 'var(--color-ink-900)' }}>
+                      {cat.name}
+                      <span className="text-body-small ml-2" style={{ color: 'var(--color-earth-500)', fontWeight: 400 }}>
+                        ({cat.fields.length} fields)
+                      </span>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-data" style={{ fontSize: 12, color: 'var(--color-earth-400)' }}>{cat.totalHectares.toFixed(1)} ha</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-earth-400)' }}>
+                      {expanded ? 'expand_less' : 'expand_more'}
+                    </span>
+                  </div>
+                </button>
 
-              {expanded && (
-                <div className="p-2 space-y-1">
-                  {cat.fields.map(field => (
-                    <button
-                      key={field.id}
-                      onClick={() => onFieldSelect(field.id)}
-                      className="w-full text-left p-3 rounded-lg hover:bg-primary/5 border-l-4 border-transparent hover:border-primary/50 transition-all"
-                    >
-                      <div className="flex justify-between items-start">
-                        <h4 className="text-sm font-semibold text-slate-800">{field.name}</h4>
-                        <span className="text-xs text-slate-400">{field.sizeHectares} ha</span>
-                      </div>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        {field.currentCrop || field.livestock || 'No current use'}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )
-        })}
+                {expanded && (
+                  <div style={{ padding: 8 }} className="flex flex-col gap-1">
+                    {cat.fields.map(field => (
+                      <button
+                        key={field.id}
+                        onClick={() => onFieldSelect(field.id)}
+                        className="w-full text-left p-3"
+                        style={{
+                          borderRadius: 'var(--radius-sm)',
+                          borderLeft: '3px solid transparent',
+                          background: 'transparent',
+                          border: 'none',
+                          borderLeft: '3px solid transparent',
+                          cursor: 'pointer',
+                          transition: 'all 120ms ease',
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = 'rgba(78,140,53,0.06)'
+                          e.currentTarget.style.borderLeftColor = 'var(--color-sage-500)'
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = 'transparent'
+                          e.currentTarget.style.borderLeftColor = 'transparent'
+                        }}
+                      >
+                        <div className="flex justify-between items-start">
+                          <h4 className="text-heading-4" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{field.name}</h4>
+                          <span className="text-data" style={{ fontSize: 12, color: 'var(--color-earth-400)' }}>{field.sizeHectares} ha</span>
+                        </div>
+                        <p className="text-body-small" style={{ color: 'var(--color-earth-500)', marginTop: 2 }}>
+                          {field.currentCrop || field.livestock || 'No current use'}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       {/* Footer */}
-      <div className="p-4 bg-slate-50 border-t border-slate-100">
-        <div className="flex items-center justify-between text-xs text-slate-500">
-          <span>Total Area</span>
-          <span className="font-bold text-slate-800">{totalHectares.toFixed(1)} ha</span>
+      <div style={{ padding: 16, background: 'var(--color-parchment-100)', borderTop: '1px solid var(--color-parchment-300)' }}>
+        <div className="flex items-center justify-between">
+          <span className="text-label" style={{ color: 'var(--color-earth-400)' }}>Total Area</span>
+          <span className="text-data" style={{ color: 'var(--color-ink-900)', fontWeight: 500 }}>{totalHectares.toFixed(1)} ha</span>
         </div>
       </div>
     </div>

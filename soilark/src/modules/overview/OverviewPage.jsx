@@ -34,15 +34,19 @@ export default function OverviewPage() {
         <Calendar onToggleView={toggleView} initialAddEvent={addEvent} />
       )}
 
-      {/* View toggle - only shown on map view; calendar has its own toggle in the header */}
+      {/* View toggle - only shown on map view */}
       {view === 'map' && (
         <div className="absolute top-4 right-4 z-20">
           <button
             onClick={toggleView}
-            className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-white transition-colors"
+            className="btn btn-secondary flex items-center gap-2"
+            style={{
+              background: 'var(--color-parchment-50)',
+              borderColor: 'var(--color-parchment-300)',
+            }}
           >
-            <span className="material-icons text-base">calendar_month</span>
-            Switch to Calendar
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>calendar_month</span>
+            Calendar
           </button>
         </div>
       )}
@@ -50,11 +54,19 @@ export default function OverviewPage() {
       {/* Weather widget (map view only) */}
       {view === 'map' && (
         <div className="absolute top-4 left-4 z-20">
-          <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-200 flex items-center gap-3 shadow-lg">
-            <span className="material-icons text-amber-500">wb_sunny</span>
+          <div
+            className="flex items-center gap-3"
+            style={{
+              padding: '8px 16px',
+              background: 'var(--color-parchment-50)',
+              border: '1px solid var(--color-parchment-300)',
+              borderRadius: 'var(--radius-md)',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-ochre-400)' }}>wb_sunny</span>
             <div>
-              <p className="text-xs font-bold text-slate-800 leading-none">8°C</p>
-              <p className="text-[10px] text-slate-500 leading-none mt-1">Partly Cloudy · Wind 12mph</p>
+              <p className="text-data" style={{ color: 'var(--color-ink-900)', fontWeight: 500, lineHeight: 1 }}>8°C</p>
+              <p className="text-body-small" style={{ color: 'var(--color-earth-400)', lineHeight: 1, marginTop: 2 }}>Partly Cloudy · Wind 12mph</p>
             </div>
           </div>
         </div>

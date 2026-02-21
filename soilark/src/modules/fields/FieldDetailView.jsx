@@ -23,30 +23,29 @@ export default function FieldDetailView({ fieldId, onBack }) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-slate-100">
+      <div style={{ padding: 16, borderBottom: '1px solid var(--color-parchment-300)' }}>
         <button
           onClick={onBack}
-          className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800 transition-colors mb-3"
+          className="btn btn-ghost flex items-center gap-1 mb-3"
+          style={{ padding: '4px 8px', fontSize: 13 }}
         >
-          <span className="material-icons text-base">arrow_back</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
           Back to fields
         </button>
         <div className="flex items-center gap-3">
           <div
-            className="w-3 h-3 rounded-full shrink-0"
-            style={{ backgroundColor: colors?.border }}
+            className="shrink-0"
+            style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: colors?.border }}
           />
           <div>
-            <h2 className="text-lg font-bold text-slate-900">{field.name}</h2>
-            <p className="text-xs text-slate-500">{field.category} · {field.sizeHectares} ha</p>
+            <h2 className="text-heading-3" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{field.name}</h2>
+            <p className="text-body-small" style={{ color: 'var(--color-earth-500)' }}>{field.category} · {field.sizeHectares} ha</p>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
       <TabBar tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
 
-      {/* Tab content */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {activeTab === 'overview' && <FieldOverviewTab field={field} />}
         {activeTab === 'history' && <FieldHistoryTab field={field} />}

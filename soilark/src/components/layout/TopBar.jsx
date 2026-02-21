@@ -1,62 +1,70 @@
-import { useState, useEffect, useRef } from 'react'
-import { formatOrdinalDate } from '../../utils/dates'
-import { estateStats } from '../../data/estateStats'
-import EstateStatsDropdown from './EstateStatsDropdown'
+import { useLocation } from 'react-router-dom'
+import { NAV_ITEMS } from '../../constants/navigation'
 
 export default function TopBar() {
-  const [dateStr, setDateStr] = useState(formatOrdinalDate(new Date()))
-  const [showStats, setShowStats] = useState(false)
-  const statsRef = useRef(null)
+  const location = useLocation()
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDateStr(formatOrdinalDate(new Date()))
-    }, 10000)
-    return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
-    function handleClick(e) {
-      if (statsRef.current && !statsRef.current.contains(e.target)) {
-        setShowStats(false)
-      }
-    }
-    if (showStats) document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [showStats])
+  // Determine current page name from nav items
+  const currentItem = NAV_ITEMS.find(item => {
+    if (item.path === '/') return location.pathname === '/'
+    return location.pathname.startsWith(item.path)
+  })
+  const pageName = currentItem?.label || 'Overview'
 
   return (
-    <header className="h-14 bg-gradient-to-r from-emerald-900 to-emerald-800 text-white flex items-center justify-between px-6 z-40 shrink-0">
-      {/* Left: Date/Time + Estate + Stats */}
-      <div className="flex items-center gap-4">
-        <div className="text-sm font-medium opacity-90">{dateStr}</div>
-
-        {/* Estate selector */}
-        <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg text-sm">
-          <span className="material-icons text-base">location_on</span>
-          <span className="font-medium">Landark Estate</span>
-        </div>
-
-        {/* Estate Stats */}
-        <div className="relative" ref={statsRef}>
-          <button
-            onClick={() => setShowStats(!showStats)}
-            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-sm transition-colors"
-          >
-            <span className="material-icons text-base">bar_chart</span>
-            <span className="font-medium">{estateStats.totalHectares} ha</span>
-            <span className="material-icons text-base">
-              {showStats ? 'expand_less' : 'expand_more'}
-            </span>
-          </button>
-          {showStats && <EstateStatsDropdown onClose={() => setShowStats(false)} />}
-        </div>
+    <header
+      className="flex items-center justify-between shrink-0"
+      style={{
+        height: 'var(--topbar-height)',
+        background: 'var(--color-parchment-50)',
+        borderBottom: '1px solid var(--color-parchment-300)',
+        padding: '0 24px',
+      }}
+    >
+      {/* Left: Breadcrumb */}
+      <div className="flex items-center gap-1.5">
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-earth-400)' }}>
+          LandArk Estate
+        </span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-parchment-300)' }}>
+          /
+        </span>
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500, color: 'var(--color-ink-900)' }}>
+          {pageName}
+        </span>
       </div>
 
-      {/* Right: User */}
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-full bg-primary/30 border border-primary/50 flex items-center justify-center text-xs font-bold">
-          JS
+      {/* Right: Notifications + Avatar */}
+      <div className="flex items-center gap-3">
+        <button
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 4,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: 20, color: 'var(--color-earth-400)' }}
+          >
+            notifications
+          </span>
+        </button>
+        <div
+          className="flex items-center justify-center shrink-0"
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: '50%',
+            background: 'var(--color-sage-600)',
+          }}
+        >
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 11, color: 'white' }}>
+            JS
+          </span>
         </div>
       </div>
     </header>

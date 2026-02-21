@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useApp } from '../../context/AppContext'
 import { getMonthDays, isToday, isSameDay, MONTHS, DAYS_SHORT_MON } from '../../utils/dates'
 import { aggregateEvents, getEventsForDate } from '../../utils/events'
@@ -10,15 +10,25 @@ const MAX_VISIBLE_EVENTS = 2
 
 const FILTER_KEYS = ['task', 'service', 'event']
 
-export default function Calendar({ onDaySelect, selectedDate: externalSelectedDate, mode = 'view', onToggleView, initialAddEvent = false }) {
+export default function Calendar({ onDaySelect, selectedDate: externalSelectedDate, navigateToDate, mode = 'view', onToggleView, initialAddEvent = false }) {
   const { fields, tasks, customEvents } = useApp()
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [selectedDate, setSelectedDate] = useState(null)
   const [filters, setFilters] = useState({ task: true, service: true, event: true })
-  // panelMode: null | 'agenda' | 'newEvent'
   const [panelMode, setPanelMode] = useState(initialAddEvent ? 'newEvent' : null)
   const [showForm, setShowForm] = useState(false)
+
+  useEffect(() => {
+    if (navigateToDate) {
+      const dateStr = navigateToDate.split('#')[0]
+      const d = new Date(dateStr)
+      setCurrentMonth(d.getMonth())
+      setCurrentYear(d.getFullYear())
+      setSelectedDate(d)
+      setPanelMode('agenda')
+    }
+  }, [navigateToDate])
 
   const activeSelectedDate = externalSelectedDate || selectedDate
 
@@ -70,7 +80,6 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
       return
     }
     if (panelMode === 'newEvent') {
-      // In new event mode, clicking a date selects it for the form
       setSelectedDate(date)
       return
     }
@@ -98,29 +107,27 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
   }
 
   return (
-    <div className="flex h-full bg-white">
+    <div className="relative h-full" style={{ background: 'var(--color-parchment-50)' }}>
       {/* Main calendar area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex flex-col overflow-hidden h-full">
         {/* Header */}
-        <header className="p-6 flex items-center justify-between border-b border-slate-100">
+        <header className="flex items-center justify-between" style={{ padding: '16px 24px', borderBottom: '1px solid var(--color-parchment-300)' }}>
           <div className="flex items-center gap-4">
-            <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1">
-              <button onClick={handlePrev} className="p-1.5 hover:bg-white rounded-md transition-all">
-                <span className="material-icons text-sm text-slate-500">chevron_left</span>
+            <div
+              className="flex items-center p-1"
+              style={{ background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-sm)' }}
+            >
+              <button onClick={handlePrev} className="p-1.5" style={{ borderRadius: 'var(--radius-sm)' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-earth-500)' }}>chevron_left</span>
               </button>
-              <h2 className="px-4 font-bold text-slate-800">
+              <h2 className="text-heading-4 px-4" style={{ margin: 0 }}>
                 {MONTHS[currentMonth]} {currentYear}
               </h2>
-              <button onClick={handleNext} className="p-1.5 hover:bg-white rounded-md transition-all">
-                <span className="material-icons text-sm text-slate-500">chevron_right</span>
+              <button onClick={handleNext} className="p-1.5" style={{ borderRadius: 'var(--radius-sm)' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-earth-500)' }}>chevron_right</span>
               </button>
             </div>
-            <button
-              onClick={handleToday}
-              className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-100 transition-colors"
-            >
-              Today
-            </button>
+            <button onClick={handleToday} className="btn btn-secondary">Today</button>
 
             {/* Legend filters */}
             <div className="flex gap-3 items-center ml-2">
@@ -130,9 +137,8 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                   <button
                     key={key}
                     onClick={() => toggleFilter(key)}
-                    className={`flex items-center gap-1.5 text-xs font-medium transition-opacity ${
-                      filters[key] ? 'opacity-100' : 'opacity-40'
-                    }`}
+                    className="flex items-center gap-1.5 text-label-small"
+                    style={{ opacity: filters[key] ? 1 : 0.4, transition: 'opacity 120ms ease', background: 'none', border: 'none', cursor: 'pointer' }}
                   >
                     <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: fc.dot }} />
                     {fc.label}
@@ -142,34 +148,36 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
             </div>
 
             {/* New Event button */}
-            <button
-              onClick={handleNewEvent}
-              className="flex items-center gap-2 bg-emerald-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-800 transition-colors ml-2"
-            >
-              <span className="material-icons text-lg">add</span>
+            <button onClick={handleNewEvent} className="btn btn-primary ml-2">
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>add</span>
               New Event
             </button>
           </div>
 
-          {/* View toggle - right side */}
-          {onToggleView && (
-            <button
-              onClick={onToggleView}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
-            >
-              <span className="material-icons text-base">map</span>
-              Switch to Map
+          {/* View toggle — hidden when overlay panel is open */}
+          {onToggleView && !panelMode && (
+            <button onClick={onToggleView} className="btn btn-secondary">
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>map</span>
+              Map
             </button>
           )}
         </header>
 
         {/* Calendar grid */}
-        <div className="flex-1 p-6 overflow-auto">
-          <div className="h-full min-h-[600px] border border-slate-200 rounded-2xl overflow-hidden flex flex-col bg-slate-50/50">
+        <div className="flex-1 overflow-auto" style={{ padding: 24 }}>
+          <div
+            className="h-full flex flex-col overflow-hidden"
+            style={{
+              minHeight: 600,
+              border: '1px solid var(--color-parchment-300)',
+              borderRadius: 'var(--radius-md)',
+              background: 'var(--color-parchment-100)',
+            }}
+          >
             {/* Day headers */}
-            <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50/80">
+            <div className="grid grid-cols-7" style={{ borderBottom: '1px solid var(--color-parchment-300)', background: 'var(--color-parchment-200)' }}>
               {DAYS_SHORT_MON.map(day => (
-                <div key={day} className="py-3 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <div key={day} className="py-3 text-center text-label" style={{ color: 'var(--color-earth-400)' }}>
                   {day}
                 </div>
               ))}
@@ -188,23 +196,53 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                   <button
                     key={i}
                     onClick={() => handleDayClick(day.date)}
-                    className={`border-r border-b border-slate-200 p-2 text-left transition-colors min-h-[120px] flex flex-col ${
-                      !day.isCurrentMonth ? 'bg-slate-50/60' :
-                      selected ? 'bg-white ring-2 ring-primary ring-inset z-10' :
-                      today ? 'bg-emerald-50/60' :
-                      'bg-white hover:bg-slate-50/50'
-                    }`}
+                    className="text-left flex flex-col"
+                    style={{
+                      borderRight: '1px solid var(--color-parchment-300)',
+                      borderBottom: '1px solid var(--color-parchment-300)',
+                      padding: 8,
+                      minHeight: 120,
+                      transition: 'background 120ms ease',
+                      background: !day.isCurrentMonth ? 'var(--color-parchment-200)'
+                        : selected ? 'var(--color-parchment-50)'
+                        : today ? 'rgba(78,140,53,0.06)'
+                        : 'var(--color-parchment-50)',
+                      outline: selected ? '2px solid var(--color-sage-500)' : 'none',
+                      outlineOffset: -2,
+                      zIndex: selected ? 10 : 'auto',
+                      cursor: 'pointer',
+                      border: 'none',
+                      borderRight: '1px solid var(--color-parchment-300)',
+                      borderBottom: '1px solid var(--color-parchment-300)',
+                    }}
                   >
                     {today ? (
-                      <span className="w-6 h-6 rounded-full bg-emerald-600 text-white text-[11px] font-bold flex items-center justify-center">
+                      <span
+                        className="flex items-center justify-center"
+                        style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: '50%',
+                          background: 'var(--color-sage-500)',
+                          color: 'white',
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: 11,
+                          fontWeight: 500,
+                        }}
+                      >
                         {day.date.getDate()}
                       </span>
                     ) : (
-                      <span className={`text-xs font-bold ${
-                        !day.isCurrentMonth ? 'text-slate-300' :
-                        selected ? 'text-emerald-600' :
-                        'text-slate-400'
-                      }`}>
+                      <span
+                        className="text-data"
+                        style={{
+                          fontSize: 12,
+                          color: !day.isCurrentMonth ? 'var(--color-parchment-300)'
+                            : selected ? 'var(--color-sage-600)'
+                            : 'var(--color-earth-400)',
+                          fontWeight: 500,
+                        }}
+                      >
                         {day.date.getDate()}
                       </span>
                     )}
@@ -212,14 +250,19 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                     {day.isCurrentMonth && visibleEvents.length > 0 && (
                       <div className="mt-1 flex flex-col gap-1">
                         {visibleEvents.map(event => {
-                          const colors = EVENT_TYPE_BG[event.type] || { bg: '#dbeafe', text: '#1e40af' }
+                          const colors = EVENT_TYPE_BG[event.type] || { bg: 'var(--color-parchment-200)', text: 'var(--color-earth-500)' }
                           return (
                             <div
                               key={event.id}
-                              className="px-2 py-1 text-[9px] font-bold rounded uppercase truncate flex items-center gap-1"
-                              style={{ backgroundColor: colors.bg, color: colors.text }}
+                              className="text-label-small truncate flex items-center gap-1"
+                              style={{
+                                padding: '2px 6px',
+                                borderRadius: 'var(--radius-sm)',
+                                backgroundColor: colors.bg,
+                                color: colors.text,
+                              }}
                             >
-                              <span className="material-icons" style={{ fontSize: '11px' }}>
+                              <span className="material-symbols-outlined" style={{ fontSize: 11 }}>
                                 {EVENT_SUBTYPE_ICONS[event.subType] || 'event'}
                               </span>
                               {event.title}
@@ -227,7 +270,7 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                           )
                         })}
                         {overflowCount > 0 && (
-                          <span className="text-[8px] text-slate-400 px-1 font-medium">
+                          <span className="text-body-small px-1" style={{ color: 'var(--color-earth-400)', fontSize: 8 }}>
                             +{overflowCount} more
                           </span>
                         )}
@@ -241,25 +284,35 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
         </div>
       </div>
 
-      {/* Sidebar panels */}
+      {/* Overlay panels — positioned absolute to avoid squashing the calendar */}
       {panelMode === 'agenda' && selectedDate && mode === 'view' && (
-        <CalendarDayPanel
-          date={selectedDate}
-          events={events}
-          allEvents={allEvents}
-          onClose={closePanel}
-          onAddEvent={() => { setShowForm(true) }}
-          showForm={showForm}
-          onFormComplete={() => setShowForm(false)}
-        />
+        <>
+          <div onClick={closePanel} style={{ position: 'absolute', inset: 0, zIndex: 19 }} />
+          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, zIndex: 20, boxShadow: 'var(--shadow-lg)' }}>
+            <CalendarDayPanel
+              date={selectedDate}
+              events={events}
+              allEvents={allEvents}
+              onClose={closePanel}
+              onAddEvent={() => { setShowForm(true) }}
+              showForm={showForm}
+              onFormComplete={() => setShowForm(false)}
+            />
+          </div>
+        </>
       )}
       {panelMode === 'newEvent' && mode === 'view' && (
-        <NewEventPanel
-          selectedDate={selectedDate}
-          events={events}
-          onDateSelect={(date) => setSelectedDate(date)}
-          onClose={closePanel}
-        />
+        <>
+          <div onClick={closePanel} style={{ position: 'absolute', inset: 0, zIndex: 19 }} />
+          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, zIndex: 20, boxShadow: 'var(--shadow-lg)' }}>
+            <NewEventPanel
+              selectedDate={selectedDate}
+              events={events}
+              onDateSelect={(date) => setSelectedDate(date)}
+              onClose={closePanel}
+            />
+          </div>
+        </>
       )}
     </div>
   )

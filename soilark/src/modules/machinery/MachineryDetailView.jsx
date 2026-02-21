@@ -9,20 +9,12 @@ import { MACHINERY_STATUS_COLORS, SERVICE_TYPES } from '../../data/machinery'
 const TABS = [
   { id: 'details', label: 'Details' },
   { id: 'service', label: 'Service' },
-  { id: 'financials', label: 'Costs & Expenses' },
+  { id: 'costs', label: 'Costs' },
   { id: 'documents', label: 'Documents' },
 ]
 
-const STATUS_OPTIONS = ['Available', 'In Use', 'Maintenance', 'Barn/Stored', 'Sold']
-
-const DOC_ICONS = {
-  certificate: 'verified',
-  manual: 'menu_book',
-  record: 'description',
-}
-
-export default function MachineryDetailView({ equipmentId, onBack }) {
-  const { machinery, tasks, updateMachinery, addServiceRecord, showToast } = useApp()
+export default function MachineryDetailView({ equipmentId, onClose, onServiceDateClick }) {
+  const { machinery, tasks, addServiceRecord, updateMachinery, showToast } = useApp()
   const [activeTab, setActiveTab] = useState('details')
   const [showServiceForm, setShowServiceForm] = useState(false)
   const navigate = useNavigate()
@@ -35,50 +27,61 @@ export default function MachineryDetailView({ equipmentId, onBack }) {
     t.assignedMachinery.includes(equipment.name)
   )
 
-  const handleStatusChange = (newStatus) => {
-    updateMachinery(equipment.id, { status: newStatus })
-    showToast(`Status updated to ${newStatus}`)
-  }
-
-  const totalLifetimeCost = (equipment.financialTransactions || []).reduce((sum, t) => sum + t.amount, 0)
-  const costPerHour = equipment.hours > 0 ? totalLifetimeCost / equipment.hours : 0
   const isOverdue = equipment.hours >= equipment.nextServiceDue
+  const badgeClass = MACHINERY_STATUS_COLORS[equipment.status] || 'badge-neutral'
+
+  // Cost calculations
+  const transactions = equipment.financialTransactions || []
+  const totalLifetimeCost = transactions.reduce((sum, t) => sum + t.amount, 0)
+  const costPerHour = equipment.hours > 0 ? totalLifetimeCost / equipment.hours : 0
+
+  const purchaseDate = equipment.purchaseDate ? new Date(equipment.purchaseDate) : null
+  const monthsSincePurchase = purchaseDate
+    ? Math.max(1, Math.round((Date.now() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44)))
+    : 1
+  const monthlyAverage = totalLifetimeCost / monthsSincePurchase
+
+  const oneYearAgo = new Date()
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+  const annualCost = transactions
+    .filter(t => new Date(t.date) >= oneYearAgo)
+    .reduce((sum, t) => sum + t.amount, 0)
+
+  // Cost breakdown by category
+  const serviceCost = transactions.filter(t => t.category === 'Service' || t.category === 'Parts').reduce((s, t) => s + t.amount, 0)
+  const fuelCost = transactions.filter(t => t.category === 'Fuel').reduce((s, t) => s + t.amount, 0)
+  const insuranceCost = transactions.filter(t => t.category === 'Insurance').reduce((s, t) => s + t.amount, 0)
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="p-4 border-b border-slate-100">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800 transition-colors mb-3"
-        >
-          <span className="material-icons text-base">arrow_back</span>
-          Back to machinery
-        </button>
-
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-bold text-slate-900 mb-1">{equipment.name}</h2>
-            <p className="text-sm text-slate-500">{equipment.make} {equipment.model} &middot; {equipment.year}</p>
+      {/* Sticky Panel Header */}
+      <div style={{
+        padding: '12px 16px',
+        borderBottom: '1px solid var(--color-parchment-300)',
+        background: 'var(--color-parchment-100)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+      }}>
+        <div className="flex items-start gap-3">
+          <button
+            onClick={onClose}
+            className="btn btn-ghost shrink-0"
+            style={{ padding: 4, marginTop: 2 }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-earth-400)' }}>arrow_back</span>
+          </button>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h2 className="text-heading-3" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{equipment.name}</h2>
+                <p className="text-body-small" style={{ color: 'var(--color-earth-500)', margin: 0 }}>
+                  {equipment.make} {equipment.model} &middot; {equipment.year}
+                </p>
+              </div>
+              <span className={`badge ${badgeClass}`}>{equipment.status}</span>
+            </div>
           </div>
-          <MachineryStatusBadge status={equipment.status} />
-        </div>
-
-        {/* Status changer */}
-        <div className="flex gap-2 mt-3 flex-wrap">
-          {STATUS_OPTIONS.map(s => (
-            <button
-              key={s}
-              onClick={() => handleStatusChange(s)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                equipment.status === s
-                  ? 'bg-primary/20 text-primary border border-primary/30'
-                  : 'bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
         </div>
       </div>
 
@@ -87,62 +90,74 @@ export default function MachineryDetailView({ equipmentId, onBack }) {
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {/* Details Tab */}
         {activeTab === 'details' && (
-          <div className="p-5 space-y-5">
-            {/* Basic Info */}
-            <div>
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Equipment Details</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <PropItem label="Category" value={equipment.type} />
-                <PropItem label="Serial Number" value={equipment.serialNumber} />
-                <PropItem label="Fuel Type" value={equipment.fuelType} />
-                <PropItem label="Operating Hours" value={`${equipment.hours.toLocaleString()} hrs`} />
-                <PropItem label="Location" value={equipment.location} />
-                <PropItem label="Assigned Operator" value={equipment.assignedOperator} />
-              </div>
+          <div style={{ padding: '0' }}>
+            {/* Edit button */}
+            <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button className="btn btn-ghost">Edit</button>
             </div>
 
-            {/* Purchase & Financial */}
-            <div>
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Purchase & Value</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <PropItem label="Date Purchased" value={formatShortDate(equipment.purchaseDate)} />
-                <PropItem label="Purchase Price" value={formatGBP(equipment.purchasePrice)} />
-                <PropItem label="Current Value" value={formatGBP(equipment.currentValue)} />
-                <PropItem label="Depreciation" value={formatGBP(equipment.purchasePrice - equipment.currentValue)} />
-              </div>
-            </div>
+            {/* Equipment section */}
+            <FieldSection title="Equipment">
+              <FieldRow label="Category" value={equipment.type} />
+              <FieldRow label="Make" value={equipment.make} />
+              <FieldRow label="Model" value={equipment.model} />
+              <FieldRow label="Year" value={String(equipment.year)} />
+              <FieldRow label="Serial Number" value={equipment.serialNumber} />
+              <FieldRow label="Fuel Type" value={equipment.fuelType} />
+              <FieldRow label="Status" value={equipment.status} />
+              {equipment.notes && <FieldRow label="Notes" value={equipment.notes} />}
+            </FieldSection>
 
-            {/* Specifications */}
+            {/* Purchase & Financial section */}
+            <FieldSection title="Purchase & Financial">
+              <FieldRow label="Date Purchased" value={equipment.purchaseDate ? formatShortDate(equipment.purchaseDate) : '—'} />
+              <FieldRow label="Purchase Price" value={formatGBP(equipment.purchasePrice)} />
+              <FieldRow label="Current Value" value={formatGBP(equipment.currentValue)} />
+              <FieldRow label="Depreciation" value={formatGBP(equipment.purchasePrice - equipment.currentValue)} />
+            </FieldSection>
+
+            {/* Specifications section */}
             {equipment.specifications && Object.keys(equipment.specifications).length > 0 && (
-              <div>
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Specifications</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {Object.entries(equipment.specifications).map(([key, value]) => (
-                    <PropItem
-                      key={key}
-                      label={key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
-                      value={typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)}
-                    />
-                  ))}
-                </div>
-              </div>
+              <FieldSection title="Specifications">
+                {Object.entries(equipment.specifications).map(([key, value]) => (
+                  <FieldRow
+                    key={key}
+                    label={key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
+                    value={typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)}
+                    mono
+                  />
+                ))}
+              </FieldSection>
             )}
 
             {/* Associated Tasks */}
             {associatedTasks.length > 0 && (
-              <div>
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
+              <div style={{ padding: '16px' }}>
+                <h3 className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 12 }}>
                   Associated Tasks ({associatedTasks.length})
                 </h3>
-                <div className="space-y-1">
+                <div className="flex flex-col gap-1">
                   {associatedTasks.map(task => (
                     <button
                       key={task.id}
                       onClick={() => navigate('/tasks', { state: { openTaskId: task.id } })}
-                      className="w-full text-left text-sm text-slate-700 py-2 px-3 bg-slate-50 rounded-lg hover:bg-primary/5 hover:text-primary transition-colors flex items-center justify-between"
+                      className="w-full text-left flex items-center justify-between"
+                      style={{
+                        padding: '8px 12px',
+                        background: 'var(--color-parchment-100)',
+                        borderRadius: 'var(--radius-sm)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontFamily: 'var(--font-body)',
+                        fontSize: 13,
+                        color: 'var(--color-ink-900)',
+                        transition: 'all 120ms ease',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(78,140,53,0.08)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-parchment-100)' }}
                     >
                       <span>{task.name}</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 font-medium">
+                      <span className="badge badge-neutral">
                         {task.status === 'todo' ? 'To Do' : task.status === 'inProgress' ? 'In Progress' : 'Done'}
                       </span>
                     </button>
@@ -150,58 +165,41 @@ export default function MachineryDetailView({ equipmentId, onBack }) {
                 </div>
               </div>
             )}
-
-            {/* Notes */}
-            {equipment.notes && (
-              <div>
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Notes</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">{equipment.notes}</p>
-              </div>
-            )}
           </div>
         )}
 
         {/* Service Tab */}
         {activeTab === 'service' && (
-          <div className="p-5 space-y-5">
-            {/* Service Status */}
-            <div className={`p-4 rounded-xl border ${isOverdue ? 'border-red-200 bg-red-50' : 'border-emerald-200 bg-emerald-50'}`}>
-              <div className="flex items-center gap-3">
-                <span className={`material-icons text-2xl ${isOverdue ? 'text-red-500' : 'text-emerald-500'}`}>
-                  {isOverdue ? 'warning' : 'check_circle'}
-                </span>
-                <div>
-                  <p className={`text-sm font-bold ${isOverdue ? 'text-red-800' : 'text-emerald-800'}`}>
-                    {isOverdue ? 'Service Overdue' : 'Service Up to Date'}
-                  </p>
-                  <p className={`text-xs ${isOverdue ? 'text-red-600' : 'text-emerald-600'}`}>
-                    Current: {equipment.hours.toLocaleString()} hrs &middot; Next due: {equipment.nextServiceDue.toLocaleString()} hrs
-                    {!isOverdue && ` &middot; In ${(equipment.nextServiceDue - equipment.hours).toLocaleString()} hours`}
-                  </p>
-                </div>
-              </div>
+          <div style={{ padding: 16 }} className="flex flex-col gap-5">
+            {/* Service Summary — field rows instead of stat cards */}
+            <div style={{ border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
+              <FieldRow label="Current Hours" value={equipment.hours.toLocaleString()} mono />
+              <FieldRow
+                label="Next Service Due"
+                value={`${equipment.nextServiceDue.toLocaleString()} hrs`}
+                mono
+                highlight={isOverdue}
+              />
+              <FieldRow
+                label="Last Service"
+                value={equipment.lastServiceDate ? formatShortDate(equipment.lastServiceDate) : '—'}
+                mono
+              />
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-3">
-              <PropItem label="Current Hours" value={`${equipment.hours.toLocaleString()}`} />
-              <PropItem label="Next Service Due" value={`${equipment.nextServiceDue.toLocaleString()} hrs`} />
-              <PropItem label="Last Service" value={formatShortDate(equipment.lastServiceDate)} />
-            </div>
-
-            {/* Record Service Button */}
+            {/* Record Service Button — above history */}
             <button
               onClick={() => setShowServiceForm(!showServiceForm)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-primary text-emerald-950 rounded-lg text-sm font-bold hover:bg-primary-dark transition-colors"
+              className="btn btn-ghost"
+              style={{ alignSelf: 'flex-start' }}
             >
-              <span className="material-icons text-sm">add</span>
-              Record Service
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+              Record service
             </button>
 
             {/* Inline Service Form */}
             {showServiceForm && (
               <ServiceForm
-                equipmentId={equipment.id}
                 currentHours={equipment.hours}
                 onSave={(record) => {
                   addServiceRecord(equipment.id, record)
@@ -217,147 +215,99 @@ export default function MachineryDetailView({ equipmentId, onBack }) {
               />
             )}
 
-            {/* Service History */}
+            {/* Service History — card list instead of data-table */}
             <div>
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Service Record</h3>
-              <div className="space-y-0">
-                {equipment.serviceHistory.map((svc, i) => (
-                  <div key={svc.id} className="flex gap-4 pb-6 relative">
-                    {/* Timeline connector */}
-                    {i < equipment.serviceHistory.length - 1 && (
-                      <div className="absolute left-[11px] top-8 bottom-0 w-px bg-slate-200" />
-                    )}
-                    <div className="shrink-0 mt-1">
-                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-                        <span className="material-icons text-primary text-xs">build</span>
+              <h3 className="text-label mb-3" style={{ color: 'var(--color-earth-400)' }}>Service History</h3>
+              {equipment.serviceHistory.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  {equipment.serviceHistory.map(svc => (
+                    <div
+                      key={svc.id}
+                      className="card"
+                      style={{ padding: '12px 16px', cursor: 'pointer', transition: 'all var(--duration-fast) ease' }}
+                      onClick={() => onServiceDateClick?.(svc.date)}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-parchment-200)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = '' }}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <span className="text-heading-4" style={{ color: 'var(--color-ink-900)' }}>{svc.type}</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-earth-400)', whiteSpace: 'nowrap' }}>
+                          {formatShortDate(svc.date)}
+                        </span>
                       </div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-1">
-                        <p className="text-sm font-semibold text-slate-800">{svc.type}</p>
-                        <span className="text-xs text-slate-400">{formatShortDate(svc.date)}</span>
-                      </div>
-                      <p className="text-sm text-slate-600 mb-1">{svc.notes}</p>
-                      <div className="flex items-center gap-3 text-xs text-slate-400">
+                      <div className="flex items-center gap-3" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-earth-500)' }}>
                         {svc.hoursAtService && <span>{svc.hoursAtService.toLocaleString()} hrs</span>}
                         <span>{formatGBP(svc.cost)}</span>
-                        <span>{svc.technician}</span>
                       </div>
+                      {svc.notes && (
+                        <p className="text-body-small" style={{ color: 'var(--color-earth-500)', marginTop: 4 }}>{svc.notes}</p>
+                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-body" style={{ color: 'var(--color-earth-400)' }}>No service records</p>
+              )}
             </div>
           </div>
         )}
 
-        {/* Financials Tab */}
-        {activeTab === 'financials' && (
-          <div className="p-5 space-y-5">
-            {/* Cost Summary Cards */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="p-4 bg-slate-50 rounded-xl">
-                <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Total Lifetime Cost</p>
-                <p className="text-xl font-bold text-slate-900">{formatGBP(totalLifetimeCost)}</p>
-                <p className="text-xs text-slate-400 mt-1">Purchase: {formatGBP(equipment.purchasePrice)}</p>
+        {/* Costs Tab */}
+        {activeTab === 'costs' && (
+          <div style={{ padding: 16 }} className="flex flex-col gap-5">
+            {/* 4 Stat Cards */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="stat-card">
+                <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Lifetime Cost</p>
+                <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{formatGBP(totalLifetimeCost)}</p>
               </div>
-              <div className="p-4 bg-slate-50 rounded-xl">
-                <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Cost Per Hour</p>
-                <p className="text-xl font-bold text-slate-900">{formatGBP(costPerHour)}</p>
-                <p className="text-xs text-slate-400 mt-1">{equipment.hours.toLocaleString()} hrs logged</p>
+              <div className="stat-card">
+                <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Monthly Average</p>
+                <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{formatGBP(monthlyAverage)}</p>
               </div>
-              <div className="p-4 bg-slate-50 rounded-xl">
-                <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Next Service Est.</p>
-                <p className="text-xl font-bold text-slate-900">
-                  {equipment.serviceHistory.length > 0
-                    ? formatGBP(equipment.serviceHistory[0].cost)
-                    : '—'}
-                </p>
-                <p className="text-xs text-slate-400 mt-1">
-                  {isOverdue ? 'Overdue' : `In ${(equipment.nextServiceDue - equipment.hours).toLocaleString()} hrs approx.`}
-                </p>
+              <div className="stat-card">
+                <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Annual Cost</p>
+                <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{formatGBP(annualCost)}</p>
+              </div>
+              <div className="stat-card">
+                <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Cost per Hour</p>
+                <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{formatGBP(costPerHour)}</p>
               </div>
             </div>
 
-            {/* Linked Transactions */}
+            {/* Cost Breakdown */}
             <div>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Linked Transactions</h3>
+              <h3 className="text-label mb-3" style={{ color: 'var(--color-earth-400)' }}>Cost Breakdown</h3>
+              <div style={{ border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
+                <CostRow label="Service & Maintenance" value={serviceCost} />
+                <CostRow label="Fuel" value={fuelCost} border />
+                <CostRow label="Insurance" value={insuranceCost} border />
               </div>
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-100">
-                    <th className="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-2">Date</th>
-                    <th className="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-2">Category</th>
-                    <th className="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-2">Description</th>
-                    <th className="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-2">Provider</th>
-                    <th className="text-right text-[10px] font-bold text-slate-400 uppercase tracking-wider py-2">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(equipment.financialTransactions || []).map((txn, i) => (
-                    <tr key={i} className="border-b border-slate-50">
-                      <td className="py-3 text-sm text-slate-600">{formatShortDate(txn.date)}</td>
-                      <td className="py-3">
-                        <span className={`text-xs px-2 py-0.5 rounded font-medium ${
-                          txn.category === 'Fuel' ? 'bg-amber-100 text-amber-700'
-                          : txn.category === 'Parts' ? 'bg-blue-100 text-blue-700'
-                          : txn.category === 'Insurance' ? 'bg-purple-100 text-purple-700'
-                          : 'bg-emerald-100 text-emerald-700'
-                        }`}>
-                          {txn.category}
-                        </span>
-                      </td>
-                      <td className="py-3 text-sm text-slate-600">{txn.description}</td>
-                      <td className="py-3 text-sm text-slate-500">{txn.provider}</td>
-                      <td className="py-3 text-sm font-medium text-slate-800 text-right">{formatGBP(txn.amount)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           </div>
         )}
 
         {/* Documents Tab */}
         {activeTab === 'documents' && (
-          <div className="p-5 space-y-5">
-            {/* Serial Plate Photo */}
-            <div>
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Serial Plate Photo</h3>
-              <div className="w-full h-48 bg-slate-100 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400">
-                <span className="material-icons text-3xl mb-2">add_a_photo</span>
-                <p className="text-sm">Upload serial plate photo</p>
+          <div style={{ padding: 16 }} className="flex flex-col gap-3">
+            {(equipment.documents || []).map((doc, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-3"
+                style={{ padding: '10px 16px' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-earth-400)' }}>description</span>
+                <div className="flex-1 min-w-0">
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-ink-900)', margin: 0 }}>{doc.name}</p>
+                  <p className="text-label-small" style={{ color: 'var(--color-earth-400)', margin: 0 }}>{doc.type}</p>
+                </div>
+                <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-400)', cursor: 'pointer' }}>download</span>
               </div>
-            </div>
-
-            {/* Document Repository */}
-            <div>
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Document Repository</h3>
-              <div className="space-y-2">
-                {(equipment.documents || []).map((doc, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
-                  >
-                    <span className="material-icons text-primary text-xl">
-                      {DOC_ICONS[doc.type] || 'description'}
-                    </span>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-slate-800">{doc.name}</p>
-                      <p className="text-xs text-slate-400">{formatShortDate(doc.date)}</p>
-                    </div>
-                    <span className="material-icons text-slate-300 text-sm">chevron_right</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Internal Asset ID */}
-            <div className="p-3 bg-slate-50 rounded-lg">
-              <p className="text-[10px] text-slate-400 uppercase font-bold mb-1">Internal Asset ID</p>
-              <p className="text-sm font-mono text-slate-600">{equipment.id.toUpperCase()}</p>
-            </div>
+            ))}
+            <button className="btn btn-ghost" style={{ alignSelf: 'flex-start', marginTop: 8 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+              Upload document
+            </button>
           </div>
         )}
       </div>
@@ -365,34 +315,66 @@ export default function MachineryDetailView({ equipmentId, onBack }) {
   )
 }
 
-function MachineryStatusBadge({ status }) {
-  const colors = MACHINERY_STATUS_COLORS[status] || MACHINERY_STATUS_COLORS['Available']
+/* Field row component — label left, value right */
+function FieldRow({ label, value, mono, highlight }) {
   return (
-    <span
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium shrink-0"
-      style={{ backgroundColor: colors.bg, color: colors.text }}
+    <div
+      className="flex items-center justify-between"
+      style={{
+        padding: '12px 16px',
+        borderBottom: '1px solid var(--color-parchment-200)',
+      }}
     >
-      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: colors.dot }} />
-      {status}
-    </span>
-  )
-}
-
-function PropItem({ label, value }) {
-  return (
-    <div className="p-3 bg-slate-50 rounded-lg">
-      <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">{label}</p>
-      <p className="text-sm font-medium text-slate-800">{value || '—'}</p>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-earth-400)' }}>
+        {label}
+      </span>
+      <span style={{
+        fontFamily: mono ? 'var(--font-mono)' : 'var(--font-body)',
+        fontSize: 13,
+        color: highlight ? 'var(--color-ochre-400)' : 'var(--color-ink-900)',
+        textAlign: 'end'
+      }}>
+        {value || '—'}
+      </span>
     </div>
   )
 }
 
-function ServiceForm({ equipmentId, currentHours, onSave, onCancel }) {
+/* Section divider with title */
+function FieldSection({ title, children }) {
+  return (
+    <div>
+      <div style={{ padding: '12px 16px', borderBottom: '2px solid var(--color-parchment-300)' }}>
+        <h3 className="text-label" style={{ color: 'var(--color-earth-400)', margin: 0 }}>{title}</h3>
+      </div>
+      {children}
+    </div>
+  )
+}
+
+/* Cost breakdown row */
+function CostRow({ label, value, border }) {
+  return (
+    <div
+      className="flex items-center justify-between"
+      style={{
+        padding: '12px 16px',
+        background: 'var(--color-parchment-100)',
+        borderTop: border ? '1px solid var(--color-parchment-200)' : undefined,
+      }}
+    >
+      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-ink-900)' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--color-ink-900)' }}>{formatGBP(value)}</span>
+    </div>
+  )
+}
+
+/* Inline service record form */
+function ServiceForm({ currentHours, onSave, onCancel }) {
   const [form, setForm] = useState({
     date: new Date().toISOString().split('T')[0],
     type: 'Regular Service',
     cost: '',
-    technician: '',
     notes: '',
     hoursAtService: String(currentHours),
   })
@@ -404,93 +386,43 @@ function ServiceForm({ equipmentId, currentHours, onSave, onCancel }) {
       date: form.date,
       type: form.type,
       cost: parseFloat(form.cost) || 0,
-      technician: form.technician,
       notes: form.notes,
       hoursAtService: parseInt(form.hoursAtService) || currentHours,
     })
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-      <h4 className="text-sm font-bold text-slate-800">Record Service</h4>
-      <div className="grid grid-cols-2 gap-3">
+    <form onSubmit={handleSubmit} className="card flex flex-col gap-3">
+      <h4 className="text-heading-4" style={{ color: 'var(--color-ink-900)', margin: 0 }}>Record Service</h4>
+      <div className="grid grid-cols-3 gap-3">
         <div>
-          <label className="text-[10px] font-bold text-slate-500 uppercase">Date</label>
-          <input
-            type="date"
-            value={form.date}
-            onChange={e => setForm({ ...form, date: e.target.value })}
-            className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
-            required
-          />
+          <label className="form-label">Date</label>
+          <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="form-input" required />
         </div>
         <div>
-          <label className="text-[10px] font-bold text-slate-500 uppercase">Service Type</label>
-          <select
-            value={form.type}
-            onChange={e => setForm({ ...form, type: e.target.value })}
-            className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
-          >
+          <label className="form-label">Type</label>
+          <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} className="form-select">
             {SERVICE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-[10px] font-bold text-slate-500 uppercase">Hours at Service</label>
-          <input
-            type="number"
-            value={form.hoursAtService}
-            onChange={e => setForm({ ...form, hoursAtService: e.target.value })}
-            className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
-          />
+          <label className="form-label">Hours at Service</label>
+          <input type="number" value={form.hoursAtService} onChange={e => setForm({ ...form, hoursAtService: e.target.value })} className="form-input" />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="form-label">Cost</label>
+          <input type="number" step="0.01" value={form.cost} onChange={e => setForm({ ...form, cost: e.target.value })} placeholder="0.00" className="form-input" required />
         </div>
         <div>
-          <label className="text-[10px] font-bold text-slate-500 uppercase">Cost</label>
-          <input
-            type="number"
-            step="0.01"
-            value={form.cost}
-            onChange={e => setForm({ ...form, cost: e.target.value })}
-            placeholder="0.00"
-            className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
-            required
-          />
+          <label className="form-label">Notes</label>
+          <input type="text" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Work performed..." className="form-input" />
         </div>
       </div>
-      <div>
-        <label className="text-[10px] font-bold text-slate-500 uppercase">Technician</label>
-        <input
-          type="text"
-          value={form.technician}
-          onChange={e => setForm({ ...form, technician: e.target.value })}
-          placeholder="Name or company"
-          className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none"
-          required
-        />
-      </div>
-      <div>
-        <label className="text-[10px] font-bold text-slate-500 uppercase">Notes</label>
-        <textarea
-          value={form.notes}
-          onChange={e => setForm({ ...form, notes: e.target.value })}
-          placeholder="Work performed..."
-          rows={2}
-          className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none resize-none"
-        />
-      </div>
       <div className="flex gap-2 justify-end">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="px-4 py-2 bg-primary text-emerald-950 text-sm font-bold rounded-lg hover:bg-primary-dark transition-colors"
-        >
-          Save Record
-        </button>
+        <button type="button" onClick={onCancel} className="btn btn-secondary">Cancel</button>
+        <button type="submit" className="btn btn-primary">Save</button>
       </div>
     </form>
   )

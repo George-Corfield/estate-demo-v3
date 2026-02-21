@@ -24,7 +24,6 @@ export default function FieldsPage() {
       navigate('.', { replace: true, state: {} })
     }
     if (location.state?.addNote) {
-      // If no field selected, just show the list; user picks a field first
       navigate('.', { replace: true, state: {} })
     }
   }, [location.state, navigate])
@@ -35,8 +34,11 @@ export default function FieldsPage() {
 
   return (
     <div className="flex h-full">
-      {/* Left panel */}
-      <div className="w-[420px] min-w-[380px] max-w-[520px] border-r border-slate-200 bg-white flex flex-col overflow-hidden shrink-0">
+      {/* Left panel — 35% split */}
+      <div
+        className="split-panel"
+        style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+      >
         {selectedFieldId ? (
           <FieldDetailView
             fieldId={selectedFieldId}
@@ -50,29 +52,28 @@ export default function FieldsPage() {
         )}
       </div>
 
-      {/* Right panel */}
+      {/* Right panel — 65% map */}
       <div className="flex-1 relative">
         {rightView === 'map' ? (
-          <EstateMap
-            highlightedFieldId={selectedFieldId}
-            onFieldClick={handleFieldClick}
-          />
+          <>
+            <EstateMap
+              highlightedFieldId={selectedFieldId}
+              onFieldClick={handleFieldClick}
+            />
+            <div className="absolute top-4 right-4 z-20">
+              <button
+                onClick={() => setRightView('calendar')}
+                className="btn btn-secondary flex items-center gap-2"
+                style={{ background: 'var(--color-parchment-50)' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>calendar_month</span>
+                Calendar
+              </button>
+            </div>
+          </>
         ) : (
-          <Calendar />
+          <Calendar onToggleView={() => setRightView('map')} />
         )}
-
-        {/* View toggle */}
-        <div className="absolute top-4 right-4 z-20">
-          <button
-            onClick={() => setRightView(rightView === 'map' ? 'calendar' : 'map')}
-            className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-white transition-colors"
-          >
-            <span className="material-icons text-base">
-              {rightView === 'map' ? 'calendar_month' : 'map'}
-            </span>
-            Switch to {rightView === 'map' ? 'Calendar' : 'Map'}
-          </button>
-        </div>
       </div>
     </div>
   )
