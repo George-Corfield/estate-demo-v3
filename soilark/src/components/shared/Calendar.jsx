@@ -11,7 +11,7 @@ const MAX_VISIBLE_EVENTS = 2
 const FILTER_KEYS = ['task', 'service', 'event']
 
 export default function Calendar({ onDaySelect, selectedDate: externalSelectedDate, navigateToDate, mode = 'view', onToggleView, initialAddEvent = false }) {
-  const { fields, tasks, customEvents } = useApp()
+  const { fields, tasks, customEvents, machinery } = useApp()
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [selectedDate, setSelectedDate] = useState(null)
@@ -33,8 +33,8 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
   const activeSelectedDate = externalSelectedDate || selectedDate
 
   const allEvents = useMemo(
-    () => aggregateEvents(fields, tasks, customEvents),
-    [fields, tasks, customEvents]
+    () => aggregateEvents(fields, tasks, customEvents, machinery),
+    [fields, tasks, customEvents, machinery]
   )
 
   const events = useMemo(
@@ -287,7 +287,7 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
       {/* Overlay panels — positioned absolute to avoid squashing the calendar */}
       {panelMode === 'agenda' && selectedDate && mode === 'view' && (
         <>
-          <div onClick={closePanel} style={{ position: 'absolute', inset: 0, zIndex: 19 }} />
+          {/* <div onClick={closePanel} style={{ position: 'absolute', inset: 0, zIndex: 19 }} /> */}
           <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, zIndex: 20, boxShadow: 'var(--shadow-lg)' }}>
             <CalendarDayPanel
               date={selectedDate}
@@ -303,7 +303,7 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
       )}
       {panelMode === 'newEvent' && mode === 'view' && (
         <>
-          <div onClick={closePanel} style={{ position: 'absolute', inset: 0, zIndex: 19 }} />
+          {/* <div onClick={closePanel} style={{ position: 'absolute', inset: 0, zIndex: 19 }} /> */}
           <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, zIndex: 20, boxShadow: 'var(--shadow-lg)' }}>
             <NewEventPanel
               selectedDate={selectedDate}

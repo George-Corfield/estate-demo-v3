@@ -126,6 +126,9 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
                   {event.details && (
                     <p className="text-body-small" style={{ color: 'var(--color-earth-500)', marginTop: 2 }}>{event.details}</p>
                   )}
+                  {event.description && (
+                    <p className="text-body-small" style={{ color: 'var(--color-earth-500)', marginTop: 2 }}>{event.description}</p>
+                  )}
 
                   {/* Assignees */}
                   {event.assignedTo && event.assignedTo.length > 0 && (
@@ -168,7 +171,7 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
         )}
 
         {/* Up Next section */}
-        {upNext.length > 0 && (
+        {/* {upNext.length > 0 && (
           <div style={{ marginTop: 48, paddingTop: 48, borderTop: '1px solid var(--color-parchment-300)' }}>
             <div className="flex items-center justify-between" style={{ marginBottom: 24 }}>
               <p className="text-label" style={{ color: 'var(--color-earth-400)' }}>Coming Up</p>
@@ -197,7 +200,7 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
               )
             })}
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Bottom Add Event button */}

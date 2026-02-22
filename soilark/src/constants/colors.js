@@ -37,9 +37,9 @@ export const EVENT_TYPE_BG = {
   // Using light tints instead of just parchment
   task: { bg: '#EBF5E8', text: '#3B7A1E' },      // Light green tint
   service: { bg: '#FEF6E5', text: '#D49A20' },   // Light gold tint
-  appointment: { bg: '#F6F1EE', text: '#8B5A3C' }, // Light earth tint
+  appointment: { bg: '#eef2f6', text: '#3c628b' }, // Light earth tint
   event: { bg: '#F6F1EE', text: '#8B5A3C' },
-  reminder: { bg: '#FEF6E5', text: '#D49A20' },
+  reminder: { bg: '#fee5e5', text: '#d42020' },
 }
 
 export const EVENT_FILTER_COLORS = {

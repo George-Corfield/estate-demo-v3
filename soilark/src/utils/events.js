@@ -1,6 +1,6 @@
 import { formatDateKey } from './dates'
 
-export function aggregateEvents(fields, tasks, customEvents = []) {
+export function aggregateEvents(fields, tasks, customEvents = [], machinery = []) {
   const events = []
 
   tasks.forEach(task => {
@@ -40,6 +40,25 @@ export function aggregateEvents(fields, tasks, customEvents = []) {
       ...evt,
       type: evt.type || 'custom',
       subType: evt.type?.toLowerCase(),
+    })
+  })
+
+  machinery.forEach(equip => {
+    (equip.serviceHistory || []).forEach(svc => {
+      const typeLabel = svc.type || 'Service'
+      const subType = typeLabel.toLowerCase().includes('mot') ? 'mot'
+        : typeLabel.toLowerCase().includes('repair') ? 'service'
+        : 'service'
+      events.push({
+        id: `mach-svc-${svc.id}`,
+        date: svc.date,
+        title: `${typeLabel} — ${equip.name}`,
+        type: 'service',
+        subType,
+        description: svc.notes || '',
+        machineryName: equip.name,
+        sourceId: equip.id,
+      })
     })
   })
 

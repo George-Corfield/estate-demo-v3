@@ -381,12 +381,9 @@ export const EQUIPMENT_CATEGORY_TABS = [
 ]
 
 export const SERVICE_TYPES = [
-  'Regular Service',
+  'Service',
   'Repair',
-  'Major Repair',
-  'Pre-Season Service',
-  'Post-Season Service',
-  'Emergency Repair',
+  'MOT'
 ]
 
 export const MACHINERY_STATUS_COLORS = {
