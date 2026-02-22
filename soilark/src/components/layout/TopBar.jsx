@@ -34,7 +34,7 @@ export default function TopBar() {
         {/* Estate selector */}
         <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg text-sm">
           <span className="material-icons text-base">location_on</span>
-          <span className="font-medium">Landark Estate</span>
+          <span className="font-medium">Landark Estate </span>
         </div>
 
         {/* Estate Stats */}
