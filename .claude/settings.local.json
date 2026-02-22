@@ -10,7 +10,8 @@
       "WebFetch(domain:pixabay.com)",
       "Bash(ls:*)",
       "Bash(cat:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(npm run lint:*)"
     ]
   }
 }

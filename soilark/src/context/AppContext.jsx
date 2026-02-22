@@ -3,6 +3,7 @@ import { initialFields } from '../data/fields'
 import { initialTasks } from '../data/tasks'
 import { initialEvents } from '../data/events'
 import { initialMachinery } from '../data/machinery'
+import { initialStaff } from '../data/staff'
 
 const AppContext = createContext(null)
 
@@ -11,6 +12,7 @@ const initialState = {
   tasks: initialTasks,
   customEvents: initialEvents,
   machinery: initialMachinery,
+  staff: initialStaff,
   toasts: [],
 }
 
@@ -83,6 +85,22 @@ function reducer(state, action) {
             : m
         ),
       }
+    case 'ADD_STAFF':
+      return { ...state, staff: [...state.staff, action.member] }
+    case 'UPDATE_STAFF':
+      return {
+        ...state,
+        staff: state.staff.map(s =>
+          s.id === action.id ? { ...s, ...action.updates } : s
+        ),
+      }
+    case 'ARCHIVE_STAFF':
+      return {
+        ...state,
+        staff: state.staff.map(s =>
+          s.id === action.id ? { ...s, status: 'Archived' } : s
+        ),
+      }
     case 'ADD_CUSTOM_EVENT':
       return { ...state, customEvents: [...state.customEvents, action.event] }
     case 'SHOW_TOAST':
@@ -133,6 +151,18 @@ export function AppProvider({ children }) {
     dispatch({ type: 'ADD_SERVICE_RECORD', equipmentId, record })
   }, [])
 
+  const addStaff = useCallback((member) => {
+    dispatch({ type: 'ADD_STAFF', member })
+  }, [])
+
+  const updateStaff = useCallback((id, updates) => {
+    dispatch({ type: 'UPDATE_STAFF', id, updates })
+  }, [])
+
+  const archiveStaff = useCallback((id) => {
+    dispatch({ type: 'ARCHIVE_STAFF', id })
+  }, [])
+
   const addCustomEvent = useCallback((event) => {
     dispatch({ type: 'ADD_CUSTOM_EVENT', event })
   }, [])
@@ -154,6 +184,9 @@ export function AppProvider({ children }) {
     addMachinery,
     updateMachinery,
     addServiceRecord,
+    addStaff,
+    updateStaff,
+    archiveStaff,
     addCustomEvent,
     showToast,
   }

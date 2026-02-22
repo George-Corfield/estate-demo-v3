@@ -5,6 +5,7 @@ import OverviewPage from './modules/overview/OverviewPage'
 import FieldsPage from './modules/fields/FieldsPage'
 import TasksPage from './modules/tasks/TasksPage'
 import MachineryPage from './modules/machinery/MachineryPage'
+import StaffPage from './modules/staff/StaffPage'
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
             <Route index element={<OverviewPage />} />
             <Route path="fields" element={<FieldsPage />} />
             <Route path="tasks" element={<TasksPage />} />
+            <Route path="staff" element={<StaffPage />} />
             <Route path="machinery" element={<MachineryPage />} />
           </Route>
         </Routes>

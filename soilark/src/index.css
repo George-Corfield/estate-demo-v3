@@ -216,6 +216,11 @@ body {
   color: var(--color-earth-500);
 }
 
+.badge-danger {
+  background: var(--color-ochre-500);
+  color: white;
+}
+
 /* Buttons */
 .btn {
   font-family: var(--font-body);

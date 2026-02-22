@@ -1,4 +1,5 @@
 # LandArk — Design System
+
 > Version 0.2 · February 2026
 
 ---
@@ -19,18 +20,23 @@ When a spec is ambiguous, the **Philosophy** section takes precedence. When a sp
 Five named principles that define every design decision. When in doubt, return here.
 
 ### 1.1 The Estate Office
+
 LandArk belongs in the hands of a land agent or farm manager — not a tech founder. The aesthetic reference is a well-equipped estate office: OS maps on the wall, a leather-bound field register, a solid oak desk. Digital, but rooted. Every screen should feel considered and purposeful, not slick or fashionable. When choosing between two valid design options, choose the one that feels more like a tool built for the land.
 
 ### 1.2 The Land Is Always the Reference Point
+
 The map is the heart of LandArk, not a feature within it. Even when a user is viewing a task list or a field record, they are viewing it in the context of where it sits on the land. The map persists wherever possible. Spatial context is never more than one interaction away. Design decisions that obscure or de-prioritise the map are wrong by default.
 
 ### 1.3 Earn Your Colour
+
 Colour in LandArk is not decoration — it carries meaning. The majority of the UI is parchment, ink, and earth tones. Sage green is reserved for active, healthy, and primary interactive states. Ochre is reserved for attention, overdue, and warning states. Introducing colour outside these roles dilutes the signal. A screen that uses colour sparingly communicates more than one that uses it freely.
 
 ### 1.4 Data First, Chrome Second
+
 LandArk users are reading information between jobs. The interface exists to surface data clearly and quickly — not to express personality through UI decoration. Hierarchy must be immediately obvious. Key numbers must be readable at a glance. Avoid any element that adds visual weight without adding informational value.
 
 ### 1.5 Precision Without Coldness
+
 LandArk is structured and consistent, but not clinical. Warm parchment backgrounds, earthy supporting tones, and weighted sans-serif headings provide the warmth. Monospace labels and tight data formatting provide the precision. The balance between these two registers — warm surfaces, precise data — is the character of the app.
 
 ---
@@ -39,25 +45,25 @@ LandArk is structured and consistent, but not clinical. Warm parchment backgroun
 
 ### 2.1 Palette
 
-| Token | Hex | Usage |
-|---|---|---|
-| `parchment-50` | `#FAF7F2` | Primary page background |
-| `parchment-100` | `#F2EDE3` | Secondary surfaces — cards, panels, sidebar content |
-| `parchment-200` | `#E5DDD0` | Table header backgrounds, hover states on rows |
-| `parchment-300` | `#D4C9B8` | Component borders, input outlines, dividers |
-| `sage-300` | `#96B882` | Active nav icon colour in sidebar, tinted hover backgrounds |
-| `sage-400` | `#74A45A` | Secondary interactive elements, icon fills |
-| `sage-500` | `#4E8C35` | **Primary action** — buttons, active nav indicator, links, healthy status |
-| `sage-600` | `#3A6E24` | Stat/data numbers, sage text on light backgrounds |
-| `sage-700` | `#264A16` | Dark sage text, high-contrast sage on parchment |
-| `ochre-300` | `#E8B84B` | Tinted warning backgrounds, harvest/seasonal indicators |
-| `ochre-400` | `#D49A20` | **Secondary accent** — overdue tasks, attention states, warnings |
-| `ochre-500` | `#B87D0A` | Ochre text on light backgrounds |
-| `earth-400` | `#9C7355` | Metadata labels, secondary UI text, column headers |
-| `earth-500` | `#7A5540` | Secondary body text, card meta, placeholder text |
-| `earth-600` | `#543A28` | Strong supporting text |
-| `ink-800` | `#1E2218` | Sidebar background, dark surfaces |
-| `ink-900` | `#141810` | Primary headings, primary body text |
+| Token           | Hex       | Usage                                                                     |
+| --------------- | --------- | ------------------------------------------------------------------------- |
+| `parchment-50`  | `#FAF7F2` | Primary page background                                                   |
+| `parchment-100` | `#F2EDE3` | Secondary surfaces — cards, panels, sidebar content                       |
+| `parchment-200` | `#E5DDD0` | Table header backgrounds, hover states on rows                            |
+| `parchment-300` | `#D4C9B8` | Component borders, input outlines, dividers                               |
+| `sage-300`      | `#96B882` | Active nav icon colour in sidebar, tinted hover backgrounds               |
+| `sage-400`      | `#74A45A` | Secondary interactive elements, icon fills                                |
+| `sage-500`      | `#4E8C35` | **Primary action** — buttons, active nav indicator, links, healthy status |
+| `sage-600`      | `#3A6E24` | Stat/data numbers, sage text on light backgrounds                         |
+| `sage-700`      | `#264A16` | Dark sage text, high-contrast sage on parchment                           |
+| `ochre-300`     | `#E8B84B` | Tinted warning backgrounds, harvest/seasonal indicators                   |
+| `ochre-400`     | `#D49A20` | **Secondary accent** — overdue tasks, attention states, warnings          |
+| `ochre-500`     | `#B87D0A` | Ochre text on light backgrounds                                           |
+| `earth-400`     | `#9C7355` | Metadata labels, secondary UI text, column headers                        |
+| `earth-500`     | `#7A5540` | Secondary body text, card meta, placeholder text                          |
+| `earth-600`     | `#543A28` | Strong supporting text                                                    |
+| `ink-800`       | `#1E2218` | Sidebar background, dark surfaces                                         |
+| `ink-900`       | `#141810` | Primary headings, primary body text                                       |
 
 ### 2.2 Colour Usage Rules
 
@@ -70,15 +76,15 @@ LandArk is structured and consistent, but not clinical. Warm parchment backgroun
 
 ### 2.3 Semantic Colour Mapping
 
-| State | Colour Token | Usage |
-|---|---|---|
-| Healthy / Established | `sage-500` | Field established, task complete, machinery serviced |
-| Attention / Overdue | `ochre-400` | Task overdue, service due, spray due |
-| Scheduled / Neutral | `parchment-300` + `earth-500` text | Planned but not yet active |
-| Active / Selected | `sage-500` border + `sage-300` bg tint | Selected item in panel or map |
-| Primary action | `sage-500` | Buttons, active nav |
-| Data values | `sage-600` | Key stat numbers |
-| Warning data | `ochre-400` | Stat numbers requiring attention |
+| State                 | Colour Token                           | Usage                                                |
+| --------------------- | -------------------------------------- | ---------------------------------------------------- |
+| Healthy / Established | `sage-500`                             | Field established, task complete, machinery serviced |
+| Attention / Overdue   | `ochre-400`                            | Task overdue, service due, spray due                 |
+| Scheduled / Neutral   | `parchment-300` + `earth-500` text     | Planned but not yet active                           |
+| Active / Selected     | `sage-500` border + `sage-300` bg tint | Selected item in panel or map                        |
+| Primary action        | `sage-500`                             | Buttons, active nav                                  |
+| Data values           | `sage-600`                             | Key stat numbers                                     |
+| Warning data          | `ochre-400`                            | Stat numbers requiring attention                     |
 
 ---
 
@@ -86,40 +92,42 @@ LandArk is structured and consistent, but not clinical. Warm parchment backgroun
 
 ### 3.1 Typefaces
 
-| Role | Family | Rationale |
-|---|---|---|
-| **Display / Headings** | Lato | Readable at a glance, even stroke weights, warm but not ornate. Weight-based hierarchy (700/900) rather than style contrast. |
-| **Body / UI text** | DM Sans | Clean, legible at 12–13px, slightly warmer than Inter. Handles all prose, labels, and interface copy below heading level. |
-| **Monospace** | JetBrains Mono | Reserved for structured data, measurements, grid references, dates, and column headers. Brings OS Maps-style technical precision to data. |
+| Role                   | Family         | Rationale                                                                                                                                 |
+| ---------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Display / Headings** | Lato           | Readable at a glance, even stroke weights, warm but not ornate. Weight-based hierarchy (700/900) rather than style contrast.              |
+| **Body / UI text**     | DM Sans        | Clean, legible at 12–13px, slightly warmer than Inter. Handles all prose, labels, and interface copy below heading level.                 |
+| **Monospace**          | JetBrains Mono | Reserved for structured data, measurements, grid references, dates, and column headers. Brings OS Maps-style technical precision to data. |
 
 Google Fonts import string:
+
 ```
 https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap
 ```
 
 CSS variables:
+
 ```css
---font-display: 'Lato', system-ui, sans-serif;
---font-body:    'DM Sans', system-ui, sans-serif;
---font-mono:    'JetBrains Mono', monospace;
+--font-display: "Lato", system-ui, sans-serif;
+--font-body: "DM Sans", system-ui, sans-serif;
+--font-mono: "JetBrains Mono", monospace;
 ```
 
 ### 3.2 Type Scale
 
-| Token | Family | Size | Weight | Line Height | Letter Spacing | Usage |
-|---|---|---|---|---|---|---|
-| `display` | Lato | 36px | 900 | 1.1 | -0.02em | Page-level hero stats, estate name |
-| `heading-1` | Lato | 28px | 700 | 1.15 | -0.02em | Page titles |
-| `heading-2` | Lato | 22px | 700 | 1.2 | -0.01em | Section headings |
-| `heading-3` | Lato | 18px | 700 | 1.3 | 0 | Sub-section headings, modal titles |
-| `heading-4` | Lato | 15px | 700 | 1.4 | 0 | Card titles, panel headings |
-| `body-large` | DM Sans | 15px | 400 | 1.6 | 0 | Introductory or featured body copy |
-| `body` | DM Sans | 13px | 400 | 1.6 | 0 | Standard body text, descriptions |
-| `body-small` | DM Sans | 12px | 300 | 1.5 | 0 | Secondary metadata, timestamps |
-| `label` | JetBrains Mono | 10px | 500 | 1.4 | 0.08em | Column headers, section labels — always uppercase |
-| `label-small` | JetBrains Mono | 9px | 400 | 1.4 | 0.1em | Badge text, tag text — always uppercase |
-| `data` | JetBrains Mono | 13px | 400 | 1.4 | 0 | Inline data values — hectares, hours, prices, coordinates |
-| `data-large` | Lato | 36px | 900 | 1.0 | -0.02em | Hero stat numbers — uses `sage-600` colour |
+| Token         | Family         | Size | Weight | Line Height | Letter Spacing | Usage                                                     |
+| ------------- | -------------- | ---- | ------ | ----------- | -------------- | --------------------------------------------------------- |
+| `display`     | Lato           | 36px | 900    | 1.1         | -0.02em        | Page-level hero stats, estate name                        |
+| `heading-1`   | Lato           | 28px | 700    | 1.15        | -0.02em        | Page titles                                               |
+| `heading-2`   | Lato           | 22px | 700    | 1.2         | -0.01em        | Section headings                                          |
+| `heading-3`   | Lato           | 18px | 700    | 1.3         | 0              | Sub-section headings, modal titles                        |
+| `heading-4`   | Lato           | 15px | 700    | 1.4         | 0              | Card titles, panel headings                               |
+| `body-large`  | DM Sans        | 15px | 400    | 1.6         | 0              | Introductory or featured body copy                        |
+| `body`        | DM Sans        | 13px | 400    | 1.6         | 0              | Standard body text, descriptions                          |
+| `body-small`  | DM Sans        | 12px | 300    | 1.5         | 0              | Secondary metadata, timestamps                            |
+| `label`       | JetBrains Mono | 10px | 500    | 1.4         | 0.08em         | Column headers, section labels — always uppercase         |
+| `label-small` | JetBrains Mono | 9px  | 400    | 1.4         | 0.1em          | Badge text, tag text — always uppercase                   |
+| `data`        | JetBrains Mono | 13px | 400    | 1.4         | 0              | Inline data values — hectares, hours, prices, coordinates |
+| `data-large`  | Lato           | 36px | 900    | 1.0         | -0.02em        | Hero stat numbers — uses`sage-600` colour                 |
 
 ### 3.3 Weight & Style Rules
 
@@ -138,31 +146,31 @@ CSS variables:
 
 Base unit: **4px**. All spacing values are multiples of this unit.
 
-| Token | Value | Usage |
-|---|---|---|
-| `space-1` | 4px | Icon padding, tight internal gaps |
-| `space-2` | 8px | Nav item padding, badge padding |
-| `space-3` | 12px | Card internal gaps, nav section padding |
-| `space-4` | 16px | Standard gap between related elements |
-| `space-5` | 20px | Card padding (internal) |
-| `space-6` | 24px | Gap between cards, section sub-spacing |
-| `space-8` | 32px | Gap between major content sections |
-| `space-10` | 40px | Page section separation |
-| `space-12` | 48px | Page-level padding, top/bottom of content areas |
+| Token      | Value | Usage                                           |
+| ---------- | ----- | ----------------------------------------------- |
+| `space-1`  | 4px   | Icon padding, tight internal gaps               |
+| `space-2`  | 8px   | Nav item padding, badge padding                 |
+| `space-3`  | 12px  | Card internal gaps, nav section padding         |
+| `space-4`  | 16px  | Standard gap between related elements           |
+| `space-5`  | 20px  | Card padding (internal)                         |
+| `space-6`  | 24px  | Gap between cards, section sub-spacing          |
+| `space-8`  | 32px  | Gap between major content sections              |
+| `space-10` | 40px  | Page section separation                         |
+| `space-12` | 48px  | Page-level padding, top/bottom of content areas |
 
 ### 4.2 Layout Tokens
 
 ```css
---sidebar-collapsed:   56px;
---sidebar-expanded:    232px;
---sidebar-transition:  200ms ease;
---topbar-height:       48px;
---panel-width:         35%;
---map-width:           65%;
---content-padding:     32px;
---border-radius-sm:    4px;
---border-radius-md:    6px;
---border-radius-lg:    8px;
+--sidebar-collapsed: 56px;
+--sidebar-expanded: 232px;
+--sidebar-transition: 200ms ease;
+--topbar-height: 48px;
+--panel-width: 35%;
+--map-width: 65%;
+--content-padding: 32px;
+--border-radius-sm: 4px;
+--border-radius-md: 6px;
+--border-radius-lg: 8px;
 ```
 
 ### 4.3 Page Chrome
@@ -182,6 +190,7 @@ In all three modes, the collapsed sidebar (56px) is a permanent fixture on the l
 ---
 
 #### Mode 1 — Full Map (Default)
+
 The map occupies the entire content area to the right of the sidebar. No panel. This is the home/overview state.
 
 ```
@@ -200,6 +209,7 @@ Used by: Overview / home screen.
 ---
 
 #### Mode 2 — Split View (Map + Panel)
+
 A panel occupies 35% of the content area (measured from the right edge of the sidebar) from the left. The map occupies the remaining 65%. The panel slides in smoothly — the map squeezes into its remaining space rather than being covered. Transition is 200ms ease.
 
 When an item is selected in the panel, the map responds: the relevant field or asset is highlighted and the map flies to centre it.
@@ -220,6 +230,7 @@ Used by: Fields, Tasks, Machinery, Inputs, Calendar.
 > **Note on Calendar:** A full-width calendar would be a more conventional layout, but the Mode 2 split view (calendar panel + map) has been validated with stakeholders and is the confirmed approach for v1. Revisit if the calendar view is substantially redesigned in a future version.
 
 Panel behaviour:
+
 - Panel is independently scrollable
 - Panel header is sticky within the panel
 - Selecting a panel item highlights the corresponding map feature and flies the map to it
@@ -229,6 +240,7 @@ Panel behaviour:
 ---
 
 #### Mode 3 — Full Content (No Map)
+
 The map is replaced entirely by a standard content view to the right of the sidebar. Used for screens with no meaningful spatial relationship to the land. Transition from map modes uses a brief fade (150ms) rather than a slide, to signal a change in context.
 
 ```
@@ -243,6 +255,21 @@ The map is replaced entirely by a standard content view to the right of the side
 ```
 
 Used by: Finance, Documents, Settings.
+
+#### Mode 4 - Split Full Context (No Map)
+
+Extension of Mode 3. Used for screens in Mode 3 where some extra detail has to be displayed about a listed item with no meaningful spatial relationship to the land. Transition from Mode 3 uses a slide to signal extra detail.
+
+```
+┌──────┬─────────────────────────────────────────┐
+│      │ Topbar                                   │
+│ NAV  ├──────────────────────────────────────────┤
+│      │                          |               │
+│ 56px │    PAGE CONTENT VIEW                   │               |
+│      │                          │               |
+│      │                          |               │
+└──────┴──────────────────────────────────────────┘
+```
 
 ### 4.5 Hybrid Mode Screens
 
@@ -269,16 +296,17 @@ LandArk uses **medium density**. Specific values:
 ## 5. Elevation & Depth
 
 ### 5.1 Principles
+
 LandArk is predominantly flat. Depth is communicated through border definition and background tone contrast, not drop shadows. Shadows are used sparingly and only for elements that genuinely float above the content (modals, dropdowns, tooltips).
 
 ### 5.2 Shadow Scale
 
-| Token | Value | Usage |
-|---|---|---|
-| `shadow-none` | none | Cards, panels, all flat surfaces |
-| `shadow-sm` | `0 1px 3px rgba(0,0,0,0.08)` | Subtle lift — top bar, sticky elements |
-| `shadow-md` | `0 4px 12px rgba(0,0,0,0.10)` | Dropdowns, floating panels |
-| `shadow-lg` | `0 8px 32px rgba(0,0,0,0.14)` | Modals only |
+| Token         | Value                         | Usage                                  |
+| ------------- | ----------------------------- | -------------------------------------- |
+| `shadow-none` | none                          | Cards, panels, all flat surfaces       |
+| `shadow-sm`   | `0 1px 3px rgba(0,0,0,0.08)`  | Subtle lift — top bar, sticky elements |
+| `shadow-md`   | `0 4px 12px rgba(0,0,0,0.10)` | Dropdowns, floating panels             |
+| `shadow-lg`   | `0 8px 32px rgba(0,0,0,0.14)` | Modals only                            |
 
 ### 5.3 Border Rules
 
@@ -304,6 +332,7 @@ Each contract defines the exact visual anatomy of a component. When generating c
 **Expanded (hover):** 232px wide. Brand name appears in Lato 700 `parchment-100`. Section labels in JetBrains Mono 8px uppercase `rgba(255,255,255,0.2)`. Nav labels in DM Sans 13px.
 
 **Nav item states:**
+
 - Default: icon `rgba(255,255,255,0.4)`, label `rgba(255,255,255,0.45)`, no background
 - Hover: icon `rgba(255,255,255,0.65)`, label `rgba(255,255,255,0.65)`, background `rgba(255,255,255,0.05)`
 - Active: 2px left border `sage-500`, background `rgba(78,140,53,0.15)`, icon `sage-300`, label `rgba(255,255,255,0.85)`
@@ -333,6 +362,7 @@ Background: `parchment-100`. Border: `1px solid parchment-300`. Border radius: 6
 **Accent stripe:** 3px left border signals status. `sage-500` for healthy/active. `ochre-400` for attention required. No stripe for neutral/scheduled.
 
 **Anatomy (top to bottom):**
+
 1. Category label — JetBrains Mono 9px uppercase `earth-400`
 2. Title — Lato 700 14–15px `ink-900`
 3. Meta — DM Sans 12px 300 weight `earth-500`
@@ -358,12 +388,12 @@ Container: `parchment-100` background, `1px solid parchment-300` border, 6px bor
 
 ### 6.5 Button
 
-| Variant | Background | Text | Border | Usage |
-|---|---|---|---|---|
-| Primary | `sage-500` | white | none | One per view, main action |
-| Secondary | transparent | `earth-500` | `1px solid parchment-300` | Supporting actions |
-| Ghost | transparent | `sage-500` | none | Inline links, tertiary actions |
-| Destructive | transparent | `ochre-500` | `1px solid ochre-300` | Delete, remove |
+| Variant     | Background  | Text        | Border                    | Usage                          |
+| ----------- | ----------- | ----------- | ------------------------- | ------------------------------ |
+| Primary     | `sage-500`  | white       | none                      | One per view, main action      |
+| Secondary   | transparent | `earth-500` | `1px solid parchment-300` | Supporting actions             |
+| Ghost       | transparent | `sage-500`  | none                      | Inline links, tertiary actions |
+| Destructive | transparent | `ochre-500` | `1px solid ochre-300`     | Delete, remove                 |
 
 All buttons: DM Sans 13px 400 weight. Padding: 9px vertical, 18px horizontal. Border radius: 4px. No uppercase. No shadow. Disabled: 40% opacity.
 
@@ -373,10 +403,10 @@ All buttons: DM Sans 13px 400 weight. Padding: 9px vertical, 18px horizontal. Bo
 
 Font: JetBrains Mono 9px 500 weight uppercase. Padding: 2px vertical, 7px horizontal. Border radius: 3px. Always solid filled — never outline only.
 
-| State | Background | Text |
-|---|---|---|
-| Healthy / Complete | `sage-500` | white |
-| Overdue / Warning | `ochre-400` | white |
+| State               | Background      | Text        |
+| ------------------- | --------------- | ----------- |
+| Healthy / Complete  | `sage-500`      | white       |
+| Overdue / Warning   | `ochre-400`     | white       |
 | Scheduled / Neutral | `parchment-300` | `earth-500` |
 
 ---
@@ -449,8 +479,6 @@ For complex creation flows that cannot fit within the panel (e.g. adding a new f
 
 **Toasts and alerts:** Feedback messages (success, error, info) are delivered as toast notifications anchored to the bottom-right of the content area. They are non-blocking, auto-dismiss after 4 seconds, and never require user interaction to proceed.
 
-
-
 ---
 
 ### 6.11 Empty States
@@ -464,19 +492,20 @@ Copy tone: practical and direct. Never whimsical.
 ## 7. Motion & Interaction
 
 ### 7.1 Principles
+
 Motion is purposeful and minimal. Every transition communicates a state change. No decorative animation.
 
 ### 7.2 Timing & Easing
 
-| Token | Value | Usage |
-|---|---|---|
-| `duration-fast` | 120ms | Hover states, colour changes |
-| `duration-base` | 200ms | Sidebar expand, panel slide, layout transitions |
-| `duration-slow` | 300ms | Modal enter/exit, map fly-to |
-| `duration-fade` | 150ms | Mode 3 content fade |
-| `easing-standard` | `ease` | All layout transitions |
-| `easing-enter` | `ease-out` | Elements entering |
-| `easing-exit` | `ease-in` | Elements leaving |
+| Token             | Value      | Usage                                           |
+| ----------------- | ---------- | ----------------------------------------------- |
+| `duration-fast`   | 120ms      | Hover states, colour changes                    |
+| `duration-base`   | 200ms      | Sidebar expand, panel slide, layout transitions |
+| `duration-slow`   | 300ms      | Modal enter/exit, map fly-to                    |
+| `duration-fade`   | 150ms      | Mode 3 content fade                             |
+| `easing-standard` | `ease`     | All layout transitions                          |
+| `easing-enter`    | `ease-out` | Elements entering                               |
+| `easing-exit`     | `ease-in`  | Elements leaving                                |
 
 ### 7.3 Interaction Patterns
 
@@ -493,6 +522,7 @@ Motion is purposeful and minimal. Every transition communicates a state change. 
 ## 8. Iconography
 
 ### 8.1 Icon Set
+
 **Material Symbols Outlined** — weight 300, optical size 20px. Only icon set used in LandArk.
 
 Import: `Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0`
@@ -514,6 +544,7 @@ Standard size: 20px. Inline with text: 16px. Maximum: 24px.
 Hard constraints. Non-negotiable.
 
 ### LandArk never:
+
 - Uses pure white (`#FFFFFF`) or pure black (`#000000`)
 - Uses Inter, Roboto, Arial, or system-ui as a visible typeface
 - Uses purple, blue, teal, pink, or red anywhere in the UI
@@ -530,6 +561,7 @@ Hard constraints. Non-negotiable.
 - Uses modals or full-screen overlays — all interactions use inline expansion, panel content replacement, inline confirmation, or (exceptionally) a side drawer
 
 ### LandArk always:
+
 - Uses `parchment-50` or `parchment-100` as surface backgrounds
 - Uses Lato 700 or 900 for all headings
 - Uses DM Sans for all body and UI copy
@@ -546,8 +578,8 @@ Hard constraints. Non-negotiable.
 
 ## 10. Changelog
 
-| Version | Date | Notes |
-|---|---|---|
-| 0.1 | Feb 2026 | Skeleton created |
-| 0.2 | Feb 2026 | Full document — colour, typography, spacing, layout modes, component contracts, motion, iconography |
-| 0.3 | Feb 2026 | Layout mode diagrams corrected to include persistent sidebar. Modal contract removed and replaced with no-modal principle and four interaction patterns. Do/Don't updated accordingly. |
+| Version | Date     | Notes                                                                                                                                                                                  |
+| ------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.1     | Feb 2026 | Skeleton created                                                                                                                                                                       |
+| 0.2     | Feb 2026 | Full document — colour, typography, spacing, layout modes, component contracts, motion, iconography                                                                                    |
+| 0.3     | Feb 2026 | Layout mode diagrams corrected to include persistent sidebar. Modal contract removed and replaced with no-modal principle and four interaction patterns. Do/Don't updated accordingly. |
