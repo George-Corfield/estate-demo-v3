@@ -25,7 +25,7 @@ function ProfileCircle({ name, initials, size = 36 }) {
       width: size,
       height: size,
       borderRadius: '50%',
-      background: 'var(--color-sage-600)',
+      background: 'var(--color-green-600)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -81,7 +81,7 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
       <div style={{ padding: 'var(--content-padding)' }} className="flex flex-col gap-5 flex-1 overflow-y-auto custom-scrollbar">
         {/* Page Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-heading-2" style={{ color: 'var(--color-ink-900)', margin: 0 }}>Staff</h1>
+          <h1 className="text-heading-2" style={{ color: 'var(--color-slate-900)', margin: 0 }}>Staff</h1>
           <button onClick={() => setShowInlineCreate(true)} className="btn btn-primary">
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
             Add Staff Member
@@ -92,16 +92,16 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
         {!compressed && (
           <div className="grid grid-cols-3 gap-4">
             <div className="stat-card">
-              <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Total Staff</p>
-              <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{totalStaff}</p>
+              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Total Staff</p>
+              <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{totalStaff}</p>
             </div>
             <div className="stat-card">
-              <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>On Site</p>
-              <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{onSite}</p>
+              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>On Site</p>
+              <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{onSite}</p>
             </div>
             <div className="stat-card">
-              <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Off Site</p>
-              <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{offSite}</p>
+              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Off Site</p>
+              <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{offSite}</p>
             </div>
           </div>
         )}
@@ -155,9 +155,9 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
                 style={{
                   cursor: 'pointer',
                   transition: 'all var(--duration-fast) ease',
-                  background: isSelected ? 'var(--color-parchment-200)' : undefined,
+                  background: isSelected ? 'var(--color-surface-200)' : undefined,
                 }}
-                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--color-parchment-200)' }}
+                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--color-surface-200)' }}
                 onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = '' }}
               >
                 <div className="flex items-start gap-4">
@@ -165,8 +165,8 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-heading-3" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{member.name}</p>
-                        <p className="text-body-large" style={{ color: 'var(--color-earth-500)', margin: 0 }}>
+                        <p className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{member.name}</p>
+                        <p className="text-body-large" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
                           {member.role}{member.team ? ` · ${member.team}` : ''}
                         </p>
                       </div>
@@ -174,8 +174,8 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
                     </div>
                     {!compressed && (
                       <div className="flex items-center gap-2 mt-1">
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-earth-400)' }}>Permission</span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-ink-900)' }}>{member.permissionLevel}</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-400)' }}>Permission</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-900)' }}>{member.permissionLevel}</span>
                       </div>
                     )}
                   </div>
@@ -186,14 +186,14 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
         </div>
 
         {filtered.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-earth-400)' }}>
+          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-slate-400)' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 36, marginBottom: 8, display: 'block' }}>person_off</span>
             <p className="text-body">No staff members found</p>
           </div>
         )}
 
         {filtered.length > 0 && (
-          <p className="text-body-small" style={{ color: 'var(--color-earth-400)' }}>
+          <p className="text-body-small" style={{ color: 'var(--color-slate-400)' }}>
             Showing {filtered.length} of {activeStaff.length} staff members
           </p>
         )}

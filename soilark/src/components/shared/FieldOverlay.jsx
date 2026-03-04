@@ -5,12 +5,12 @@ export default function FieldOverlay({ field, isHighlighted, isWhiteHighlighted,
   const pos = field.mapPosition
   const active = isHighlighted || isSelected || isWhiteHighlighted
 
-  // Design system: selected = sage-500 30% fill + 2px stroke, attention = ochre-400
+  // Design system: selected = green-500 30% fill + 2px stroke, attention = amber-400
   const bgColor = isWhiteHighlighted ? 'rgba(255,255,255,0.45)'
     : isSelected ? 'rgba(78,140,53,0.3)'
     : active ? `${colors.bg}40` : `${colors.bg}18`
   const borderColor = isWhiteHighlighted ? 'rgba(255,255,255,0.9)'
-    : isSelected ? 'var(--color-sage-500)'
+    : isSelected ? 'var(--color-green-500)'
     : active ? colors.border : `${colors.border}80`
 
   return (
@@ -58,7 +58,7 @@ export default function FieldOverlay({ field, isHighlighted, isWhiteHighlighted,
       {isSelected && (
         <span
           className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center"
-          style={{ background: 'var(--color-sage-500)' }}
+          style={{ background: 'var(--color-green-500)' }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'white' }}>check</span>
         </span>

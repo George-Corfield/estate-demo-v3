@@ -23,7 +23,7 @@ export default function FieldDetailView({ fieldId, onBack }) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div style={{ padding: 16, borderBottom: '1px solid var(--color-parchment-300)' }}>
+      <div style={{ padding: 16, borderBottom: '1px solid var(--color-surface-300)' }}>
         <button
           onClick={onBack}
           className="btn btn-ghost flex items-center gap-1 mb-3"
@@ -38,8 +38,8 @@ export default function FieldDetailView({ fieldId, onBack }) {
             style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: colors?.border }}
           />
           <div>
-            <h2 className="text-heading-3" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{field.name}</h2>
-            <p className="text-body-small" style={{ color: 'var(--color-earth-500)' }}>{field.category} · {field.sizeHectares} ha</p>
+            <h2 className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{field.name}</h2>
+            <p className="text-body-small" style={{ color: 'var(--color-slate-500)' }}>{field.category} · {field.sizeHectares} ha</p>
           </div>
         </div>
       </div>

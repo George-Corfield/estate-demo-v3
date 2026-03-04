@@ -11,7 +11,7 @@ export default function EstateMap({
   const { fields } = useApp()
 
   return (
-    <div className="relative w-full h-full overflow-hidden" style={{ background: 'var(--color-ink-800)' }}>
+    <div className="relative w-full h-full overflow-hidden" style={{ background: 'var(--color-deep-950)' }}>
       {/* Map background */}
       <img
         src="/map-aerial.jpg"
@@ -42,27 +42,27 @@ export default function EstateMap({
         <div
           className="flex flex-col overflow-hidden"
           style={{
-            background: 'var(--color-parchment-50)',
-            border: '1px solid var(--color-parchment-300)',
+            background: 'var(--color-surface-50)',
+            border: '1px solid var(--color-surface-300)',
             borderRadius: 'var(--radius-sm)',
           }}
         >
-          <button className="p-2.5" style={{ borderBottom: '1px solid var(--color-parchment-300)' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-500)' }}>add</span>
+          <button className="p-2.5" style={{ borderBottom: '1px solid var(--color-surface-300)' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-slate-500)' }}>add</span>
           </button>
           <button className="p-2.5">
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-500)' }}>remove</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-slate-500)' }}>remove</span>
           </button>
         </div>
         <button
           className="p-2.5"
           style={{
-            background: 'var(--color-parchment-50)',
-            border: '1px solid var(--color-parchment-300)',
+            background: 'var(--color-surface-50)',
+            border: '1px solid var(--color-surface-300)',
             borderRadius: 'var(--radius-sm)',
           }}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-500)' }}>my_location</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-slate-500)' }}>my_location</span>
         </button>
       </div>
     </div>

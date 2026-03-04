@@ -5,10 +5,10 @@ export default function TaskFilterBar({ filters, onChange, onAddTask }) {
   const { fields } = useApp()
 
   return (
-    <div style={{ padding: 16, borderBottom: '1px solid var(--color-parchment-300)' }} className="flex flex-col gap-3">
+    <div style={{ padding: 16, borderBottom: '1px solid var(--color-surface-300)' }} className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-heading-3 flex items-center gap-2" style={{ color: 'var(--color-ink-900)', margin: 0 }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-sage-500)' }}>assignment</span>
+        <h2 className="text-heading-3 flex items-center gap-2" style={{ color: 'var(--color-slate-900)', margin: 0 }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-green-500)' }}>assignment</span>
           Tasks
         </h2>
         <button onClick={onAddTask} className="btn btn-primary">

@@ -56,7 +56,7 @@ export default function MachineryPage() {
                 <button
                   onClick={() => setRightView('calendar')}
                   className="btn btn-secondary flex items-center gap-2"
-                  style={{ background: 'var(--color-parchment-50)' }}
+                  style={{ background: 'var(--color-surface-50)' }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: 18 }}>calendar_month</span>
                   Calendar
@@ -73,7 +73,7 @@ export default function MachineryPage() {
 
   // Mode 3: full-width list
   return (
-    <div className="flex-1 min-w-0 flex flex-col overflow-hidden h-full" style={{ background: 'var(--color-parchment-50)' }}>
+    <div className="flex-1 min-w-0 flex flex-col overflow-hidden h-full" style={{ background: 'var(--color-surface-50)' }}>
       <MachineryListView
         onEquipmentClick={handleEquipmentClick}
         showInlineCreate={showInlineCreate}

@@ -30,7 +30,7 @@ export default function StaffPage() {
   if (selectedStaffId) {
     return (
       <div className="flex h-full">
-        <div style={{ width: '65%', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--color-parchment-50)' }}>
+        <div style={{ width: '65%', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--color-surface-50)' }}>
           <StaffListView
             onStaffClick={handleStaffClick}
             showInlineCreate={showInlineCreate}
@@ -39,7 +39,7 @@ export default function StaffPage() {
             selectedStaffId={selectedStaffId}
           />
         </div>
-        <div style={{ width: '35%', borderLeft: '1px solid var(--color-parchment-300)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ width: '35%', borderLeft: '1px solid var(--color-surface-300)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <StaffDetailView
             staffId={selectedStaffId}
             onClose={handleBack}
@@ -51,7 +51,7 @@ export default function StaffPage() {
 
   // Mode 3: full-width list
   return (
-    <div className="flex-1 min-w-0 flex flex-col overflow-hidden h-full" style={{ background: 'var(--color-parchment-50)' }}>
+    <div className="flex-1 min-w-0 flex flex-col overflow-hidden h-full" style={{ background: 'var(--color-surface-50)' }}>
       <StaffListView
         onStaffClick={handleStaffClick}
         showInlineCreate={showInlineCreate}

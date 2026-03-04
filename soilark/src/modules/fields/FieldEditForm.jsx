@@ -33,7 +33,7 @@ export default function FieldEditForm({ field, onCancel, onSave }) {
 
   return (
     <form onSubmit={handleSubmit} style={{ padding: 20 }} className="flex flex-col gap-4">
-      <h3 className="text-label" style={{ color: 'var(--color-earth-400)' }}>Edit Field</h3>
+      <h3 className="text-label" style={{ color: 'var(--color-slate-400)' }}>Edit Field</h3>
 
       <FormField label="Field Name">
         <input type="text" value={form.name} onChange={e => update('name', e.target.value)} required className="form-input" />

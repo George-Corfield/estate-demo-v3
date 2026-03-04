@@ -52,16 +52,16 @@ export default function NewEventPanel({ selectedDate, events, onDateSelect, onCl
   }
 
   return (
-    <aside style={{ width: 320, background: 'var(--color-parchment-50)', borderLeft: '1px solid var(--color-parchment-300)', display: 'flex', flexDirection: 'column', flexShrink: 0, height: '100%' }}>
+    <aside style={{ width: 320, background: 'var(--color-surface-50)', borderLeft: '1px solid var(--color-surface-300)', display: 'flex', flexDirection: 'column', flexShrink: 0, height: '100%' }}>
       {/* Header */}
-      <div style={{ padding: '24px 24px 16px', borderBottom: '1px solid var(--color-parchment-300)' }}>
+      <div style={{ padding: '24px 24px 16px', borderBottom: '1px solid var(--color-surface-300)' }}>
         <div className="flex items-center justify-between" style={{ marginBottom: 4 }}>
-          <h3 className="text-heading-3" style={{ color: 'var(--color-ink-900)', margin: 0 }}>Add New Event</h3>
+          <h3 className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>Add New Event</h3>
           <button onClick={onClose} className="btn btn-ghost" style={{ padding: 4 }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-400)' }}>close</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-slate-400)' }}>close</span>
           </button>
         </div>
-        <p className="text-body-small" style={{ color: 'var(--color-earth-400)' }}>Select a date on the calendar or enter it below</p>
+        <p className="text-body-small" style={{ color: 'var(--color-slate-400)' }}>Select a date on the calendar or enter it below</p>
       </div>
 
       {/* Form */}
@@ -134,23 +134,23 @@ export default function NewEventPanel({ selectedDate, events, onDateSelect, onCl
         {/* Agenda for selected date */}
         {selectedDate && (
           <div style={{ padding: '0 24px 24px' }}>
-            <div style={{ borderTop: '1px solid var(--color-parchment-300)', paddingTop: 20 }}>
-              <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 16 }}>
+            <div style={{ borderTop: '1px solid var(--color-surface-300)', paddingTop: 20 }}>
+              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 16 }}>
                 Agenda for {formatAgendaDate(selectedDate)}
               </p>
               {dayEvents.length === 0 ? (
-                <p className="text-body-small" style={{ color: 'var(--color-earth-400)', textAlign: 'center', padding: '16px 0' }}>No events on this day</p>
+                <p className="text-body-small" style={{ color: 'var(--color-slate-400)', textAlign: 'center', padding: '16px 0' }}>No events on this day</p>
               ) : (
                 <div className="flex flex-col gap-3">
                   {dayEvents.map(event => {
-                    const dotColor = EVENT_TYPE_COLORS[event.type] || 'var(--color-sage-500)'
+                    const dotColor = EVENT_TYPE_COLORS[event.type] || 'var(--color-green-500)'
                     return (
                       <div key={event.id} className="flex items-start gap-3 card" style={{ padding: 12 }}>
                         <div style={{ width: 6, alignSelf: 'stretch', borderRadius: 3, backgroundColor: dotColor, flexShrink: 0 }} />
                         <div style={{ minWidth: 0 }}>
-                          <h4 className="text-heading-4" style={{ color: 'var(--color-ink-900)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.title}</h4>
-                          {event.time && <p className="text-body-small" style={{ color: 'var(--color-earth-400)' }}>{event.time}</p>}
-                          {event.fieldName && <p className="text-body-small" style={{ color: 'var(--color-earth-500)' }}>{event.fieldName}</p>}
+                          <h4 className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.title}</h4>
+                          {event.time && <p className="text-body-small" style={{ color: 'var(--color-slate-400)' }}>{event.time}</p>}
+                          {event.fieldName && <p className="text-body-small" style={{ color: 'var(--color-slate-500)' }}>{event.fieldName}</p>}
                         </div>
                       </div>
                     )

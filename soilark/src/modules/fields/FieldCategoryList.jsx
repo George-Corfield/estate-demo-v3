@@ -61,14 +61,14 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
       {/* Header */}
       <div className="split-panel-header" style={{ height: 'auto', padding: 20, flexDirection: 'column', alignItems: 'stretch' }}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-heading-3 flex items-center gap-2" style={{ color: 'var(--color-ink-900)', margin: 0 }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-sage-500)' }}>layers</span>
+          <h2 className="text-heading-3 flex items-center gap-2" style={{ color: 'var(--color-slate-900)', margin: 0 }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-green-500)' }}>layers</span>
             Fields
           </h2>
-          <span className="text-label" style={{ color: 'var(--color-earth-400)' }}>{fields.length} fields</span>
+          <span className="text-label" style={{ color: 'var(--color-slate-400)' }}>{fields.length} fields</span>
         </div>
         <div className="relative">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2" style={{ fontSize: 16, color: 'var(--color-earth-400)' }}>search</span>
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2" style={{ fontSize: 16, color: 'var(--color-slate-400)' }}>search</span>
           <input
             type="text"
             value={search}
@@ -90,13 +90,13 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
               <div
                 key={cat.name}
                 className="overflow-hidden"
-                style={{ border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}
+                style={{ border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)' }}
               >
                 <button
                   onClick={() => toggleCategory(cat.name)}
                   className="w-full flex items-center justify-between p-3"
                   style={{
-                    background: 'var(--color-parchment-100)',
+                    background: 'var(--color-surface-100)',
                     border: 'none',
                     cursor: 'pointer',
                     transition: 'background 120ms ease',
@@ -106,16 +106,16 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
                     <span className="material-symbols-outlined" style={{ fontSize: 20, color: colors.border }}>
                       {CATEGORY_ICONS[cat.name]}
                     </span>
-                    <span className="text-heading-4" style={{ color: 'var(--color-ink-900)' }}>
+                    <span className="text-heading-4" style={{ color: 'var(--color-slate-900)' }}>
                       {cat.name}
-                      <span className="text-body-small ml-2" style={{ color: 'var(--color-earth-500)', fontWeight: 400 }}>
+                      <span className="text-body-small ml-2" style={{ color: 'var(--color-slate-500)', fontWeight: 400 }}>
                         ({cat.fields.length} fields)
                       </span>
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-data" style={{ fontSize: 12, color: 'var(--color-earth-400)' }}>{cat.totalHectares.toFixed(1)} ha</span>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-earth-400)' }}>
+                    <span className="text-data" style={{ fontSize: 12, color: 'var(--color-slate-400)' }}>{cat.totalHectares.toFixed(1)} ha</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-slate-400)' }}>
                       {expanded ? 'expand_less' : 'expand_more'}
                     </span>
                   </div>
@@ -139,7 +139,7 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
                         }}
                         onMouseEnter={e => {
                           e.currentTarget.style.background = 'rgba(78,140,53,0.06)'
-                          e.currentTarget.style.borderLeftColor = 'var(--color-sage-500)'
+                          e.currentTarget.style.borderLeftColor = 'var(--color-green-500)'
                         }}
                         onMouseLeave={e => {
                           e.currentTarget.style.background = 'transparent'
@@ -147,10 +147,10 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
                         }}
                       >
                         <div className="flex justify-between items-start">
-                          <h4 className="text-heading-4" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{field.name}</h4>
-                          <span className="text-data" style={{ fontSize: 12, color: 'var(--color-earth-400)' }}>{field.sizeHectares} ha</span>
+                          <h4 className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{field.name}</h4>
+                          <span className="text-data" style={{ fontSize: 12, color: 'var(--color-slate-400)' }}>{field.sizeHectares} ha</span>
                         </div>
-                        <p className="text-body-small" style={{ color: 'var(--color-earth-500)', marginTop: 2 }}>
+                        <p className="text-body-small" style={{ color: 'var(--color-slate-500)', marginTop: 2 }}>
                           {field.currentCrop || field.livestock || 'No current use'}
                         </p>
                       </button>
@@ -164,10 +164,10 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
       </div>
 
       {/* Footer */}
-      <div style={{ padding: 16, background: 'var(--color-parchment-100)', borderTop: '1px solid var(--color-parchment-300)' }}>
+      <div style={{ padding: 16, background: 'var(--color-surface-100)', borderTop: '1px solid var(--color-surface-300)' }}>
         <div className="flex items-center justify-between">
-          <span className="text-label" style={{ color: 'var(--color-earth-400)' }}>Total Area</span>
-          <span className="text-data" style={{ color: 'var(--color-ink-900)', fontWeight: 500 }}>{totalHectares.toFixed(1)} ha</span>
+          <span className="text-label" style={{ color: 'var(--color-slate-400)' }}>Total Area</span>
+          <span className="text-data" style={{ color: 'var(--color-slate-900)', fontWeight: 500 }}>{totalHectares.toFixed(1)} ha</span>
         </div>
       </div>
     </div>

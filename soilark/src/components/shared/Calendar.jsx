@@ -107,24 +107,24 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
   }
 
   return (
-    <div className="relative h-full" style={{ background: 'var(--color-parchment-50)' }}>
+    <div className="relative h-full" style={{ background: 'var(--color-surface-50)' }}>
       {/* Main calendar area */}
       <div className="flex flex-col overflow-hidden h-full">
         {/* Header */}
-        <header className="flex items-center justify-between" style={{ padding: '16px 24px', borderBottom: '1px solid var(--color-parchment-300)' }}>
+        <header className="flex items-center justify-between" style={{ padding: '16px 24px', borderBottom: '1px solid var(--color-surface-300)' }}>
           <div className="flex items-center gap-4">
             <div
               className="flex items-center p-1"
-              style={{ background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-sm)' }}
+              style={{ background: 'var(--color-surface-100)', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-sm)' }}
             >
               <button onClick={handlePrev} className="p-1.5" style={{ borderRadius: 'var(--radius-sm)' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-earth-500)' }}>chevron_left</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-slate-500)' }}>chevron_left</span>
               </button>
               <h2 className="text-heading-4 px-4" style={{ margin: 0 }}>
                 {MONTHS[currentMonth]} {currentYear}
               </h2>
               <button onClick={handleNext} className="p-1.5" style={{ borderRadius: 'var(--radius-sm)' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-earth-500)' }}>chevron_right</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-slate-500)' }}>chevron_right</span>
               </button>
             </div>
             <button onClick={handleToday} className="btn btn-secondary">Today</button>
@@ -169,15 +169,15 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
             className="h-full flex flex-col overflow-hidden"
             style={{
               minHeight: 600,
-              border: '1px solid var(--color-parchment-300)',
+              border: '1px solid var(--color-surface-300)',
               borderRadius: 'var(--radius-md)',
-              background: 'var(--color-parchment-100)',
+              background: 'var(--color-surface-100)',
             }}
           >
             {/* Day headers */}
-            <div className="grid grid-cols-7" style={{ borderBottom: '1px solid var(--color-parchment-300)', background: 'var(--color-parchment-200)' }}>
+            <div className="grid grid-cols-7" style={{ borderBottom: '1px solid var(--color-surface-300)', background: 'var(--color-surface-200)' }}>
               {DAYS_SHORT_MON.map(day => (
-                <div key={day} className="py-3 text-center text-label" style={{ color: 'var(--color-earth-400)' }}>
+                <div key={day} className="py-3 text-center text-label" style={{ color: 'var(--color-slate-400)' }}>
                   {day}
                 </div>
               ))}
@@ -198,22 +198,22 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                     onClick={() => handleDayClick(day.date)}
                     className="text-left flex flex-col"
                     style={{
-                      borderRight: '1px solid var(--color-parchment-300)',
-                      borderBottom: '1px solid var(--color-parchment-300)',
+                      borderRight: '1px solid var(--color-surface-300)',
+                      borderBottom: '1px solid var(--color-surface-300)',
                       padding: 8,
                       minHeight: 120,
                       transition: 'background 120ms ease',
-                      background: !day.isCurrentMonth ? 'var(--color-parchment-200)'
-                        : selected ? 'var(--color-parchment-50)'
+                      background: !day.isCurrentMonth ? 'var(--color-surface-200)'
+                        : selected ? 'var(--color-surface-50)'
                         : today ? 'rgba(78,140,53,0.06)'
-                        : 'var(--color-parchment-50)',
-                      outline: selected ? '2px solid var(--color-sage-500)' : 'none',
+                        : 'var(--color-surface-50)',
+                      outline: selected ? '2px solid var(--color-green-500)' : 'none',
                       outlineOffset: -2,
                       zIndex: selected ? 10 : 'auto',
                       cursor: 'pointer',
                       border: 'none',
-                      borderRight: '1px solid var(--color-parchment-300)',
-                      borderBottom: '1px solid var(--color-parchment-300)',
+                      borderRight: '1px solid var(--color-surface-300)',
+                      borderBottom: '1px solid var(--color-surface-300)',
                     }}
                   >
                     {today ? (
@@ -223,7 +223,7 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                           width: 24,
                           height: 24,
                           borderRadius: '50%',
-                          background: 'var(--color-sage-500)',
+                          background: 'var(--color-green-500)',
                           color: 'white',
                           fontFamily: 'var(--font-mono)',
                           fontSize: 11,
@@ -237,9 +237,9 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                         className="text-data"
                         style={{
                           fontSize: 12,
-                          color: !day.isCurrentMonth ? 'var(--color-parchment-300)'
-                            : selected ? 'var(--color-sage-600)'
-                            : 'var(--color-earth-400)',
+                          color: !day.isCurrentMonth ? 'var(--color-surface-300)'
+                            : selected ? 'var(--color-green-600)'
+                            : 'var(--color-slate-400)',
                           fontWeight: 500,
                         }}
                       >
@@ -250,7 +250,7 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                     {day.isCurrentMonth && visibleEvents.length > 0 && (
                       <div className="mt-1 flex flex-col gap-1">
                         {visibleEvents.map(event => {
-                          const colors = EVENT_TYPE_BG[event.type] || { bg: 'var(--color-parchment-200)', text: 'var(--color-earth-500)' }
+                          const colors = EVENT_TYPE_BG[event.type] || { bg: 'var(--color-surface-200)', text: 'var(--color-slate-500)' }
                           return (
                             <div
                               key={event.id}
@@ -270,7 +270,7 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                           )
                         })}
                         {overflowCount > 0 && (
-                          <span className="text-body-small px-1" style={{ color: 'var(--color-earth-400)', fontSize: 8 }}>
+                          <span className="text-body-small px-1" style={{ color: 'var(--color-slate-400)', fontSize: 8 }}>
                             +{overflowCount} more
                           </span>
                         )}

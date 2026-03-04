@@ -5,7 +5,7 @@ export const initialTasks = [
     type: 'Fertilizing',
     status: 'todo',
     priority: 'high',
-    dueDate: '2026-02-18',
+    dueDate: '2026-03-07',
     description: 'Apply NPK compound fertiliser across all winter wheat fields to support spring growth. Soil analysis indicates nitrogen deficiency in North Field and Church Field.',
     assignedTo: ['John Smith', 'David Jones'],
     assignedMachinery: ['Amazone Centaur 6001'],

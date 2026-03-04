@@ -41,8 +41,8 @@ export default function OverviewPage() {
             onClick={toggleView}
             className="btn btn-secondary flex items-center gap-2"
             style={{
-              background: 'var(--color-parchment-50)',
-              borderColor: 'var(--color-parchment-300)',
+              background: 'var(--color-surface-50)',
+              borderColor: 'var(--color-surface-300)',
             }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 18 }}>calendar_month</span>
@@ -58,15 +58,15 @@ export default function OverviewPage() {
             className="flex items-center gap-3"
             style={{
               padding: '8px 16px',
-              background: 'var(--color-parchment-50)',
-              border: '1px solid var(--color-parchment-300)',
+              background: 'var(--color-surface-50)',
+              border: '1px solid var(--color-surface-300)',
               borderRadius: 'var(--radius-md)',
             }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-ochre-400)' }}>wb_sunny</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-amber-400)' }}>wb_sunny</span>
             <div>
-              <p className="text-data" style={{ color: 'var(--color-ink-900)', fontWeight: 500, lineHeight: 1 }}>8°C</p>
-              <p className="text-body-small" style={{ color: 'var(--color-earth-400)', lineHeight: 1, marginTop: 2 }}>Partly Cloudy · Wind 12mph</p>
+              <p className="text-data" style={{ color: 'var(--color-slate-900)', fontWeight: 500, lineHeight: 1 }}>8°C</p>
+              <p className="text-body-small" style={{ color: 'var(--color-slate-400)', lineHeight: 1, marginTop: 2 }}>Partly Cloudy · Wind 12mph</p>
             </div>
           </div>
         </div>

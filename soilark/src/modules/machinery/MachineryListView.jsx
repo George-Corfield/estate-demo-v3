@@ -89,7 +89,7 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
       <div style={{ padding: 'var(--content-padding)' }} className="flex flex-col gap-5 flex-1 overflow-y-auto custom-scrollbar">
         {/* Page Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-heading-2" style={{ color: 'var(--color-ink-900)', margin: 0 }}>Machinery & Equipment</h1>
+          <h1 className="text-heading-2" style={{ color: 'var(--color-slate-900)', margin: 0 }}>Machinery & Equipment</h1>
           <button onClick={() => setShowInlineCreate(true)} className="btn btn-primary">
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
             Add Equipment
@@ -99,20 +99,20 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
         {/* Stat Strip */}
         <div className="grid grid-cols-4 gap-4">
           <div className="stat-card">
-            <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Total Equipment</p>
-            <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{totalEquipment}</p>
+            <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Total Equipment</p>
+            <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{totalEquipment}</p>
           </div>
           <div className="stat-card">
-            <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Services Due</p>
-            <p className="text-data-large" style={{ color: servicesDue > 0 ? 'var(--color-ochre-400)' : 'var(--color-sage-600)' }}>{servicesDue}</p>
+            <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Services Due</p>
+            <p className="text-data-large" style={{ color: servicesDue > 0 ? 'var(--color-amber-400)' : 'var(--color-green-600)' }}>{servicesDue}</p>
           </div>
           <div className="stat-card">
-            <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>In Maintenance</p>
-            <p className="text-data-large" style={{ color: inMaintenance > 0 ? 'var(--color-ochre-400)' : 'var(--color-sage-600)' }}>{inMaintenance}</p>
+            <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>In Maintenance</p>
+            <p className="text-data-large" style={{ color: inMaintenance > 0 ? 'var(--color-amber-400)' : 'var(--color-green-600)' }}>{inMaintenance}</p>
           </div>
           <div className="stat-card">
-            <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Active</p>
-            <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{activeCount}</p>
+            <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Active</p>
+            <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{activeCount}</p>
           </div>
         </div>
 
@@ -171,21 +171,21 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
                 className={`card ${accentClass}`}
                 onClick={() => onEquipmentClick(equipment.id)}
                 style={{ cursor: 'pointer', transition: 'all var(--duration-fast) ease' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-parchment-200)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-surface-200)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = '' }}
               >
                 <div className="flex items-start gap-4">
                   {/* Category Icon */}
-                  <div style={{ width: 36, height: 36, borderRadius: 'var(--radius-sm)', background: 'var(--color-parchment-200)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span className="material-symbols-outlined" style={{ color: 'var(--color-earth-500)', fontSize: 18 }}>{icon}</span>
+                  <div style={{ width: 36, height: 36, borderRadius: 'var(--radius-sm)', background: 'var(--color-surface-200)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span className="material-symbols-outlined" style={{ color: 'var(--color-slate-500)', fontSize: 18 }}>{icon}</span>
                   </div>
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-heading-4" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{equipment.name}</p>
-                        <p className="text-body-small" style={{ color: 'var(--color-earth-500)', margin: 0 }}>
+                        <p className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{equipment.name}</p>
+                        <p className="text-body-small" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
                           {equipment.make} &middot; {equipment.model} &middot; {equipment.year}
                         </p>
                       </div>
@@ -193,13 +193,13 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
                     </div>
                     <div className="flex items-center gap-6 mt-2">
                       <div>
-                        <span className="text-data" style={{ color: 'var(--color-ink-900)' }}>{equipment.hours.toLocaleString()}</span>
-                        <span className="text-label" style={{ color: 'var(--color-earth-400)', marginLeft: 4 }}>HRS</span>
+                        <span className="text-data" style={{ color: 'var(--color-slate-900)' }}>{equipment.hours.toLocaleString()}</span>
+                        <span className="text-label" style={{ color: 'var(--color-slate-400)', marginLeft: 4 }}>HRS</span>
                       </div>
                       {equipment.nextServiceDue && (
                         <div>
-                          <span className="text-label" style={{ color: 'var(--color-earth-400)', marginRight: 4 }}>NEXT SERVICE</span>
-                          <span className="text-data" style={{ color: isOverdue ? 'var(--color-ochre-400)' : 'var(--color-ink-900)' }}>
+                          <span className="text-label" style={{ color: 'var(--color-slate-400)', marginRight: 4 }}>NEXT SERVICE</span>
+                          <span className="text-data" style={{ color: isOverdue ? 'var(--color-amber-400)' : 'var(--color-slate-900)' }}>
                             {equipment.nextServiceDue.toLocaleString()} hrs
                           </span>
                         </div>
@@ -213,14 +213,14 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
         </div>
 
         {filtered.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-earth-400)' }}>
+          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-slate-400)' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 36, marginBottom: 8, display: 'block' }}>inventory_2</span>
             <p className="text-body">No equipment found</p>
           </div>
         )}
 
         {filtered.length > 0 && (
-          <p className="text-body-small" style={{ color: 'var(--color-earth-400)' }}>
+          <p className="text-body-small" style={{ color: 'var(--color-slate-400)' }}>
             Showing {filtered.length} of {machinery.length} items
           </p>
         )}

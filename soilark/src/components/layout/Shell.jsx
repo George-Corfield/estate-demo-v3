@@ -5,7 +5,7 @@ import Toast from './Toast'
 
 export default function Shell() {
   return (
-    <div className="flex h-screen w-full overflow-hidden" style={{ background: 'var(--color-parchment-50)' }}>
+    <div className="flex h-screen w-full overflow-hidden" style={{ background: 'var(--color-surface-50)' }}>
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <TopBar />

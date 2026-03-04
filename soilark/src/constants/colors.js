@@ -1,7 +1,11 @@
 // LandArk Design System palette tokens
 // LandArk "Lush & Sunlit" palette tokens
+const sage200 = '#dcfce7'
+const sage300 = '#67c034'
+const sage400 = '#66ba39'
 const sage500 = '#56AB2F'      // Brighter, more "living" green
 const sage600 = '#3B7A1E'      // Deep forest for contrast
+const darkGreen = '#166534'
 const ochre400 = '#F2A900'     // Pure golden harvest
 const ochre300 = '#FFCC33'     // Sunlight/Daffodil yellow
 const earth400 = '#B57E5D'     // Warmer terracotta
@@ -10,19 +14,73 @@ const parchment100 = '#F9F7F2' // Cleaner, whiter base
 const parchment200 = '#F0EAD6' // Less gray, more "cream"
 const parchment300 = '#E6DCC3' // Deeper tan without the "mud"
 const ink900 = '#1A1D16'       // Near-black with a hint of forest
-const vibrantBlue = '#4A90E2'  // Added for "Services" to break the brown/green monotony
+const blue200 = '#DBEAFE'
+const blue600 = '#1E40AF'  // Added for "Services" to break the brown/green monotony
+const danger200 = '#FEF2F2'
+const danger400 = '#EF4444'
+const danger600 = '#991B1B'
+const slate200 = '#F1F5F9'
+const slate600 = '#475569'
+
+const Surface50 = '#f6f8f6'
+const Surface100 = '#f1f5f1'
+const Surface200 = '#e2e8f0'
+const Surface300 = '#cbd5e1'
+
+const Green100 = '#dcfce7'
+const Green300 = '#86efac'
+const Green400 = '#4ade80'
+const Green500 = '#13ec13'
+const Green600 = '#0fb80f'
+const Green700 = '#22c55e'
+const Green800 = '#166534'
+
+const Deep700 = '#047857'
+const Deep800 = '#065f46'
+const Deep900 = '#064e3b'
+const Deep950 = '#022c22'
+
+const Amber100 = '#fef3c7'
+const Amber300 = '#fcd34d'
+const Amber400 = '#f59e0b'
+const Amber700 = '#92400e'
+
+const Blue100 = '#dbeafe'
+const Blue400 = '#3b82f6'
+const Blue700 = '#1e40af'
+
+const Red100 = '#fef2f2'
+const Red400 = '#ef4444'
+const Red600 = '#dc2626'
+const Red700 = '#991b1b'
+
+const Slate50 = '#f8fafc'
+const Slate100 = '#f1f5f9'
+const Slate200 = '#e2e8f0'
+const Slate300 = '#cbd5e1'
+const Slate400 = '#94a3b8'
+const Slate500 = '#64748b'
+const Slate600 = '#475569'
+const Slate800 = '#1e293b'
+const Slate900 = '#0f172a'
+
+const Indigo500 = '#6366f1'
+const Orange400 = '#f97316'
+const Gray500 = '#6b7280'
+const Primary = '#13ec13'
+
 
 export const CATEGORY_COLORS = {
-  Arable: { bg: '#FFCC33', border: '#F2A900', text: '#1A1D16' },
-  Pastoral: { bg: '#56AB2F', border: '#3B7A1E', text: '#fff' },
-  Grassland: { bg: '#A3CF62', border: '#56AB2F', text: '#1A1D16' },
-  Forestry: { bg: '#8B5A3C', border: '#543A28', text: '#fff' },
+  Arable: { bg: Amber300, border: Amber400, text: Slate900 },
+  Pastoral: { bg: Green700, border: Green800, text: Slate50},
+  Grassland: { bg: Green400, border: Green500, text: Slate900 },
+  Forestry: { bg: earth400, border: earth500, text: Slate50},
 }
 
 export const PRIORITY_COLORS = {
-  high: { bg: ochre400, text: '#fff' },
-  medium: { bg: parchment300, text: earth500 },
-  low: { bg: parchment200, text: earth500 },
+  high: { bg: Red100, text: Red700 },
+  medium: { bg: Amber100, text: Amber700 },
+  low: { bg: Blue100, text: Blue700 },
 }
 
 export const EVENT_TYPE_COLORS = {
@@ -76,7 +134,7 @@ export const EVENT_TYPE_TO_FILTER = {
 }
 
 export const STATUS_COLORS = {
-  todo: { bg: parchment300, text: earth500, label: 'To Do' },
-  inProgress: { bg: sage500, text: '#fff', label: 'In Progress' },
-  done: { bg: sage500, text: '#fff', label: 'Done' },
+  todo: { bg: Slate200, text: Slate600, label: 'To Do' },
+  inProgress: { bg: Blue100, text: Blue700, label: 'In Progress' },
+  done: { bg: Green100, text: Deep700, label: 'Done' },
 }

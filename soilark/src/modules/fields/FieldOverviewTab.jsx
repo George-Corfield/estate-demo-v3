@@ -21,7 +21,7 @@ export default function FieldOverviewTab({ field }) {
       {/* Properties grid */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-label" style={{ color: 'var(--color-earth-400)' }}>Properties</h3>
+          <h3 className="text-label" style={{ color: 'var(--color-slate-600)' }}>Properties</h3>
           <button onClick={() => setEditing(true)} className="btn btn-ghost" style={{ padding: '4px 8px', fontSize: 12 }}>
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>edit</span>
             Edit
@@ -41,19 +41,19 @@ export default function FieldOverviewTab({ field }) {
       {/* Description */}
       {field.description && (
         <div>
-          <h3 className="text-label mb-2" style={{ color: 'var(--color-earth-400)' }}>Description</h3>
-          <p className="text-body" style={{ color: 'var(--color-earth-600)' }}>{field.description}</p>
+          <h3 className="text-label mb-2" style={{ color: 'var(--color-slate-600)' }}>Description</h3>
+          <p className="text-body" style={{ color: 'var(--color-slate-900)' }}>{field.description}</p>
         </div>
       )}
 
       {/* Linked tasks */}
       <div>
-        <h3 className="text-label mb-3" style={{ color: 'var(--color-earth-400)' }}>
+        <h3 className="text-label mb-3" style={{ color: 'var(--color-slate-600)' }}>
           Linked Tasks
-          {linkedTasks.length > 0 && <span style={{ color: 'var(--color-earth-400)', marginLeft: 4 }}>({linkedTasks.length})</span>}
+          {linkedTasks.length > 0 && <span style={{ color: 'var(--color-slate-600)', marginLeft: 4 }}>({linkedTasks.length})</span>}
         </h3>
         {linkedTasks.length === 0 ? (
-          <p className="text-body" style={{ color: 'var(--color-earth-400)' }}>No tasks linked to this field</p>
+          <p className="text-body" style={{ color: 'var(--color-slate-400)' }}>No tasks linked to this field</p>
         ) : (
           <div className="flex flex-col gap-2">
             {linkedTasks.map(task => (
@@ -62,20 +62,20 @@ export default function FieldOverviewTab({ field }) {
                 onClick={() => navigate('/tasks', { state: { openTaskId: task.id } })}
                 className="card w-full text-left"
                 style={{ padding: 12, cursor: 'pointer', transition: 'border-color 120ms ease' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-sage-500)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-parchment-300)' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-green-500)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-surface-300)' }}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <p className="text-heading-4" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{task.name}</p>
+                  <p className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{task.name}</p>
                   <PriorityBadge priority={task.priority} />
                 </div>
                 <div className="flex items-center gap-3">
                   <StatusBadge status={task.status} />
-                  <span className="text-body-small" style={{ color: 'var(--color-earth-500)' }}>{task.type}</span>
-                  <span className="text-body-small" style={{ color: 'var(--color-earth-400)' }}>{formatRelativeDate(task.dueDate)}</span>
+                  <span className="text-body-small" style={{ color: 'var(--color-slate-500)' }}>{task.type}</span>
+                  <span className="text-body-small" style={{ color: 'var(--color-slate-400)' }}>{formatRelativeDate(task.dueDate)}</span>
                 </div>
                 {task.assignedTo.length > 0 && (
-                  <p className="text-body-small" style={{ color: 'var(--color-earth-400)', marginTop: 4 }}>
+                  <p className="text-body-small" style={{ color: 'var(--color-slate-400)', marginTop: 4 }}>
                     Assigned: {task.assignedTo.join(', ')}
                   </p>
                 )}
@@ -90,9 +90,10 @@ export default function FieldOverviewTab({ field }) {
 
 function PropItem({ label, value, mono }) {
   return (
-    <div style={{ padding: 12, background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}>
-      <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>{label}</p>
-      <p className={mono ? 'text-data' : 'text-body'} style={{ color: 'var(--color-ink-900)', fontWeight: 500, margin: 0 }}>{value}</p>
+    // <div style={{ padding: 12, background: 'var(--color-surface-100)', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)' }}>
+    <div style={{ padding: 12, background: 'var(--color-slate-100)', borderRadius: 'var(--radius-md)' }}>  
+      <p className="text-label" style={{ color: 'var(--color-slate-600)', marginBottom: 4 }}>{label}</p>
+      <p className={mono ? 'text-data' : 'text-body'} style={{ color: 'var(--color-slate-900)', fontWeight: 500, margin: 0 }}>{value}</p>
     </div>
   )
 }

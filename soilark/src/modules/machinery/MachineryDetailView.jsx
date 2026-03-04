@@ -57,8 +57,8 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
       {/* Sticky Panel Header */}
       <div style={{
         padding: '12px 16px',
-        borderBottom: '1px solid var(--color-parchment-300)',
-        background: 'var(--color-parchment-100)',
+        borderBottom: '1px solid var(--color-surface-300)',
+        background: 'var(--color-surface-100)',
         position: 'sticky',
         top: 0,
         zIndex: 10,
@@ -69,13 +69,13 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
             className="btn btn-ghost shrink-0"
             style={{ padding: 4, marginTop: 2 }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-earth-400)' }}>arrow_back</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-slate-400)' }}>arrow_back</span>
           </button>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h2 className="text-heading-3" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{equipment.name}</h2>
-                <p className="text-body-small" style={{ color: 'var(--color-earth-500)', margin: 0 }}>
+                <h2 className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{equipment.name}</h2>
+                <p className="text-body-small" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
                   {equipment.make} {equipment.model} &middot; {equipment.year}
                 </p>
               </div>
@@ -133,7 +133,7 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
             {/* Associated Tasks */}
             {associatedTasks.length > 0 && (
               <div style={{ padding: '16px' }}>
-                <h3 className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 12 }}>
+                <h3 className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 12 }}>
                   Associated Tasks ({associatedTasks.length})
                 </h3>
                 <div className="flex flex-col gap-1">
@@ -144,17 +144,17 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
                       className="w-full text-left flex items-center justify-between"
                       style={{
                         padding: '8px 12px',
-                        background: 'var(--color-parchment-100)',
+                        background: 'var(--color-surface-100)',
                         borderRadius: 'var(--radius-sm)',
                         border: 'none',
                         cursor: 'pointer',
                         fontFamily: 'var(--font-body)',
                         fontSize: 13,
-                        color: 'var(--color-ink-900)',
+                        color: 'var(--color-slate-900)',
                         transition: 'all 120ms ease',
                       }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(78,140,53,0.08)' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-parchment-100)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-surface-100)' }}
                     >
                       <span>{task.name}</span>
                       <span className="badge badge-neutral">
@@ -172,7 +172,7 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
         {activeTab === 'service' && (
           <div style={{ padding: 16 }} className="flex flex-col gap-5">
             {/* Service Summary — field rows instead of stat cards */}
-            <div style={{ border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
+            <div style={{ border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
               <FieldRow label="Current Hours" value={equipment.hours.toLocaleString()} mono />
               <FieldRow
                 label="Next Service Due"
@@ -217,7 +217,7 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
 
             {/* Service History — card list instead of data-table */}
             <div>
-              <h3 className="text-label mb-3" style={{ color: 'var(--color-earth-400)' }}>Service History</h3>
+              <h3 className="text-label mb-3" style={{ color: 'var(--color-slate-400)' }}>Service History</h3>
               {equipment.serviceHistory.length > 0 ? (
                 <div className="flex flex-col gap-2">
                   {equipment.serviceHistory.map(svc => (
@@ -226,27 +226,27 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
                       className="card"
                       style={{ padding: '12px 16px', cursor: 'pointer', transition: 'all var(--duration-fast) ease' }}
                       onClick={() => onServiceDateClick?.(svc.date)}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-parchment-200)' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-surface-200)' }}
                       onMouseLeave={e => { e.currentTarget.style.background = '' }}
                     >
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <span className="text-heading-4" style={{ color: 'var(--color-ink-900)' }}>{svc.type}</span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-earth-400)', whiteSpace: 'nowrap' }}>
+                        <span className="text-heading-4" style={{ color: 'var(--color-slate-900)' }}>{svc.type}</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-slate-400)', whiteSpace: 'nowrap' }}>
                           {formatShortDate(svc.date)}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-earth-500)' }}>
+                      <div className="flex items-center gap-3" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-slate-500)' }}>
                         {svc.hoursAtService && <span>{svc.hoursAtService.toLocaleString()} hrs</span>}
                         <span>{formatGBP(svc.cost)}</span>
                       </div>
                       {svc.notes && (
-                        <p className="text-body-small" style={{ color: 'var(--color-earth-500)', marginTop: 4 }}>{svc.notes}</p>
+                        <p className="text-body-small" style={{ color: 'var(--color-slate-500)', marginTop: 4 }}>{svc.notes}</p>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-body" style={{ color: 'var(--color-earth-400)' }}>No service records</p>
+                <p className="text-body" style={{ color: 'var(--color-slate-400)' }}>No service records</p>
               )}
             </div>
           </div>
@@ -258,27 +258,27 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
             {/* 4 Stat Cards */}
             <div className="grid grid-cols-2 gap-3">
               <div className="stat-card">
-                <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Lifetime Cost</p>
-                <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{formatGBP(totalLifetimeCost)}</p>
+                <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Lifetime Cost</p>
+                <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{formatGBP(totalLifetimeCost)}</p>
               </div>
               <div className="stat-card">
-                <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Monthly Average</p>
-                <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{formatGBP(monthlyAverage)}</p>
+                <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Monthly Average</p>
+                <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{formatGBP(monthlyAverage)}</p>
               </div>
               <div className="stat-card">
-                <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Annual Cost</p>
-                <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{formatGBP(annualCost)}</p>
+                <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Annual Cost</p>
+                <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{formatGBP(annualCost)}</p>
               </div>
               <div className="stat-card">
-                <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Cost per Hour</p>
-                <p className="text-data-large" style={{ color: 'var(--color-sage-600)' }}>{formatGBP(costPerHour)}</p>
+                <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Cost per Hour</p>
+                <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{formatGBP(costPerHour)}</p>
               </div>
             </div>
 
             {/* Cost Breakdown */}
             <div>
-              <h3 className="text-label mb-3" style={{ color: 'var(--color-earth-400)' }}>Cost Breakdown</h3>
-              <div style={{ border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
+              <h3 className="text-label mb-3" style={{ color: 'var(--color-slate-400)' }}>Cost Breakdown</h3>
+              <div style={{ border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
                 <CostRow label="Service & Maintenance" value={serviceCost} />
                 <CostRow label="Fuel" value={fuelCost} border />
                 <CostRow label="Insurance" value={insuranceCost} border />
@@ -296,12 +296,12 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
                 className="flex items-center gap-3"
                 style={{ padding: '10px 16px' }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-earth-400)' }}>description</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-slate-400)' }}>description</span>
                 <div className="flex-1 min-w-0">
-                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-ink-900)', margin: 0 }}>{doc.name}</p>
-                  <p className="text-label-small" style={{ color: 'var(--color-earth-400)', margin: 0 }}>{doc.type}</p>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-slate-900)', margin: 0 }}>{doc.name}</p>
+                  <p className="text-label-small" style={{ color: 'var(--color-slate-400)', margin: 0 }}>{doc.type}</p>
                 </div>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-400)', cursor: 'pointer' }}>download</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-slate-400)', cursor: 'pointer' }}>download</span>
               </div>
             ))}
             <button className="btn btn-ghost" style={{ alignSelf: 'flex-start', marginTop: 8 }}>
@@ -322,16 +322,16 @@ function FieldRow({ label, value, mono, highlight }) {
       className="flex items-center justify-between"
       style={{
         padding: '12px 16px',
-        borderBottom: '1px solid var(--color-parchment-200)',
+        borderBottom: '1px solid var(--color-surface-200)',
       }}
     >
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-earth-400)' }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-400)' }}>
         {label}
       </span>
       <span style={{
         fontFamily: mono ? 'var(--font-mono)' : 'var(--font-body)',
         fontSize: 13,
-        color: highlight ? 'var(--color-ochre-400)' : 'var(--color-ink-900)',
+        color: highlight ? 'var(--color-amber-400)' : 'var(--color-slate-900)',
         textAlign: 'end'
       }}>
         {value || '—'}
@@ -344,8 +344,8 @@ function FieldRow({ label, value, mono, highlight }) {
 function FieldSection({ title, children }) {
   return (
     <div>
-      <div style={{ padding: '12px 16px', borderBottom: '2px solid var(--color-parchment-300)' }}>
-        <h3 className="text-label" style={{ color: 'var(--color-earth-400)', margin: 0 }}>{title}</h3>
+      <div style={{ padding: '12px 16px', borderBottom: '2px solid var(--color-surface-300)' }}>
+        <h3 className="text-label" style={{ color: 'var(--color-slate-400)', margin: 0 }}>{title}</h3>
       </div>
       {children}
     </div>
@@ -359,12 +359,12 @@ function CostRow({ label, value, border }) {
       className="flex items-center justify-between"
       style={{
         padding: '12px 16px',
-        background: 'var(--color-parchment-100)',
-        borderTop: border ? '1px solid var(--color-parchment-200)' : undefined,
+        background: 'var(--color-surface-100)',
+        borderTop: border ? '1px solid var(--color-surface-200)' : undefined,
       }}
     >
-      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-ink-900)' }}>{label}</span>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--color-ink-900)' }}>{formatGBP(value)}</span>
+      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-slate-900)' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--color-slate-900)' }}>{formatGBP(value)}</span>
     </div>
   )
 }
@@ -393,7 +393,7 @@ function ServiceForm({ currentHours, onSave, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit} className="card flex flex-col gap-3">
-      <h4 className="text-heading-4" style={{ color: 'var(--color-ink-900)', margin: 0 }}>Record Service</h4>
+      <h4 className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0 }}>Record Service</h4>
       <div className="grid grid-cols-3 gap-3">
         <div>
           <label className="form-label">Date</label>

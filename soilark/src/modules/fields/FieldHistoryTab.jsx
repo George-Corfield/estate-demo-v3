@@ -77,23 +77,23 @@ export default function FieldHistoryTab({ field }) {
             className="w-full"
             style={{
               padding: '10px 0',
-              border: '2px dashed var(--color-parchment-300)',
+              border: '2px dashed var(--color-surface-300)',
               borderRadius: 'var(--radius-md)',
               background: 'transparent',
               fontFamily: 'var(--font-body)',
               fontSize: 13,
               fontWeight: 500,
-              color: 'var(--color-earth-500)',
+              color: 'var(--color-slate-500)',
               cursor: 'pointer',
               transition: 'all 120ms ease',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'var(--color-sage-500)'
-              e.currentTarget.style.color = 'var(--color-sage-500)'
+              e.currentTarget.style.borderColor = 'var(--color-green-500)'
+              e.currentTarget.style.color = 'var(--color-green-500)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'var(--color-parchment-300)'
-              e.currentTarget.style.color = 'var(--color-earth-500)'
+              e.currentTarget.style.borderColor = 'var(--color-surface-300)'
+              e.currentTarget.style.color = 'var(--color-slate-500)'
             }}
           >
             + Add Field Note
@@ -102,13 +102,13 @@ export default function FieldHistoryTab({ field }) {
       </div>
 
       {/* Timeline */}
-      <h3 className="text-label mb-4" style={{ color: 'var(--color-earth-400)' }}>
+      <h3 className="text-label mb-4" style={{ color: 'var(--color-slate-400)' }}>
         Activity History
-        <span style={{ color: 'var(--color-earth-400)', marginLeft: 4 }}>({activities.length})</span>
+        <span style={{ color: 'var(--color-slate-400)', marginLeft: 4 }}>({activities.length})</span>
       </h3>
 
       {activities.length === 0 ? (
-        <p className="text-body" style={{ color: 'var(--color-earth-400)', textAlign: 'center', padding: '32px 0' }}>No activity recorded yet</p>
+        <p className="text-body" style={{ color: 'var(--color-slate-400)', textAlign: 'center', padding: '32px 0' }}>No activity recorded yet</p>
       ) : (
         <div className="flex flex-col">
           {activities.map((activity, i) => (
@@ -119,21 +119,21 @@ export default function FieldHistoryTab({ field }) {
                     width: 10,
                     height: 10,
                     borderRadius: '50%',
-                    background: i === 0 ? 'var(--color-sage-500)' : 'var(--color-parchment-300)',
+                    background: i === 0 ? 'var(--color-green-500)' : 'var(--color-surface-300)',
                     boxShadow: i === 0 ? '0 0 0 4px rgba(78,140,53,0.15)' : 'none',
                   }}
                 />
                 {i < activities.length - 1 && (
-                  <div className="flex-1 mt-1" style={{ width: 1, background: 'var(--color-parchment-300)' }} />
+                  <div className="flex-1 mt-1" style={{ width: 1, background: 'var(--color-surface-300)' }} />
                 )}
               </div>
               <div style={{ paddingBottom: 24 }}>
-                <p className="text-heading-4" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{activity.title}</p>
-                <p className="text-body-small" style={{ color: 'var(--color-earth-400)', marginTop: 2 }}>
+                <p className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{activity.title}</p>
+                <p className="text-body-small" style={{ color: 'var(--color-slate-400)', marginTop: 2 }}>
                   {formatShortDate(activity.date)} · {activity.user}
                 </p>
                 {activity.details && (
-                  <p className="text-body-small" style={{ color: 'var(--color-earth-600)', marginTop: 6 }}>{activity.details}</p>
+                  <p className="text-body-small" style={{ color: 'var(--color-slate-600)', marginTop: 6 }}>{activity.details}</p>
                 )}
               </div>
             </div>

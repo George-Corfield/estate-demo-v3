@@ -28,13 +28,13 @@ const PRIORITIES = ['low', 'medium', 'high']
 
 const toggleActiveStyle = {
   background: 'rgba(78,140,53,0.15)',
-  color: 'var(--color-sage-500)',
+  color: 'var(--color-green-500)',
   border: '1px solid rgba(78,140,53,0.3)',
 }
 const toggleInactiveStyle = {
-  background: 'var(--color-parchment-50)',
-  color: 'var(--color-earth-500)',
-  border: '1px solid var(--color-parchment-300)',
+  background: 'var(--color-surface-50)',
+  color: 'var(--color-slate-500)',
+  border: '1px solid var(--color-surface-300)',
 }
 const toggleBaseStyle = {
   padding: '6px 12px',
@@ -300,10 +300,10 @@ export default function TaskCreateForm({
 
   return (
     <div className="flex flex-col h-full">
-      <div style={{ padding: 16, borderBottom: '1px solid var(--color-parchment-300)' }} className="flex items-center justify-between">
-        <h2 className="text-heading-3" style={{ color: 'var(--color-ink-900)', margin: 0 }}>New Task</h2>
+      <div style={{ padding: 16, borderBottom: '1px solid var(--color-surface-300)' }} className="flex items-center justify-between">
+        <h2 className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>New Task</h2>
         <button onClick={onCancel} className="btn btn-ghost" style={{ padding: 4 }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-earth-400)' }}>close</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-slate-400)' }}>close</span>
         </button>
       </div>
 
@@ -358,7 +358,7 @@ export default function TaskCreateForm({
           {/* Fields */}
           <div>
             <label className="form-label">
-              Fields * <span style={{ color: 'var(--color-earth-400)', textTransform: 'none' }}>(click map or select below)</span>
+              Fields * <span style={{ color: 'var(--color-slate-400)', textTransform: 'none' }}>(click map or select below)</span>
             </label>
             {selectedFieldIds.length > 0 && (
               <div className="flex flex-wrap gap-1" style={{ marginTop: 4, marginBottom: 8 }}>
@@ -375,16 +375,16 @@ export default function TaskCreateForm({
                 })}
               </div>
             )}
-            <div style={{ maxHeight: 144, overflowY: 'auto', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-sm)' }}>
+            <div style={{ maxHeight: 144, overflowY: 'auto', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-sm)' }}>
               {fields.map(f => (
-                <label key={f.id} className="flex items-center gap-2" style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--color-parchment-200)', fontSize: 13, fontFamily: 'var(--font-body)', color: 'var(--color-earth-600)' }}>
+                <label key={f.id} className="flex items-center gap-2" style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--color-surface-200)', fontSize: 13, fontFamily: 'var(--font-body)', color: 'var(--color-slate-600)' }}>
                   <input
                     type="checkbox"
                     checked={selectedFieldIds.includes(f.id)}
                     onChange={() => toggleField(f.id)}
                   />
                   <span>{f.name}</span>
-                  <span className="text-data" style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-earth-400)' }}>{f.category}</span>
+                  <span className="text-data" style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-slate-400)' }}>{f.category}</span>
                 </label>
               ))}
             </div>
@@ -392,8 +392,8 @@ export default function TaskCreateForm({
 
           {/* ── Crop/Seed Fields ── */}
           {form.type === 'Planting' && plantingSubtype === 'Crop/Seed' && (
-            <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}>
-              <h3 className="text-label" style={{ color: 'var(--color-sage-600)' }}>Crop / Seed Details</h3>
+            <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-surface-100)', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)' }}>
+              <h3 className="text-label" style={{ color: 'var(--color-green-600)' }}>Crop / Seed Details</h3>
 
               <div>
                 <label className="form-label">Crop / Mix *</label>
@@ -434,7 +434,7 @@ export default function TaskCreateForm({
                     step="any"
                     required
                   />
-                  <div className="flex" style={{ borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-parchment-300)', overflow: 'hidden' }}>
+                  <div className="flex" style={{ borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-surface-300)', overflow: 'hidden' }}>
                     {SEED_RATE_UNITS.map(u => (
                       <button
                         key={u}
@@ -449,8 +449,8 @@ export default function TaskCreateForm({
                           transition: 'all 120ms ease',
                           border: 'none',
                           ...(rateUnit === u
-                            ? { background: 'rgba(78,140,53,0.15)', color: 'var(--color-sage-500)' }
-                            : { background: 'var(--color-parchment-50)', color: 'var(--color-earth-500)' }),
+                            ? { background: 'rgba(78,140,53,0.15)', color: 'var(--color-green-500)' }
+                            : { background: 'var(--color-surface-50)', color: 'var(--color-slate-500)' }),
                         }}
                       >
                         {u}
@@ -482,10 +482,10 @@ export default function TaskCreateForm({
                   <label className="form-label">
                     {seedSource === 'Bought' ? 'Price' : 'Cost'}
                     {rateUnit === 'seeds/m²' ? ' per seed' : ' per tonne'}
-                    <span style={{ color: 'var(--color-earth-400)', textTransform: 'none', marginLeft: 4 }}>(optional)</span>
+                    <span style={{ color: 'var(--color-slate-400)', textTransform: 'none', marginLeft: 4 }}>(optional)</span>
                   </label>
                   <div style={{ position: 'relative', marginTop: 4 }}>
-                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-earth-400)', fontSize: 13 }}>£</span>
+                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-slate-400)', fontSize: 13 }}>£</span>
                     <input
                       type="number"
                       value={seedPrice}
@@ -519,8 +519,8 @@ export default function TaskCreateForm({
 
           {/* ── Hedges Fields ── */}
           {form.type === 'Planting' && plantingSubtype === 'Hedges' && (
-            <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}>
-              <h3 className="text-label" style={{ color: 'var(--color-sage-600)' }}>Hedge Details</h3>
+            <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-surface-100)', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)' }}>
+              <h3 className="text-label" style={{ color: 'var(--color-green-600)' }}>Hedge Details</h3>
 
               <div>
                 <label className="form-label">Hedge Plant *</label>
@@ -623,10 +623,10 @@ export default function TaskCreateForm({
               {plantSource === 'Bought' && (
                 <div>
                   <label className="form-label">
-                    Price per Plant <span style={{ color: 'var(--color-earth-400)', textTransform: 'none' }}>(optional)</span>
+                    Price per Plant <span style={{ color: 'var(--color-slate-400)', textTransform: 'none' }}>(optional)</span>
                   </label>
                   <div style={{ position: 'relative', marginTop: 4 }}>
-                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-earth-400)', fontSize: 13 }}>£</span>
+                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-slate-400)', fontSize: 13 }}>£</span>
                     <input
                       type="number"
                       value={pricePerPlant}
@@ -652,8 +652,8 @@ export default function TaskCreateForm({
 
           {/* ── Trees Fields ── */}
           {form.type === 'Planting' && plantingSubtype === 'Trees' && (
-            <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}>
-              <h3 className="text-label" style={{ color: 'var(--color-sage-600)' }}>Tree Details</h3>
+            <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-surface-100)', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)' }}>
+              <h3 className="text-label" style={{ color: 'var(--color-green-600)' }}>Tree Details</h3>
 
               <div>
                 <label className="form-label">Tree Species *</label>
@@ -745,10 +745,10 @@ export default function TaskCreateForm({
               {treeSource === 'Bought' && (
                 <div>
                   <label className="form-label">
-                    Price per Tree <span style={{ color: 'var(--color-earth-400)', textTransform: 'none' }}>(optional)</span>
+                    Price per Tree <span style={{ color: 'var(--color-slate-400)', textTransform: 'none' }}>(optional)</span>
                   </label>
                   <div style={{ position: 'relative', marginTop: 4 }}>
-                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-earth-400)', fontSize: 13 }}>£</span>
+                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-slate-400)', fontSize: 13 }}>£</span>
                     <input
                       type="number"
                       value={pricePerTree}
@@ -784,7 +784,7 @@ export default function TaskCreateForm({
                     height: 20,
                     borderRadius: 10,
                     transition: 'background 120ms ease',
-                    background: labourEnabled ? 'var(--color-sage-500)' : 'var(--color-parchment-300)',
+                    background: labourEnabled ? 'var(--color-green-500)' : 'var(--color-surface-300)',
                     cursor: 'pointer',
                   }}
                 >
@@ -799,12 +799,12 @@ export default function TaskCreateForm({
                     transition: 'left 120ms ease',
                   }} />
                 </div>
-                <span className="text-body" style={{ fontWeight: 600, color: 'var(--color-earth-600)' }}>Add Labour Costs</span>
+                <span className="text-body" style={{ fontWeight: 600, color: 'var(--color-slate-600)' }}>Add Labour Costs</span>
               </label>
 
               {labourEnabled && (
-                <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}>
-                  <h3 className="text-label" style={{ color: 'var(--color-earth-600)' }}>Labour Details</h3>
+                <div className="flex flex-col gap-4" style={{ padding: 16, background: 'var(--color-surface-100)', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)' }}>
+                  <h3 className="text-label" style={{ color: 'var(--color-slate-600)' }}>Labour Details</h3>
 
                   <div>
                     <label className="form-label">Labour Type *</label>
@@ -836,7 +836,7 @@ export default function TaskCreateForm({
                         Rate ({labourPricingMethod === 'Per Hour' ? '£/hour' : labourPricingMethod === 'Per Day' ? '£/day' : labourPricingMethod === 'Per Tree' ? '£/tree' : '£/plant'}) *
                       </label>
                       <div style={{ position: 'relative', marginTop: 4 }}>
-                        <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-earth-400)', fontSize: 13 }}>£</span>
+                        <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-slate-400)', fontSize: 13 }}>£</span>
                         <input
                           type="number"
                           value={labourRate}
@@ -907,7 +907,7 @@ export default function TaskCreateForm({
           {/* Due Date */}
           <div>
             <label className="form-label">
-              Due Date * <span style={{ color: 'var(--color-earth-400)', textTransform: 'none' }}>(or click calendar)</span>
+              Due Date * <span style={{ color: 'var(--color-slate-400)', textTransform: 'none' }}>(or click calendar)</span>
             </label>
             <input
               type="date"
@@ -939,16 +939,16 @@ export default function TaskCreateForm({
           {/* Staff */}
           <div>
             <label className="form-label">Assign Staff</label>
-            <div style={{ maxHeight: 144, overflowY: 'auto', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-sm)', marginTop: 4 }}>
+            <div style={{ maxHeight: 144, overflowY: 'auto', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-sm)', marginTop: 4 }}>
               {initialStaff.map(s => (
-                <label key={s.id} className="flex items-center gap-2" style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--color-parchment-200)', fontSize: 13, fontFamily: 'var(--font-body)', color: 'var(--color-earth-600)' }}>
+                <label key={s.id} className="flex items-center gap-2" style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--color-surface-200)', fontSize: 13, fontFamily: 'var(--font-body)', color: 'var(--color-slate-600)' }}>
                   <input
                     type="checkbox"
                     checked={form.assignedTo.includes(s.name)}
                     onChange={() => toggleStaff(s.name)}
                   />
                   <span>{s.name}</span>
-                  <span className="text-data" style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-earth-400)' }}>{s.role}</span>
+                  <span className="text-data" style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-slate-400)' }}>{s.role}</span>
                 </label>
               ))}
             </div>
@@ -976,10 +976,10 @@ function ReadOnlyField({ children, bold }) {
       style={{
         marginTop: 4,
         padding: '8px 12px',
-        background: 'var(--color-parchment-200)',
-        border: '1px solid var(--color-parchment-300)',
+        background: 'var(--color-surface-200)',
+        border: '1px solid var(--color-surface-300)',
         borderRadius: 'var(--radius-sm)',
-        color: 'var(--color-ink-900)',
+        color: 'var(--color-slate-900)',
         fontWeight: bold ? 700 : 500,
       }}
     >

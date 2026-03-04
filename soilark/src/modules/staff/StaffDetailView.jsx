@@ -56,9 +56,9 @@ export default function StaffDetailView({ staffId, onClose }) {
   }
 
   const accentColor = member.status === 'On Site'
-    ? 'var(--color-sage-500)'
+    ? 'var(--color-green-500)'
     : member.status === 'Off Site'
-      ? 'var(--color-ochre-400)'
+      ? 'var(--color-amber-400)'
       : 'transparent'
 
   return (
@@ -66,8 +66,8 @@ export default function StaffDetailView({ staffId, onClose }) {
       {/* Sticky Panel Header */}
       <div style={{
         padding: '12px 16px',
-        borderBottom: '1px solid var(--color-parchment-300)',
-        background: 'var(--color-parchment-100)',
+        borderBottom: '1px solid var(--color-surface-300)',
+        background: 'var(--color-surface-100)',
         position: 'sticky',
         top: 0,
         zIndex: 10,
@@ -77,7 +77,7 @@ export default function StaffDetailView({ staffId, onClose }) {
           className="btn btn-ghost"
           style={{ padding: 4, marginBottom: 8 }}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-earth-400)' }}>arrow_back</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-slate-400)' }}>arrow_back</span>
         </button>
         <div className="flex items-start gap-4">
           {/* Square profile pic with accent stripe */}
@@ -86,7 +86,7 @@ export default function StaffDetailView({ staffId, onClose }) {
               width: 64,
               height: 64,
               borderRadius: 'var(--radius-sm)',
-              background: 'var(--color-sage-600)',
+              background: 'var(--color-green-600)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -101,13 +101,13 @@ export default function StaffDetailView({ staffId, onClose }) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <h2 className="text-heading-3" style={{ color: 'var(--color-ink-900)', margin: 0 }}>{member.name}</h2>
+              <h2 className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{member.name}</h2>
               <span className={`badge ${badgeClass}`}>{member.status}</span>
             </div>
-            <p className="text-body-small" style={{ color: 'var(--color-earth-500)', margin: 0 }}>
+            <p className="text-body-small" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
               {member.role}{member.team ? ` · ${member.team}` : ''}{member.permissionLevel ? ` · ${member.permissionLevel}` : ''}
             </p>
-            <p className="text-body-small" style={{ color: 'var(--color-earth-500)', margin: 0 }}>
+            <p className="text-body-small" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
               {member.email}{member.mobile ? ` · ${member.mobile}` : ''}
             </p>
             <button onClick={() => setEditing(!editing)} className="btn btn-ghost" style={{ marginTop: 6, padding: '4px 8px', fontSize: 12 }}>
@@ -152,13 +152,13 @@ export default function StaffDetailView({ staffId, onClose }) {
             {/* Archive action */}
             <div style={{ padding: 16 }}>
               {archiveStep === 0 ? (
-                <button onClick={handleArchive} className="btn btn-ghost" style={{ color: 'var(--color-ochre-500)' }}>
+                <button onClick={handleArchive} className="btn btn-ghost" style={{ color: 'var(--color-amber-400)' }}>
                   Archive
                 </button>
               ) : (
                 <div className="flex items-center gap-2">
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-ochre-500)' }}>Are you sure?</span>
-                  <button onClick={handleArchive} className="btn btn-ghost" style={{ color: 'var(--color-ochre-500)', fontWeight: 600 }}>Confirm</button>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-amber-400)' }}>Are you sure?</span>
+                  <button onClick={handleArchive} className="btn btn-ghost" style={{ color: 'var(--color-amber-400)', fontWeight: 600 }}>Confirm</button>
                   <button onClick={() => setArchiveStep(0)} className="btn btn-ghost">Cancel</button>
                 </div>
               )}
@@ -171,18 +171,18 @@ export default function StaffDetailView({ staffId, onClose }) {
           <div style={{ padding: 16 }} className="flex flex-col gap-5">
             {/* Role & Team */}
             <div className="card" style={{ padding: '12px 16px' }}>
-              <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Role & Team</p>
-              <p className="text-heading-4" style={{ color: 'var(--color-ink-900)', margin: 0 }}>
+              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Role & Team</p>
+              <p className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0 }}>
                 {member.role || 'No role assigned'}
               </p>
               {member.team && (
-                <p className="text-body-small" style={{ color: 'var(--color-earth-500)', margin: 0 }}>{member.team}</p>
+                <p className="text-body-small" style={{ color: 'var(--color-slate-500)', margin: 0 }}>{member.team}</p>
               )}
             </div>
 
             {/* Active Tasks */}
             <div>
-              <h3 className="text-label mb-3" style={{ color: 'var(--color-earth-400)' }}>
+              <h3 className="text-label mb-3" style={{ color: 'var(--color-slate-400)' }}>
                 Active Tasks ({activeTasks.length})
               </h3>
               {activeTasks.length > 0 ? (
@@ -194,17 +194,17 @@ export default function StaffDetailView({ staffId, onClose }) {
                       className="w-full text-left flex items-center justify-between"
                       style={{
                         padding: '8px 12px',
-                        background: 'var(--color-parchment-100)',
+                        background: 'var(--color-surface-100)',
                         borderRadius: 'var(--radius-sm)',
                         border: 'none',
                         cursor: 'pointer',
                         fontFamily: 'var(--font-body)',
                         fontSize: 13,
-                        color: 'var(--color-ink-900)',
+                        color: 'var(--color-slate-900)',
                         transition: 'all 120ms ease',
                       }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(78,140,53,0.08)' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-parchment-100)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-surface-100)' }}
                     >
                       <span>{task.name}</span>
                       <span className="badge badge-neutral">
@@ -214,13 +214,13 @@ export default function StaffDetailView({ staffId, onClose }) {
                   ))}
                 </div>
               ) : (
-                <p className="text-body" style={{ color: 'var(--color-earth-400)' }}>No active tasks</p>
+                <p className="text-body" style={{ color: 'var(--color-slate-400)' }}>No active tasks</p>
               )}
             </div>
 
             {/* Activity History */}
             <div>
-              <h3 className="text-label mb-3" style={{ color: 'var(--color-earth-400)' }}>
+              <h3 className="text-label mb-3" style={{ color: 'var(--color-slate-400)' }}>
                 Activity History
               </h3>
               {doneTasks.length > 0 ? (
@@ -232,27 +232,27 @@ export default function StaffDetailView({ staffId, onClose }) {
                       className="w-full text-left flex items-center justify-between"
                       style={{
                         padding: '8px 12px',
-                        background: 'var(--color-parchment-100)',
+                        background: 'var(--color-surface-100)',
                         borderRadius: 'var(--radius-sm)',
                         border: 'none',
                         cursor: 'pointer',
                         fontFamily: 'var(--font-body)',
                         fontSize: 13,
-                        color: 'var(--color-ink-900)',
+                        color: 'var(--color-slate-900)',
                         transition: 'all 120ms ease',
                       }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(78,140,53,0.08)' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-parchment-100)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-surface-100)' }}
                     >
                       <span>{task.name}</span>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-earth-400)', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-slate-400)', whiteSpace: 'nowrap' }}>
                         {task.completedDate ? formatShortDate(task.completedDate) : 'Done'}
                       </span>
                     </button>
                   ))}
                 </div>
               ) : (
-                <p className="text-body" style={{ color: 'var(--color-earth-400)' }}>No completed tasks</p>
+                <p className="text-body" style={{ color: 'var(--color-slate-400)' }}>No completed tasks</p>
               )}
             </div>
           </div>
@@ -263,27 +263,27 @@ export default function StaffDetailView({ staffId, onClose }) {
           <div style={{ padding: 16 }} className="flex flex-col gap-5">
             {/* Employee Records */}
             <div>
-              <h3 className="text-label mb-3" style={{ color: 'var(--color-earth-400)' }}>Employee Records</h3>
+              <h3 className="text-label mb-3" style={{ color: 'var(--color-slate-400)' }}>Employee Records</h3>
               {employeeRecords.length > 0 ? (
                 <div className="flex flex-col gap-2">
                   {employeeRecords.map(doc => (
                     <div key={doc.id} className="flex items-center gap-3" style={{ padding: '10px 16px' }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-earth-400)' }}>description</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-slate-400)' }}>description</span>
                       <div className="flex-1 min-w-0">
-                        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-ink-900)', margin: 0 }}>{doc.name}</p>
+                        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-slate-900)', margin: 0 }}>{doc.name}</p>
                       </div>
-                      <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-400)', cursor: 'pointer' }}>download</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-slate-400)', cursor: 'pointer' }}>download</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-body" style={{ color: 'var(--color-earth-400)' }}>No employee records</p>
+                <p className="text-body" style={{ color: 'var(--color-slate-400)' }}>No employee records</p>
               )}
             </div>
 
             {/* Qualifications & Certificates */}
             <div>
-              <h3 className="text-label mb-3" style={{ color: 'var(--color-earth-400)' }}>Qualifications & Certificates</h3>
+              <h3 className="text-label mb-3" style={{ color: 'var(--color-slate-400)' }}>Qualifications & Certificates</h3>
               {qualifications.length > 0 ? (
                 <div className="flex flex-col gap-2">
                   {qualifications.map(doc => {
@@ -292,23 +292,23 @@ export default function StaffDetailView({ staffId, onClose }) {
 
                     return (
                       <div key={doc.id} className="flex items-center gap-3" style={{ padding: '10px 16px' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-earth-400)' }}>verified</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-slate-400)' }}>verified</span>
                         <div className="flex-1 min-w-0">
-                          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-ink-900)', margin: 0 }}>{doc.name}</p>
+                          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-slate-900)', margin: 0 }}>{doc.name}</p>
                           {doc.expiryDate && (
-                            <p className="text-label-small" style={{ color: 'var(--color-earth-400)', margin: 0 }}>
+                            <p className="text-label-small" style={{ color: 'var(--color-slate-400)', margin: 0 }}>
                               Expires: {formatShortDate(doc.expiryDate)}
                             </p>
                           )}
                         </div>
                         {expiryStatus && <span className={`badge ${expiryBadgeClass}`}>{expiryStatus}</span>}
-                        <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-earth-400)', cursor: 'pointer' }}>download</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-slate-400)', cursor: 'pointer' }}>download</span>
                       </div>
                     )
                   })}
                 </div>
               ) : (
-                <p className="text-body" style={{ color: 'var(--color-earth-400)' }}>No qualifications on file</p>
+                <p className="text-body" style={{ color: 'var(--color-slate-400)' }}>No qualifications on file</p>
               )}
             </div>
 
@@ -329,16 +329,16 @@ function FieldRow({ label, value, mono }) {
       className="flex items-center justify-between"
       style={{
         padding: '12px 16px',
-        borderBottom: '1px solid var(--color-parchment-200)',
+        borderBottom: '1px solid var(--color-surface-200)',
       }}
     >
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-earth-400)' }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-400)' }}>
         {label}
       </span>
       <span style={{
         fontFamily: mono ? 'var(--font-mono)' : 'var(--font-body)',
         fontSize: 13,
-        color: 'var(--color-ink-900)',
+        color: 'var(--color-slate-900)',
         textAlign: 'end',
         maxWidth: '60%',
       }}>
@@ -351,8 +351,8 @@ function FieldRow({ label, value, mono }) {
 function FieldSection({ title, children }) {
   return (
     <div>
-      <div style={{ padding: '12px 16px', borderBottom: '2px solid var(--color-parchment-300)' }}>
-        <h3 className="text-label" style={{ color: 'var(--color-earth-400)', margin: 0 }}>{title}</h3>
+      <div style={{ padding: '12px 16px', borderBottom: '2px solid var(--color-surface-300)' }}>
+        <h3 className="text-label" style={{ color: 'var(--color-slate-400)', margin: 0 }}>{title}</h3>
       </div>
       {children}
     </div>

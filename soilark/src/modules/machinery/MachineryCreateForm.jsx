@@ -59,7 +59,7 @@ export default function MachineryCreateForm({ onCancel, onSave }) {
 
   return (
     <form onSubmit={handleSubmit} className="card flex flex-col gap-4">
-      <h3 className="text-heading-4" style={{ color: 'var(--color-ink-900)', margin: 0 }}>Add Equipment</h3>
+      <h3 className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0 }}>Add Equipment</h3>
 
       {/* Required Fields */}
       <div className="grid grid-cols-2 gap-3">

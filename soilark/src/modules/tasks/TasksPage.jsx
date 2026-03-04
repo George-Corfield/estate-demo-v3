@@ -120,7 +120,7 @@ export default function TasksPage() {
           <button
             onClick={() => setRightView(rightView === 'map' ? 'calendar' : 'map')}
             className="btn btn-secondary flex items-center gap-2"
-            style={{ background: 'var(--color-parchment-50)' }}
+            style={{ background: 'var(--color-surface-50)' }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
               {rightView === 'map' ? 'calendar_month' : 'map'}

@@ -3,7 +3,7 @@ import { formatGBP } from '../../utils/currency'
 export default function TaskTypeFields({ task }) {
   const tf = task.typeFields
   if (!tf || Object.keys(tf).length === 0) {
-    return <p className="text-body" style={{ color: 'var(--color-earth-400)' }}>No type-specific fields for this task.</p>
+    return <p className="text-body" style={{ color: 'var(--color-slate-400)' }}>No type-specific fields for this task.</p>
   }
 
   return (
@@ -19,7 +19,7 @@ function TypeSpecificFields({ task, tf }) {
     case 'Fertilizing':
       return (
         <div className="flex flex-col gap-4">
-          <h3 className="text-label" style={{ color: 'var(--color-earth-400)' }}>Fertilising Details</h3>
+          <h3 className="text-label" style={{ color: 'var(--color-slate-400)' }}>Fertilising Details</h3>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Product" value={tf.product} />
             <Field label="Area" value={`${tf.areaHa} ha`} />
@@ -39,7 +39,7 @@ function TypeSpecificFields({ task, tf }) {
     case 'Harvesting':
       return (
         <div className="flex flex-col gap-4">
-          <h3 className="text-label" style={{ color: 'var(--color-earth-400)' }}>Harvesting Details</h3>
+          <h3 className="text-label" style={{ color: 'var(--color-slate-400)' }}>Harvesting Details</h3>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Expected Yield" value={tf.expectedYield} />
             <Field label="Storage Location" value={tf.storageLocation} />
@@ -56,7 +56,7 @@ function TypeSpecificFields({ task, tf }) {
     case 'Maintenance':
       return (
         <div className="flex flex-col gap-4">
-          <h3 className="text-label" style={{ color: 'var(--color-earth-400)' }}>Maintenance Details</h3>
+          <h3 className="text-label" style={{ color: 'var(--color-slate-400)' }}>Maintenance Details</h3>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Est. Hours" value={`${tf.estimatedHours}h`} />
             <Field label="Urgency" value={tf.urgency} />
@@ -65,21 +65,21 @@ function TypeSpecificFields({ task, tf }) {
           </div>
           {tf.faultDescription && (
             <div>
-              <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Fault Description</p>
-              <p className="text-body" style={{ color: 'var(--color-earth-600)', background: 'var(--color-parchment-100)', padding: 12, borderRadius: 'var(--radius-sm)' }}>{tf.faultDescription}</p>
+              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Fault Description</p>
+              <p className="text-body" style={{ color: 'var(--color-slate-600)', background: 'var(--color-surface-100)', padding: 12, borderRadius: 'var(--radius-sm)' }}>{tf.faultDescription}</p>
             </div>
           )}
           {tf.partsNeeded && (
             <div>
-              <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>Parts Needed</p>
-              <p className="text-body" style={{ color: 'var(--color-earth-600)', background: 'var(--color-parchment-100)', padding: 12, borderRadius: 'var(--radius-sm)' }}>{tf.partsNeeded}</p>
+              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Parts Needed</p>
+              <p className="text-body" style={{ color: 'var(--color-slate-600)', background: 'var(--color-surface-100)', padding: 12, borderRadius: 'var(--radius-sm)' }}>{tf.partsNeeded}</p>
             </div>
           )}
         </div>
       )
 
     default:
-      return <p className="text-body" style={{ color: 'var(--color-earth-400)' }}>No type-specific fields for "{task.type}" tasks.</p>
+      return <p className="text-body" style={{ color: 'var(--color-slate-400)' }}>No type-specific fields for "{task.type}" tasks.</p>
   }
 }
 
@@ -88,7 +88,7 @@ function PlantingFields({ tf }) {
     case 'Crop/Seed':
       return (
         <div className="flex flex-col gap-4">
-          <h3 className="text-label" style={{ color: 'var(--color-earth-400)' }}>Crop / Seed Details</h3>
+          <h3 className="text-label" style={{ color: 'var(--color-slate-400)' }}>Crop / Seed Details</h3>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Crop / Mix" value={tf.cropMix} />
             <Field label="Area" value={`${tf.area} ha`} />
@@ -110,7 +110,7 @@ function PlantingFields({ tf }) {
     case 'Hedges':
       return (
         <div className="flex flex-col gap-4">
-          <h3 className="text-label" style={{ color: 'var(--color-earth-400)' }}>Hedge Details</h3>
+          <h3 className="text-label" style={{ color: 'var(--color-slate-400)' }}>Hedge Details</h3>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Hedge Plant" value={tf.hedgePlant} />
             <Field label="Hedge Length" value={`${tf.hedgeLength?.toLocaleString()} m`} />
@@ -128,7 +128,7 @@ function PlantingFields({ tf }) {
     case 'Trees':
       return (
         <div className="flex flex-col gap-4">
-          <h3 className="text-label" style={{ color: 'var(--color-earth-400)' }}>Tree Details</h3>
+          <h3 className="text-label" style={{ color: 'var(--color-slate-400)' }}>Tree Details</h3>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Tree Species" value={tf.treeSpecies} />
             <Field label="Quantity" value={tf.quantity?.toLocaleString()} />
@@ -145,7 +145,7 @@ function PlantingFields({ tf }) {
     default:
       return (
         <div className="flex flex-col gap-4">
-          <h3 className="text-label" style={{ color: 'var(--color-earth-400)' }}>Planting Details</h3>
+          <h3 className="text-label" style={{ color: 'var(--color-slate-400)' }}>Planting Details</h3>
           <div className="grid grid-cols-2 gap-3">
             {tf.purpose && <Field label="Purpose" value={tf.purpose} />}
             {tf.plantingType && <Field label="Planting Type" value={tf.plantingType} />}
@@ -166,7 +166,7 @@ function PlantingFields({ tf }) {
 function LabourFields({ tf }) {
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-label" style={{ color: 'var(--color-earth-600)' }}>Labour Details</h3>
+      <h3 className="text-label" style={{ color: 'var(--color-slate-600)' }}>Labour Details</h3>
       <div className="grid grid-cols-2 gap-3">
         <Field label="Labour Type" value={tf.labourType} />
         <Field label="Pricing Method" value={tf.labourPricingMethod} />
@@ -184,9 +184,10 @@ function LabourFields({ tf }) {
 
 function Field({ label, value, highlight }) {
   return (
-    <div style={{ padding: 12, background: 'var(--color-parchment-100)', border: '1px solid var(--color-parchment-300)', borderRadius: 'var(--radius-md)' }}>
-      <p className="text-label" style={{ color: 'var(--color-earth-400)', marginBottom: 4 }}>{label}</p>
-      <p className="text-body" style={{ color: highlight ? 'var(--color-ink-900)' : 'var(--color-earth-600)', fontWeight: highlight ? 700 : 500 }}>{value}</p>
+    // <div style={{ padding: 12, background: 'var(--color-surface-100)', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)' }}>
+    <div style={{ padding: 12, background: 'var(--color-slate-100)', borderRadius: 'var(--radius-md)' }}>
+      <p className="text-label" style={{ color: 'var(--color-slate-500)', marginBottom: 4 }}>{label}</p>
+      <p className="text-body" style={{ color: highlight ? 'var(--color-slate-900)' : 'var(--color-slate-600)', fontWeight: highlight ? 700 : 500 }}>{value}</p>
     </div>
   )
 }

@@ -16,12 +16,12 @@ export default function Toast() {
           className="toast-enter flex items-center gap-2"
           style={{
             padding: '10px 16px',
-            background: 'var(--color-parchment-50)',
-            border: '1px solid var(--color-parchment-300)',
+            background: 'var(--color-surface-50)',
+            border: '1px solid var(--color-surface-300)',
             borderRadius: 'var(--radius-sm)',
             fontFamily: 'var(--font-body)',
             fontSize: 13,
-            color: 'var(--color-ink-900)',
+            color: 'var(--color-slate-900)',
           }}
         >
           <span
@@ -29,8 +29,8 @@ export default function Toast() {
             style={{
               fontSize: 18,
               color: toast.toastType === 'error'
-                ? 'var(--color-ochre-400)'
-                : 'var(--color-sage-500)',
+                ? 'var(--color-amber-400)'
+                : 'var(--color-green-500)',
             }}
           >
             {toast.toastType === 'success' ? 'check_circle' : toast.toastType === 'error' ? 'warning' : 'info'}

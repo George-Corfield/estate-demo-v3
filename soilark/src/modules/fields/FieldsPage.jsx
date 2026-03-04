@@ -64,7 +64,7 @@ export default function FieldsPage() {
               <button
                 onClick={() => setRightView('calendar')}
                 className="btn btn-secondary flex items-center gap-2"
-                style={{ background: 'var(--color-parchment-50)' }}
+                style={{ background: 'var(--color-surface-50)' }}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 18 }}>calendar_month</span>
                 Calendar
