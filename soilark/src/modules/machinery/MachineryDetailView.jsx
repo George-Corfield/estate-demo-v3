@@ -63,7 +63,7 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
         top: 0,
         zIndex: 10,
       }}>
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-3">
           <button
             onClick={onClose}
             className="btn btn-ghost shrink-0"
@@ -72,14 +72,19 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
             <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-slate-400)' }}>arrow_back</span>
           </button>
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>
                 <h2 className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{equipment.name}</h2>
                 <p className="text-body-small" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
                   {equipment.make} {equipment.model} &middot; {equipment.year}
                 </p>
               </div>
-              <span className={`badge ${badgeClass}`}>{equipment.status}</span>
+              <div className='flex flex-col justify-center items-center'>
+                <span className={`badge ${badgeClass}`}>{equipment.status}</span>
+                <div style={{ padding: '8px 0px 0px 0px', display: 'flex', justifyContent: 'flex-end' }}>
+                  <button className="btn btn-ghost">Edit</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -90,11 +95,7 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {/* Details Tab */}
         {activeTab === 'details' && (
-          <div style={{ padding: '0' }}>
-            {/* Edit button */}
-            <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'flex-end' }}>
-              <button className="btn btn-ghost">Edit</button>
-            </div>
+          <div style={{ padding: 20 }} className='flex flex-col gap-5'>
 
             {/* Equipment section */}
             <FieldSection title="Equipment">
@@ -316,39 +317,63 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
 }
 
 /* Field row component — label left, value right */
+// function FieldRow({ label, value, mono, highlight }) {
+//   return (
+//     <div
+//       className="flex items-center justify-between"
+//       style={{
+//         padding: '12px 16px',
+//         borderBottom: '1px solid var(--color-surface-200)',
+//       }}
+//     >
+//       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-400)' }}>
+//         {label}
+//       </span>
+//       <span style={{
+//         fontFamily: mono ? 'var(--font-mono)' : 'var(--font-body)',
+//         fontSize: 13,
+//         color: highlight ? 'var(--color-amber-400)' : 'var(--color-slate-900)',
+//         textAlign: 'end'
+//       }}>
+//         {value || '—'}
+//       </span>
+//     </div>
+//   )
+// }
+
 function FieldRow({ label, value, mono, highlight }) {
   return (
-    <div
-      className="flex items-center justify-between"
-      style={{
-        padding: '12px 16px',
-        borderBottom: '1px solid var(--color-surface-200)',
-      }}
-    >
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-400)' }}>
-        {label}
-      </span>
-      <span style={{
-        fontFamily: mono ? 'var(--font-mono)' : 'var(--font-body)',
-        fontSize: 13,
-        color: highlight ? 'var(--color-amber-400)' : 'var(--color-slate-900)',
-        textAlign: 'end'
-      }}>
-        {value || '—'}
-      </span>
+    <div style={{ padding: 12, background: 'var(--color-surface-100)', borderRadius: 'var(--radius-md)' }}>
+      <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>{label}</p>
+      <p className="text-body" style={{ color: 'var(--color-slate-900)', fontWeight: 500, margin: 0 }}>{value}</p>
     </div>
   )
 }
 
 /* Section divider with title */
+// function FieldSection({ title, children }) {
+//   return (
+//     <div>
+//       <div style={{ padding: '12px 16px', borderBottom: '2px solid var(--color-surface-300)' }}>
+//         <h3 className="text-label" style={{ color: 'var(--color-slate-400)', margin: 0 }}>{title}</h3>
+//       </div>
+//       {children}
+//     </div>
+//   )
+// }
+
 function FieldSection({ title, children }) {
   return (
-    <div>
-      <div style={{ padding: '12px 16px', borderBottom: '2px solid var(--color-surface-300)' }}>
-        <h3 className="text-label" style={{ color: 'var(--color-slate-400)', margin: 0 }}>{title}</h3>
+      <div>
+        <div style={{ padding: '12px 16px', borderBottom: '2px solid var(--color-surface-300)' }}>
+          <h3 className="text-label-large mb-2" style={{ color: 'var(--color-slate-400)', margin: 0}}>{title}</h3>
+        </div>
+        <div className='grid grid-cols-2 gap-3' style={{paddingTop: '12px'}}>
+          {children}
+        </div>
       </div>
-      {children}
-    </div>
+
+      
   )
 }
 

@@ -79,7 +79,7 @@ export default function StaffDetailView({ staffId, onClose }) {
         >
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-slate-400)' }}>arrow_back</span>
         </button>
-        <div className="flex items-start gap-4">
+        <div className="flex items-center gap-4">
           {/* Square profile pic with accent stripe */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
             <div style={{
@@ -99,20 +99,23 @@ export default function StaffDetailView({ staffId, onClose }) {
               {member.initials || <span className="material-symbols-outlined" style={{ fontSize: 28, color: '#fff' }}>person</span>}
             </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 flex justify-between min-w-0">
+            <div className="flex flex-col justify-center">
               <h2 className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{member.name}</h2>
-              <span className={`badge ${badgeClass}`}>{member.status}</span>
-            </div>
-            <p className="text-body-small" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
+              <p className="text-body-small" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
               {member.role}{member.team ? ` · ${member.team}` : ''}{member.permissionLevel ? ` · ${member.permissionLevel}` : ''}
-            </p>
-            <p className="text-body-small" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
-              {member.email}{member.mobile ? ` · ${member.mobile}` : ''}
-            </p>
-            <button onClick={() => setEditing(!editing)} className="btn btn-ghost" style={{ marginTop: 6, padding: '4px 8px', fontSize: 12 }}>
-              Edit Profile
-            </button>
+              </p>
+              <p className="text-body-small" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
+                {member.email}{member.mobile ? ` · ${member.mobile}` : ''}
+              </p>
+            </div>
+            <div className='flex flex-col justify-center items-center'>
+              <span className={`badge ${badgeClass}`}>{member.status}</span>
+              <button onClick={() => setEditing(!editing)} className="btn btn-ghost" style={{ marginTop: 6, padding: '4px 8px', fontSize: 12 }}>
+                Edit Profile
+              </button>
+            </div>
+            
           </div>
         </div>
       </div>
@@ -133,7 +136,7 @@ export default function StaffDetailView({ staffId, onClose }) {
 
         {/* Details Tab */}
         {activeTab === 'details' && !editing && (
-          <div>
+          <div style={{ padding: 20 }} className='flex flex-col gap-5'>
             <FieldSection title="Employee Information">
               <FieldRow label="Full Name" value={member.name} />
               <FieldRow label="Email" value={member.email} />
@@ -323,38 +326,60 @@ export default function StaffDetailView({ staffId, onClose }) {
   )
 }
 
+// function FieldRow({ label, value, mono }) {
+//   return (
+//     <div
+//       className="flex items-center justify-between"
+//       style={{
+//         padding: '12px 16px',
+//         borderBottom: '1px solid var(--color-surface-200)',
+//       }}
+//     >
+//       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-400)' }}>
+//         {label}
+//       </span>
+//       <span style={{
+//         fontFamily: mono ? 'var(--font-mono)' : 'var(--font-body)',
+//         fontSize: 13,
+//         color: 'var(--color-slate-900)',
+//         textAlign: 'end',
+//         maxWidth: '60%',
+//       }}>
+//         {value || '—'}
+//       </span>
+//     </div>
+//   )
+// }
+
 function FieldRow({ label, value, mono }) {
   return (
-    <div
-      className="flex items-center justify-between"
-      style={{
-        padding: '12px 16px',
-        borderBottom: '1px solid var(--color-surface-200)',
-      }}
-    >
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-400)' }}>
-        {label}
-      </span>
-      <span style={{
-        fontFamily: mono ? 'var(--font-mono)' : 'var(--font-body)',
-        fontSize: 13,
-        color: 'var(--color-slate-900)',
-        textAlign: 'end',
-        maxWidth: '60%',
-      }}>
-        {value || '—'}
-      </span>
+    <div style={{ padding: 12, background: 'var(--color-surface-100)', borderRadius: 'var(--radius-md)' }}>
+      <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>{label}</p>
+      <p className="text-body" style={{ color: 'var(--color-slate-900)', fontWeight: 500, margin: 0 }}>{value}</p>
     </div>
   )
 }
+
+// function FieldSection({ title, children }) {
+//   return (
+//     <div>
+//       <div style={{ padding: '12px 16px', borderBottom: '2px solid var(--color-surface-300)' }}>
+//         <h3 className="text-label" style={{ color: 'var(--color-slate-400)', margin: 0 }}>{title}</h3>
+//       </div>
+//       {children}
+//     </div>
+//   )
+// }
 
 function FieldSection({ title, children }) {
   return (
     <div>
       <div style={{ padding: '12px 16px', borderBottom: '2px solid var(--color-surface-300)' }}>
-        <h3 className="text-label" style={{ color: 'var(--color-slate-400)', margin: 0 }}>{title}</h3>
+        <h3 className="text-label-large" style={{ color: 'var(--color-slate-400)', margin: 0 }}>{title}</h3>
       </div>
-      {children}
+      <div className='grid grid-cols-2 gap-3' style={{paddingTop: '12px'}}>
+        {children}
+      </div>
     </div>
   )
 }

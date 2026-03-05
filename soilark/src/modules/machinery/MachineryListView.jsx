@@ -156,59 +156,69 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
         {/* Equipment Card List */}
         <div className="flex flex-col gap-3">
           {filtered.map(equipment => {
-            const icon = TYPE_ICON_MAP[equipment.type] || 'build'
-            const badgeClass = MACHINERY_STATUS_COLORS[equipment.status] || 'badge-neutral'
-            const isOverdue = equipment.hours >= equipment.nextServiceDue
-            const accentClass = equipment.status === 'Active'
-              ? 'card-accent-healthy'
-              : equipment.status === 'Maintenance'
-                ? 'card-accent-attention'
-                : ''
+            const icon = TYPE_ICON_MAP[equipment.type] || 'build';
+            const badgeClass = MACHINERY_STATUS_COLORS[equipment.status] || 'badge-neutral';
+            const isOverdue = equipment.hours >= equipment.nextServiceDue;
 
             return (
               <div
                 key={equipment.id}
-                className={`card ${accentClass}`}
                 onClick={() => onEquipmentClick(equipment.id)}
-                style={{ cursor: 'pointer', transition: 'all var(--duration-fast) ease' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-surface-200)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = '' }}
+                className="group flex items-center p-4 mb-2"
+                style={{ 
+                  cursor: 'pointer', 
+                  background: 'white',
+                  borderBottom: `1px solid var(--color-slate-100)`,
+                  transition: 'background 0.2s ease'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-surface-50)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'white' }}
               >
-                <div className="flex items-start gap-4">
-                  {/* Category Icon */}
-                  <div style={{ width: 36, height: 36, borderRadius: 'var(--radius-sm)', background: 'var(--color-surface-200)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span className="material-symbols-outlined" style={{ color: 'var(--color-slate-500)', fontSize: 18 }}>{icon}</span>
+                {/* 1. Identity Column (The "What") */}
+                <div className="flex items-center gap-4 w-1/3 min-w-[250px]">
+                  <div style={{ width: 40, height: 40, borderRadius: '8px', background: 'var(--color-surface-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span className="material-symbols-outlined" style={{ color: 'var(--color-slate-700)', fontSize: 20 }}>{icon}</span>
                   </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{equipment.name}</p>
-                        <p className="text-body-small" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
-                          {equipment.make} &middot; {equipment.model} &middot; {equipment.year}
-                        </p>
-                      </div>
-                      <span className={`badge ${badgeClass}`}>{equipment.status}</span>
-                    </div>
-                    <div className="flex items-center gap-6 mt-2">
-                      <div>
-                        <span className="text-data" style={{ color: 'var(--color-slate-900)' }}>{equipment.hours.toLocaleString()}</span>
-                        <span className="text-label" style={{ color: 'var(--color-slate-400)', marginLeft: 4 }}>HRS</span>
-                      </div>
-                      {equipment.nextServiceDue && (
-                        <div>
-                          <span className="text-label" style={{ color: 'var(--color-slate-400)', marginRight: 4 }}>NEXT SERVICE</span>
-                          <span className="text-data" style={{ color: isOverdue ? 'var(--color-amber-400)' : 'var(--color-slate-900)' }}>
-                            {equipment.nextServiceDue.toLocaleString()} hrs
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                  <div className="truncate">
+                    <p className="font-bold text-slate-900 m-0 leading-tight">{equipment.name}</p>
+                    <p className="text-xs text-slate-500 m-0 uppercase tracking-wider">
+                      {equipment.make} • {equipment.model}
+                    </p>
                   </div>
                 </div>
+
+                {/* 2. Operational Column (The "Usage") - Centered */}
+                <div className="flex-1 flex flex-col items-center border-x border-slate-100 px-4">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Total Usage</span>
+                  <div>
+                    <span className="text-lg font-mono font-bold text-slate-900">{equipment.hours.toLocaleString()}</span>
+                    <span className="text-[10px] ml-1 text-slate-400">HRS</span>
+                  </div>
+                </div>
+
+                {/* 3. Maintenance Column (The "Deadline") - Centered */}
+                <div className="flex-1 flex flex-col items-center px-4">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Next Service</span>
+                  {equipment.nextServiceDue ? (
+                    <span 
+                      className="font-semibold" 
+                      style={{ color: isOverdue ? 'var(--color-red-50)' : 'var(color-slate-900)' }}
+                    >
+                      {equipment.nextServiceDue.toLocaleString()} <small className="text-[9px]">HRS</small>
+                    </span>
+                  ) : (
+                    <span className="text-slate-300">—</span>
+                  )}
+                </div>
+
+                {/* 4. Status Column (The "Condition") - Right Aligned */}
+                <div className="w-[120px] flex justify-end">
+                  <span className={`badge ${badgeClass} shadow-sm`}>
+                    {equipment.status}
+                  </span>
+                </div>
               </div>
-            )
+            );
           })}
         </div>
 

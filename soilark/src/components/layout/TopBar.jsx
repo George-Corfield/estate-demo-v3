@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { NAV_ITEMS } from '../../constants/navigation'
 import { estateStats } from '../../data/estateStats'
 import EstateStatsDropdown from './EstateStatsDropdown'
+import { formatOrdinalDate } from '../../utils/dates'
 
 export default function TopBar() {
   const location = useLocation()
@@ -10,12 +11,21 @@ export default function TopBar() {
   const [showStats, setShowStats] = useState(false)
   const estateSwitchRef = useRef(null)
   const statsRef = useRef(null)
+  const [dateStr, setDateStr] = useState(formatOrdinalDate(new Date()))
 
   const currentItem = NAV_ITEMS.find(item => {
     if (item.path === '/') return location.pathname === '/'
     return location.pathname.startsWith(item.path)
   })
   const pageName = currentItem?.label || 'Overview'
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDateStr(formatOrdinalDate(new Date()))
+    }, 10000)
+    return () => clearInterval(interval)
+  }, [])
 
   // Close on click outside
   useEffect(() => {
@@ -154,6 +164,7 @@ export default function TopBar() {
 
       {/* Right: Notifications + Avatar */}
       <div className="flex items-center gap-3">
+        <div className="text-body opacity-90" style={{color: 'white'}}>{dateStr}</div>
         <button
           style={{
             background: 'none',

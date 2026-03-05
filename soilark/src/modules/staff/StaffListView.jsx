@@ -89,7 +89,7 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
         </div>
 
         {/* Stat Strip */}
-        {!compressed && (
+        {(
           <div className="grid grid-cols-3 gap-4">
             <div className="stat-card">
               <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Total Staff</p>
@@ -120,7 +120,7 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
             style={{ maxWidth: 280 }}
           />
           <div className="flex-1" />
-          {!compressed && (
+          {(
             <button onClick={() => exportCSV(staff)} className="btn btn-ghost">
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>download</span>
               Export staff
@@ -137,48 +137,61 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
         )}
 
         {/* Staff Card List */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           {filtered.map(member => {
-            const badgeClass = STAFF_STATUS_COLORS[member.status] || 'badge-neutral'
-            const accentClass = member.status === 'On Site'
-              ? 'card-accent-healthy'
-              : member.status === 'Off Site'
-                ? 'card-accent-attention'
-                : ''
-            const isSelected = member.id === selectedStaffId
+            const badgeClass = STAFF_STATUS_COLORS[member.status] || 'badge-neutral';
+            const isSelected = member.id === selectedStaffId;
 
             return (
               <div
                 key={member.id}
-                className={`card ${accentClass}`}
                 onClick={() => onStaffClick(member.id)}
+                className="group flex items-center p-4"
                 style={{
                   cursor: 'pointer',
                   transition: 'all var(--duration-fast) ease',
-                  background: isSelected ? 'var(--color-surface-200)' : undefined,
+                  background: isSelected ? 'var(--color-surface-200)' : 'white',
+                  borderBottom: `1px solid var(--color-slate-100)`,
+                  borderRadius: 'var(--radius-md)' // Optional: keep if you want them to look like cards
                 }}
-                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--color-surface-200)' }}
-                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = '' }}
+                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--color-surface-50)' }}
+                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'var(--color-surface-200)' : 'white' }}
               >
-                <div className="flex items-start gap-4">
+                {/* 1. Profile & Name (The "Who") - 30% Width */}
+                <div className="flex items-center gap-4 w-[30%] min-w-[200px]">
                   <ProfileCircle name={member.name} initials={member.initials} />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{member.name}</p>
-                        <p className="text-body-large" style={{ color: 'var(--color-slate-500)', margin: 0 }}>
-                          {member.role}{member.team ? ` · ${member.team}` : ''}
-                        </p>
-                      </div>
-                      <span className={`badge ${badgeClass}`}>{member.status}</span>
-                    </div>
-                    {!compressed && (
-                      <div className="flex items-center gap-2 mt-1">
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-400)' }}>Permission</span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-900)' }}>{member.permissionLevel}</span>
-                      </div>
+                  <div className="truncate">
+                    <p className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{member.name}</p>
+                    {/* Permission moved here if compressed, or kept as a small tag */}
+                    {(
+                      <span className="text-[10px] font-mono text-slate-400 uppercase">{member.permissionLevel}</span>
                     )}
                   </div>
+                </div>
+
+                {/* 2. Role & Team (The "Position") - Centered Expansion */}
+                <div className="flex-1 px-4 border-l border-slate-100">
+                  <p className="text-label" style={{ color: 'var(--color-slate-400)', fontSize: 10, marginBottom: 2 }}>ROLE & TEAM</p>
+                  <p className="text-body truncate" style={{ color: 'var(--color-slate-600)', margin: 0 }}>
+                    {member.role}{member.team ? ` · ${member.team}` : ''}
+                  </p>
+                </div>
+
+                {/* 3. Permissions (The "Access") - Only if not compressed */}
+                {(
+                  <div className="w-[15%] px-4 flex flex-col">
+                    <span className="text-label" style={{ color: 'var(--color-slate-400)', fontSize: 10, marginBottom: 2 }}>ACCESS</span>
+                    <span className="text-body truncate" style={{color: 'var(--color-slate-600)' }}>
+                      {member.permissionLevel}
+                    </span>
+                  </div>
+                )}
+
+                {/* 4. Status (The "Availability") - Right Aligned */}
+                <div className="w-[120px] flex justify-end shrink-0">
+                  <span className={`badge ${badgeClass} justify-center`}>
+                    {member.status}
+                  </span>
                 </div>
               </div>
             )
