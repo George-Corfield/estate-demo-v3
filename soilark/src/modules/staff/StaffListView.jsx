@@ -45,19 +45,22 @@ function ProfileCircle({ name, initials, size = 36 }) {
 
 export { ProfileCircle }
 
-export default function StaffListView({ onStaffClick, showInlineCreate, setShowInlineCreate, compressed, selectedStaffId }) {
+export default function StaffListView({ onStaffClick, showInlineCreate, setShowInlineCreate, selectedStaffId }) {
   const { staff } = useApp()
   const [activeTab, setActiveTab] = useState('All')
   const [search, setSearch] = useState('')
 
-  // const activeStaff = useMemo(() => staff.filter(s => s.status !== 'Archived'), [staff])
   const activeStaff = staff
 
   const filtered = useMemo(() => {
     let items = activeStaff
 
     if (activeTab !== 'All') {
-      items = items.filter(s => s.status === activeTab)
+      if (activeTab === 'Sick') {
+        items = items.filter(s => s.status === 'Sick' || s.status === 'Pending Sick Confirmation')
+      } else {
+        items = items.filter(s => s.status === activeTab)
+      }
     }
 
     if (search.trim()) {
@@ -73,8 +76,10 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
   }, [activeStaff, activeTab, search])
 
   const totalStaff = activeStaff.length
-  const onSite = activeStaff.filter(s => s.status === 'On Site').length
-  const offSite = activeStaff.filter(s => s.status === 'Off Site').length
+  const available = activeStaff.filter(s => s.status === 'Available').length
+  const onTask = activeStaff.filter(s => s.status === 'On Task').length
+  const onHoliday = activeStaff.filter(s => s.status === 'On Holiday').length
+  const sick = activeStaff.filter(s => s.status === 'Sick' || s.status === 'Pending Sick Confirmation').length
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -89,22 +94,28 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
         </div>
 
         {/* Stat Strip */}
-        {(
-          <div className="grid grid-cols-3 gap-4">
-            <div className="stat-card">
-              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Total Staff</p>
-              <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{totalStaff}</p>
-            </div>
-            <div className="stat-card">
-              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>On Site</p>
-              <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{onSite}</p>
-            </div>
-            <div className="stat-card">
-              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Off Site</p>
-              <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{offSite}</p>
-            </div>
+        <div className="grid grid-cols-5 gap-4">
+          <div className="stat-card">
+            <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Total Staff</p>
+            <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{totalStaff}</p>
           </div>
-        )}
+          <div className="stat-card">
+            <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Available</p>
+            <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{available}</p>
+          </div>
+          <div className="stat-card">
+            <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>On Task</p>
+            <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{onTask}</p>
+          </div>
+          <div className="stat-card">
+            <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>On Holiday</p>
+            <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{onHoliday}</p>
+          </div>
+          <div className="stat-card">
+            <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Sick</p>
+            <p className="text-data-large" style={{ color: 'var(--color-amber-400)' }}>{sick}</p>
+          </div>
+        </div>
 
         {/* Category Tabs */}
         <TabBar tabs={CATEGORY_TABS} activeTab={activeTab} onChange={setActiveTab} />
@@ -152,7 +163,7 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
                   transition: 'all var(--duration-fast) ease',
                   background: isSelected ? 'var(--color-surface-200)' : 'white',
                   borderBottom: `1px solid var(--color-slate-100)`,
-                  borderRadius: 'var(--radius-md)' // Optional: keep if you want them to look like cards
+                  borderRadius: 'var(--radius-md)'
                 }}
                 onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--color-surface-50)' }}
                 onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'var(--color-surface-200)' : 'white' }}
@@ -162,7 +173,6 @@ export default function StaffListView({ onStaffClick, showInlineCreate, setShowI
                   <ProfileCircle name={member.name} initials={member.initials} />
                   <div className="truncate">
                     <p className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{member.name}</p>
-                    {/* Permission moved here if compressed, or kept as a small tag */}
                     {(
                       <span className="text-[10px] font-mono text-slate-400 uppercase">{member.permissionLevel}</span>
                     )}

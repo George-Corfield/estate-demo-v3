@@ -4,6 +4,7 @@ import { initialTasks } from '../data/tasks'
 import { initialEvents } from '../data/events'
 import { initialMachinery } from '../data/machinery'
 import { initialStaff } from '../data/staff'
+import { initialAbsences } from '../data/absences'
 
 const AppContext = createContext(null)
 
@@ -13,6 +14,7 @@ const initialState = {
   customEvents: initialEvents,
   machinery: initialMachinery,
   staff: initialStaff,
+  absences: initialAbsences,
   toasts: [],
 }
 
@@ -101,6 +103,61 @@ function reducer(state, action) {
           s.id === action.id ? { ...s, status: 'Archived' } : s
         ),
       }
+    case 'REPORT_SICK':
+      return {
+        ...state,
+        staff: state.staff.map(s =>
+          s.id === action.staffId ? { ...s, status: 'Pending Sick Confirmation' } : s
+        ),
+        absences: [...state.absences, action.absence],
+      }
+    case 'CONFIRM_SICK':
+      return {
+        ...state,
+        staff: state.staff.map(s =>
+          s.id === action.staffId ? { ...s, status: 'Sick' } : s
+        ),
+        absences: state.absences.map(a =>
+          a.id === action.absenceId
+            ? { ...a, status: 'confirmed', paidStatus: action.paidStatus, confirmedBy: action.confirmedBy, confirmedAt: new Date().toISOString(), notes: action.notes || a.notes }
+            : a
+        ),
+      }
+    case 'CANCEL_SICK_REPORT':
+      return {
+        ...state,
+        staff: state.staff.map(s =>
+          s.id === action.staffId ? { ...s, status: 'Available' } : s
+        ),
+        absences: state.absences.map(a =>
+          a.id === action.absenceId ? { ...a, status: 'cancelled' } : a
+        ),
+      }
+    case 'END_SICK_LEAVE':
+      return {
+        ...state,
+        staff: state.staff.map(s =>
+          s.id === action.staffId ? { ...s, status: 'Available' } : s
+        ),
+        absences: state.absences.map(a => {
+          if (a.staffId === action.staffId && a.type === 'sick' && a.status === 'confirmed' && !a.endDate) {
+            const start = new Date(a.startDate)
+            const end = new Date()
+            const days = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1)
+            return { ...a, endDate: new Date().toISOString().split('T')[0], days }
+          }
+          return a
+        }),
+      }
+    case 'ADD_ABSENCE':
+      return { ...state, absences: [...state.absences, action.absence] }
+    case 'UPDATE_ABSENCE':
+      return {
+        ...state,
+        absences: state.absences.map(a =>
+          a.id === action.id ? { ...a, ...action.updates } : a
+        ),
+      }
     case 'ADD_CUSTOM_EVENT':
       return { ...state, customEvents: [...state.customEvents, action.event] }
     case 'SHOW_TOAST':
@@ -163,6 +220,44 @@ export function AppProvider({ children }) {
     dispatch({ type: 'ARCHIVE_STAFF', id })
   }, [])
 
+  const reportSick = useCallback((staffId) => {
+    const absence = {
+      id: `abs-${Date.now()}`,
+      staffId,
+      type: 'sick',
+      status: 'pending',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: null,
+      days: 1,
+      paidStatus: null,
+      reportedAt: new Date().toISOString(),
+      confirmedBy: null,
+      confirmedAt: null,
+      notes: '',
+    }
+    dispatch({ type: 'REPORT_SICK', staffId, absence })
+  }, [])
+
+  const confirmSick = useCallback((staffId, absenceId, { paidStatus, confirmedBy, notes }) => {
+    dispatch({ type: 'CONFIRM_SICK', staffId, absenceId, paidStatus, confirmedBy, notes })
+  }, [])
+
+  const cancelSickReport = useCallback((staffId, absenceId) => {
+    dispatch({ type: 'CANCEL_SICK_REPORT', staffId, absenceId })
+  }, [])
+
+  const endSickLeave = useCallback((staffId) => {
+    dispatch({ type: 'END_SICK_LEAVE', staffId })
+  }, [])
+
+  const addAbsence = useCallback((absence) => {
+    dispatch({ type: 'ADD_ABSENCE', absence })
+  }, [])
+
+  const updateAbsence = useCallback((id, updates) => {
+    dispatch({ type: 'UPDATE_ABSENCE', id, updates })
+  }, [])
+
   const addCustomEvent = useCallback((event) => {
     dispatch({ type: 'ADD_CUSTOM_EVENT', event })
   }, [])
@@ -187,6 +282,12 @@ export function AppProvider({ children }) {
     addStaff,
     updateStaff,
     archiveStaff,
+    reportSick,
+    confirmSick,
+    cancelSickReport,
+    endSickLeave,
+    addAbsence,
+    updateAbsence,
     addCustomEvent,
     showToast,
   }

@@ -5,11 +5,13 @@ import { formatShortDate } from '../../utils/dates'
 import { STAFF_STATUS_COLORS, getDocExpiryStatus } from '../../data/staff'
 import TabBar from '../../components/shared/TabBar'
 import StaffCreateForm from './StaffCreateForm'
+import StaffLeaveTab from './StaffLeaveTab'
 import { ProfileCircle } from './StaffListView'
 
 const TABS = [
   { id: 'details', label: 'Details' },
   { id: 'work', label: 'Work' },
+  { id: 'leave', label: 'Leave' },
   { id: 'documents', label: 'Documents' },
 ]
 
@@ -20,10 +22,12 @@ const DOC_STATUS_COLORS = {
 }
 
 export default function StaffDetailView({ staffId, onClose }) {
-  const { staff, tasks, archiveStaff, showToast } = useApp()
+  const { staff, tasks, absences, archiveStaff, reportSick, confirmSick, cancelSickReport, endSickLeave, showToast } = useApp()
   const [activeTab, setActiveTab] = useState('details')
   const [editing, setEditing] = useState(false)
   const [archiveStep, setArchiveStep] = useState(0)
+  const [sickReportStep, setSickReportStep] = useState(0)
+  const [sickConfirmForm, setSickConfirmForm] = useState({ paidStatus: 'paid', notes: '' })
   const navigate = useNavigate()
 
   const member = useMemo(() => staff.find(s => s.id === staffId), [staff, staffId])
@@ -44,6 +48,8 @@ export default function StaffDetailView({ staffId, onClose }) {
   const employeeRecords = (member.documents || []).filter(d => d.type === 'Employee Records')
   const qualifications = (member.documents || []).filter(d => d.type === 'Qualifications & Certificates')
 
+  const pendingAbsence = absences.find(a => a.staffId === member.id && a.type === 'sick' && a.status === 'pending')
+
   const handleArchive = () => {
     if (archiveStep === 0) {
       setArchiveStep(1)
@@ -55,9 +61,42 @@ export default function StaffDetailView({ staffId, onClose }) {
     }
   }
 
-  const accentColor = member.status === 'On Site'
+  const handleReportSick = () => {
+    if (sickReportStep === 0) {
+      setSickReportStep(1)
+      setTimeout(() => setSickReportStep(0), 5000)
+    } else {
+      reportSick(member.id)
+      showToast(`${member.name} reported sick`)
+      setSickReportStep(0)
+    }
+  }
+
+  const handleConfirmSick = () => {
+    if (!pendingAbsence) return
+    confirmSick(member.id, pendingAbsence.id, {
+      paidStatus: sickConfirmForm.paidStatus,
+      confirmedBy: 'staff-01',
+      notes: sickConfirmForm.notes,
+    })
+    showToast(`${member.name} confirmed sick (${sickConfirmForm.paidStatus})`)
+    setSickConfirmForm({ paidStatus: 'paid', notes: '' })
+  }
+
+  const handleCancelSick = () => {
+    if (!pendingAbsence) return
+    cancelSickReport(member.id, pendingAbsence.id)
+    showToast(`Sick report cancelled for ${member.name}`)
+  }
+
+  const handleEndSick = () => {
+    endSickLeave(member.id)
+    showToast(`${member.name} marked available`)
+  }
+
+  const accentColor = (member.status === 'Available' || member.status === 'On Task')
     ? 'var(--color-green-500)'
-    : member.status === 'Off Site'
+    : (member.status === 'Sick' || member.status === 'Pending Sick Confirmation')
       ? 'var(--color-amber-400)'
       : 'transparent'
 
@@ -115,9 +154,76 @@ export default function StaffDetailView({ staffId, onClose }) {
                 Edit Profile
               </button>
             </div>
-            
           </div>
         </div>
+
+        {/* Report Sick button for Available / Off Duty */}
+        {(member.status === 'Available' || member.status === 'Off Duty') && (
+          <div style={{ marginTop: 8 }}>
+            {sickReportStep === 0 ? (
+              <button onClick={handleReportSick} className="btn btn-ghost" style={{ color: 'var(--color-amber-400)', fontSize: 12 }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>sick</span>
+                Report Sick
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-amber-400)' }}>Report sick?</span>
+                <button onClick={handleReportSick} className="btn btn-ghost" style={{ color: 'var(--color-amber-400)', fontWeight: 600 }}>Confirm</button>
+                <button onClick={() => setSickReportStep(0)} className="btn btn-ghost">Cancel</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Pending Sick Confirmation form */}
+        {member.status === 'Pending Sick Confirmation' && (
+          <div style={{ marginTop: 12, padding: 12, background: 'var(--color-surface-200)', borderRadius: 'var(--radius-md)' }}>
+            <p className="text-label" style={{ color: 'var(--color-amber-400)', marginBottom: 8 }}>Confirm Sick Report</p>
+            <div className="flex items-center gap-4" style={{ marginBottom: 8 }}>
+              <label className="flex items-center gap-1" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-slate-700)' }}>
+                <input
+                  type="radio"
+                  name="paidStatus"
+                  value="paid"
+                  checked={sickConfirmForm.paidStatus === 'paid'}
+                  onChange={() => setSickConfirmForm(prev => ({ ...prev, paidStatus: 'paid' }))}
+                />
+                Paid
+              </label>
+              <label className="flex items-center gap-1" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-slate-700)' }}>
+                <input
+                  type="radio"
+                  name="paidStatus"
+                  value="unpaid"
+                  checked={sickConfirmForm.paidStatus === 'unpaid'}
+                  onChange={() => setSickConfirmForm(prev => ({ ...prev, paidStatus: 'unpaid' }))}
+                />
+                Unpaid
+              </label>
+            </div>
+            <textarea
+              value={sickConfirmForm.notes}
+              onChange={e => setSickConfirmForm(prev => ({ ...prev, notes: e.target.value }))}
+              placeholder="Notes (optional)"
+              className="form-input"
+              style={{ width: '100%', minHeight: 48, marginBottom: 8 }}
+            />
+            <div className="flex gap-2">
+              <button onClick={handleConfirmSick} className="btn btn-primary" style={{ fontSize: 12 }}>Confirm Sick</button>
+              <button onClick={handleCancelSick} className="btn btn-secondary" style={{ fontSize: 12 }}>Cancel Report</button>
+            </div>
+          </div>
+        )}
+
+        {/* Mark Available button when Sick */}
+        {member.status === 'Sick' && (
+          <div style={{ marginTop: 8 }}>
+            <button onClick={handleEndSick} className="btn btn-ghost" style={{ color: 'var(--color-green-600)', fontSize: 12 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>check_circle</span>
+              Mark Available
+            </button>
+          </div>
+        )}
       </div>
 
       <TabBar tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
@@ -150,6 +256,11 @@ export default function StaffDetailView({ staffId, onClose }) {
               <FieldRow label="Contract Type" value={member.contractType} />
               <FieldRow label="Hours Per Week" value={member.hoursPerWeek != null ? String(member.hoursPerWeek) : '—'} mono />
               <FieldRow label="Hourly Rate" value={member.hourlyRate != null ? `£${member.hourlyRate.toFixed(2)}` : '—'} mono />
+            </FieldSection>
+
+            <FieldSection title="Leave Entitlements">
+              <FieldRow label="Annual Leave" value={`${member.annualLeaveEntitlement || 28} days`} />
+              <FieldRow label="Sick Allowance" value={`${member.sickLeaveAllowance || 8} days`} />
             </FieldSection>
 
             {/* Archive action */}
@@ -261,6 +372,11 @@ export default function StaffDetailView({ staffId, onClose }) {
           </div>
         )}
 
+        {/* Leave Tab */}
+        {activeTab === 'leave' && !editing && (
+          <StaffLeaveTab member={member} />
+        )}
+
         {/* Documents Tab */}
         {activeTab === 'documents' && !editing && (
           <div style={{ padding: 16 }} className="flex flex-col gap-5">
@@ -326,32 +442,7 @@ export default function StaffDetailView({ staffId, onClose }) {
   )
 }
 
-// function FieldRow({ label, value, mono }) {
-//   return (
-//     <div
-//       className="flex items-center justify-between"
-//       style={{
-//         padding: '12px 16px',
-//         borderBottom: '1px solid var(--color-surface-200)',
-//       }}
-//     >
-//       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-400)' }}>
-//         {label}
-//       </span>
-//       <span style={{
-//         fontFamily: mono ? 'var(--font-mono)' : 'var(--font-body)',
-//         fontSize: 13,
-//         color: 'var(--color-slate-900)',
-//         textAlign: 'end',
-//         maxWidth: '60%',
-//       }}>
-//         {value || '—'}
-//       </span>
-//     </div>
-//   )
-// }
-
-function FieldRow({ label, value, mono }) {
+function FieldRow({ label, value }) {
   return (
     <div style={{ padding: 12, background: 'var(--color-surface-100)', borderRadius: 'var(--radius-md)' }}>
       <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>{label}</p>
@@ -359,17 +450,6 @@ function FieldRow({ label, value, mono }) {
     </div>
   )
 }
-
-// function FieldSection({ title, children }) {
-//   return (
-//     <div>
-//       <div style={{ padding: '12px 16px', borderBottom: '2px solid var(--color-surface-300)' }}>
-//         <h3 className="text-label" style={{ color: 'var(--color-slate-400)', margin: 0 }}>{title}</h3>
-//       </div>
-//       {children}
-//     </div>
-//   )
-// }
 
 function FieldSection({ title, children }) {
   return (

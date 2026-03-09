@@ -1,10 +1,16 @@
+export const STAFF_STATUSES = ['Available', 'On Task', 'On Holiday', 'Off Duty', 'Sick', 'Pending Sick Confirmation', 'Archived']
+
 export const STAFF_STATUS_COLORS = {
-  'On Site': 'badge-healthy',
-  'Off Site': 'badge-attention',
+  'Available': 'badge-healthy',
+  'On Task': 'badge-attention',
+  'On Holiday': 'badge-neutral',
+  'Off Duty': 'badge-neutral',
+  'Sick': 'badge-danger',
+  'Pending Sick Confirmation': 'badge-danger',
   'Archived': 'badge-neutral',
 }
 
-export const STAFF_CATEGORY_TABS = ['All', 'On Site', 'Off Site']
+export const STAFF_CATEGORY_TABS = ['All', 'Available', 'On Task', 'On Holiday', 'Sick']
 
 export const CONTRACT_TYPES = ['Full-Time', 'Part-Time', 'Contractor']
 
@@ -36,10 +42,13 @@ export const initialStaff = [
     contractType: 'Full-Time',
     hoursPerWeek: 45,
     hourlyRate: 18.50,
-    status: 'On Site',
+    status: 'Available',
     team: 'Management',
     permissionLevel: 'Admin',
     profilePic: null,
+    lineManagerId: null,
+    annualLeaveEntitlement: 28,
+    sickLeaveAllowance: 8,
     documents: [
       { id: 'doc-01', name: 'Employment Contract', type: 'Employee Records', expiryDate: null },
       { id: 'doc-02', name: 'Right to Work', type: 'Employee Records', expiryDate: null },
@@ -61,10 +70,13 @@ export const initialStaff = [
     contractType: 'Full-Time',
     hoursPerWeek: 40,
     hourlyRate: 16.00,
-    status: 'On Site',
+    status: 'Available',
     team: 'Livestock',
     permissionLevel: 'Manager',
     profilePic: null,
+    lineManagerId: 'staff-01',
+    annualLeaveEntitlement: 28,
+    sickLeaveAllowance: 8,
     documents: [
       { id: 'doc-06', name: 'Employment Contract', type: 'Employee Records', expiryDate: null },
       { id: 'doc-07', name: 'Right to Work', type: 'Employee Records', expiryDate: null },
@@ -85,10 +97,13 @@ export const initialStaff = [
     contractType: 'Full-Time',
     hoursPerWeek: 42,
     hourlyRate: 14.50,
-    status: 'On Site',
+    status: 'On Task',
     team: 'Arable',
     permissionLevel: 'Standard',
     profilePic: null,
+    lineManagerId: 'staff-01',
+    annualLeaveEntitlement: 28,
+    sickLeaveAllowance: 8,
     documents: [
       { id: 'doc-10', name: 'Employment Contract', type: 'Employee Records', expiryDate: null },
       { id: 'doc-11', name: 'Right to Work', type: 'Employee Records', expiryDate: null },
@@ -109,10 +124,13 @@ export const initialStaff = [
     contractType: 'Full-Time',
     hoursPerWeek: 40,
     hourlyRate: 12.50,
-    status: 'Off Site',
+    status: 'Off Duty',
     team: 'Arable',
     permissionLevel: 'Standard',
     profilePic: null,
+    lineManagerId: 'staff-01',
+    annualLeaveEntitlement: 28,
+    sickLeaveAllowance: 8,
     documents: [
       { id: 'doc-14', name: 'Employment Contract', type: 'Employee Records', expiryDate: null },
       { id: 'doc-15', name: 'Right to Work', type: 'Employee Records', expiryDate: null },
@@ -133,10 +151,13 @@ export const initialStaff = [
     contractType: 'Part-Time',
     hoursPerWeek: 24,
     hourlyRate: 12.00,
-    status: 'On Site',
+    status: 'Available',
     team: 'Livestock',
     permissionLevel: 'Standard',
     profilePic: null,
+    lineManagerId: 'staff-02',
+    annualLeaveEntitlement: 28,
+    sickLeaveAllowance: 8,
     documents: [
       { id: 'doc-18', name: 'Employment Contract', type: 'Employee Records', expiryDate: null },
       { id: 'doc-19', name: 'Right to Work', type: 'Employee Records', expiryDate: null },
@@ -156,10 +177,13 @@ export const initialStaff = [
     contractType: 'Contractor',
     hoursPerWeek: 30,
     hourlyRate: 22.00,
-    status: 'Off Site',
+    status: 'Off Duty',
     team: 'Maintenance',
     permissionLevel: 'View Only',
     profilePic: null,
+    lineManagerId: 'staff-01',
+    annualLeaveEntitlement: 28,
+    sickLeaveAllowance: 8,
     documents: [
       { id: 'doc-21', name: 'Contractor Agreement', type: 'Employee Records', expiryDate: null },
       { id: 'doc-22', name: 'Right to Work', type: 'Employee Records', expiryDate: null },

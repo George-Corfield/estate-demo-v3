@@ -6,7 +6,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_REGEX = /^[\d\s+()-]{7,}$/
 
 export default function StaffCreateForm({ onCancel, onSave, editData }) {
-  const { addStaff, updateStaff, showToast } = useApp()
+  const { staff, addStaff, updateStaff, showToast } = useApp()
   const [errors, setErrors] = useState({})
   const [form, setForm] = useState({
     name: editData?.name || '',
@@ -19,6 +19,9 @@ export default function StaffCreateForm({ onCancel, onSave, editData }) {
     contractType: editData?.contractType || 'Full-Time',
     hoursPerWeek: editData?.hoursPerWeek != null ? String(editData.hoursPerWeek) : '',
     hourlyRate: editData?.hourlyRate != null ? String(editData.hourlyRate) : '',
+    annualLeaveEntitlement: editData?.annualLeaveEntitlement != null ? String(editData.annualLeaveEntitlement) : '28',
+    sickLeaveAllowance: editData?.sickLeaveAllowance != null ? String(editData.sickLeaveAllowance) : '8',
+    lineManagerId: editData?.lineManagerId || '',
   })
 
   const update = (key, value) => {
@@ -63,6 +66,9 @@ export default function StaffCreateForm({ onCancel, onSave, editData }) {
       contractType: form.contractType,
       hoursPerWeek: parseFloat(form.hoursPerWeek),
       hourlyRate: parseFloat(form.hourlyRate),
+      annualLeaveEntitlement: parseInt(form.annualLeaveEntitlement) || 28,
+      sickLeaveAllowance: parseInt(form.sickLeaveAllowance) || 8,
+      lineManagerId: form.lineManagerId || null,
       initials,
     }
 
@@ -74,7 +80,7 @@ export default function StaffCreateForm({ onCancel, onSave, editData }) {
         id: `staff-${Date.now()}`,
         ...memberData,
         role: '',
-        status: 'On Site',
+        status: 'Available',
         team: '',
         permissionLevel: 'Standard',
         profilePic: null,
@@ -84,6 +90,9 @@ export default function StaffCreateForm({ onCancel, onSave, editData }) {
     }
     onSave()
   }
+
+  // Filter out the current staff member from the line manager options
+  const managerOptions = staff.filter(s => s.status !== 'Archived' && (!editData || s.id !== editData.id))
 
   return (
     <form onSubmit={handleSubmit} className="card flex flex-col gap-4">
@@ -135,6 +144,21 @@ export default function StaffCreateForm({ onCancel, onSave, editData }) {
             <input type="number" step="0.01" value={form.hourlyRate} onChange={e => update('hourlyRate', e.target.value)} placeholder="12.00" className="form-input" style={{ ...(errors.hourlyRate ? { borderColor: 'var(--color-amber-400)' } : {}), fontFamily: 'var(--font-mono)' }} />
           </FormField>
         </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
+        <FormField label="Line Manager">
+          <select value={form.lineManagerId} onChange={e => update('lineManagerId', e.target.value)} className="form-select">
+            <option value="">None</option>
+            {managerOptions.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        </FormField>
+        <FormField label="Annual Leave (days)">
+          <input type="number" value={form.annualLeaveEntitlement} onChange={e => update('annualLeaveEntitlement', e.target.value)} placeholder="28" className="form-input" style={{ fontFamily: 'var(--font-mono)' }} />
+        </FormField>
+        <FormField label="Sick Allowance (days)">
+          <input type="number" value={form.sickLeaveAllowance} onChange={e => update('sickLeaveAllowance', e.target.value)} placeholder="8" className="form-input" style={{ fontFamily: 'var(--font-mono)' }} />
+        </FormField>
       </div>
 
       <div className="flex gap-2 justify-end">
