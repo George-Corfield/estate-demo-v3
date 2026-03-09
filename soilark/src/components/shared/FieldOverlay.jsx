@@ -8,10 +8,10 @@ export default function FieldOverlay({ field, isHighlighted, isWhiteHighlighted,
   // Design system: selected = green-500 30% fill + 2px stroke, attention = amber-400
   const bgColor = isWhiteHighlighted ? 'rgba(255,255,255,0.45)'
     : isSelected ? 'rgba(78,140,53,0.3)'
-    : active ? `${colors.bg}40` : `${colors.bg}18`
+    : active ? `${colors.bg}80` : `${colors.bg}40`
   const borderColor = isWhiteHighlighted ? 'rgba(255,255,255,0.9)'
     : isSelected ? 'var(--color-green-500)'
-    : active ? colors.border : `${colors.border}80`
+    : active ? colors.border : `${colors.border}BF`
 
   return (
     <button

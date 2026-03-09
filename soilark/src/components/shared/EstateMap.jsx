@@ -14,7 +14,7 @@ export default function EstateMap({
     <div className="relative w-full h-full overflow-hidden" style={{ background: 'var(--color-deep-950)' }}>
       {/* Map background */}
       <img
-        src="/map-aerial.jpg"
+        src="/generated-farmland.png"
         alt=""
         className="absolute inset-0 w-full h-full object-cover opacity-80"
         onError={(e) => {
