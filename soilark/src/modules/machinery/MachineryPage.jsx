@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import MachineryListView from './MachineryListView'
+import MachineryListCompact from './MachineryListCompact'
 import MachineryDetailView from './MachineryDetailView'
 import EstateMap from '../../components/shared/EstateMap'
 import Calendar from '../../components/shared/Calendar'
 
 export default function MachineryPage() {
   const [selectedEquipmentId, setSelectedEquipmentId] = useState(null)
+  const [showMapPanel, setShowMapPanel] = useState(false)
   const [showInlineCreate, setShowInlineCreate] = useState(false)
   const [rightView, setRightView] = useState('map')
   const [calendarDate, setCalendarDate] = useState(null)
@@ -16,6 +18,7 @@ export default function MachineryPage() {
   useEffect(() => {
     if (location.state?.openEquipmentId) {
       setSelectedEquipmentId(location.state.openEquipmentId)
+      setShowMapPanel(false)
       setShowInlineCreate(false)
       navigate('.', { replace: true, state: {} })
     }
@@ -30,21 +33,58 @@ export default function MachineryPage() {
     setSelectedEquipmentId(null)
   }
 
-  // Mode 2: detail panel + map/calendar
-  if (selectedEquipmentId) {
+  const handleToggleMapPanel = () => {
+    setShowMapPanel(prev => !prev)
+  }
+
+  const toggleButton = (
+    <button
+      onClick={handleToggleMapPanel}
+      className="btn flex items-center gap-2"
+      style={{
+        position: 'absolute',
+        bottom: 16,
+        right: showMapPanel ? undefined : 16,
+        left: showMapPanel ? 16 : undefined,
+        zIndex: 30,
+        background: 'var(--color-primary)',
+        color: '#1a1a1a',
+        fontWeight: 600,
+        boxShadow: '0 2px 8px rgba(19, 236, 19, 0.3)',
+      }}
+    >
+      <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+        {showMapPanel ? 'fullscreen' : 'map'}
+      </span>
+      {showMapPanel ? 'Full View' : 'Map'}
+    </button>
+  )
+
+  // Mode 2: map/calendar visible (with either list or detail in 35% panel)
+  if (showMapPanel) {
     return (
       <div className="flex h-full">
-        <div className="split-panel" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <MachineryDetailView
-            equipmentId={selectedEquipmentId}
-            onClose={handleBack}
-            onServiceDateClick={(dateStr) => {
-              setCalendarDate(dateStr + '#' + Date.now())
-              setRightView('calendar')
-            }}
-          />
+        <div className="split-panel relative" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {selectedEquipmentId ? (
+            <MachineryDetailView
+              equipmentId={selectedEquipmentId}
+              onClose={handleBack}
+              onServiceDateClick={(dateStr) => {
+                setCalendarDate(dateStr + '#' + Date.now())
+                setRightView('calendar')
+              }}
+            />
+          ) : (
+            <MachineryListView
+              compact
+              onEquipmentClick={handleEquipmentClick}
+              showInlineCreate={showInlineCreate}
+              setShowInlineCreate={setShowInlineCreate}
+            />
+          )}
+          {toggleButton}
         </div>
-        <div className="flex-1 relative">
+        <div className="flex-1 relative" style={{borderLeft: '1px solid var(--color-surface-300)'}}>
           {rightView === 'map' ? (
             <>
               <EstateMap
@@ -71,14 +111,44 @@ export default function MachineryPage() {
     )
   }
 
-  // Mode 3: full-width list
+  // Mode 4: split list + detail (no map)
+  if (selectedEquipmentId) {
+    return (
+      <div className="flex h-full">
+        <div style={{ width: '65%', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <MachineryListView
+            compact
+            onEquipmentClick={handleEquipmentClick}
+            showInlineCreate={showInlineCreate}
+            setShowInlineCreate={setShowInlineCreate}
+            selectedId={selectedEquipmentId}
+          />
+          {toggleButton}
+        </div>
+        <div style={{ width: '35%', borderLeft: '1px solid var(--color-surface-300)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <MachineryDetailView
+            equipmentId={selectedEquipmentId}
+            onClose={handleBack}
+            onServiceDateClick={(dateStr) => {
+              setCalendarDate(dateStr + '#' + Date.now())
+              setShowMapPanel(true)
+              setRightView('calendar')
+            }}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  // Mode 3: full-width list (no map, no selection)
   return (
-    <div className="flex-1 min-w-0 flex flex-col overflow-hidden h-full" style={{ background: 'var(--color-surface-50)' }}>
+    <div className="flex-1 min-w-0 flex flex-col overflow-hidden h-full relative" style={{ background: 'var(--color-surface-50)' }}>
       <MachineryListView
         onEquipmentClick={handleEquipmentClick}
         showInlineCreate={showInlineCreate}
         setShowInlineCreate={setShowInlineCreate}
       />
+      {toggleButton}
     </div>
   )
 }

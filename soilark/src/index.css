@@ -495,6 +495,12 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-slate-300); border-radius: 10px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-slate-400); }
 
+.thin-scrollbar::-webkit-scrollbar { width: 3px; }
+.thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.thin-scrollbar::-webkit-scrollbar-thumb { background: var(--color-slate-300); border-radius: 10px; }
+.thin-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-slate-400); }
+.thin-scrollbar { scrollbar-width: thin; }
+
 /* Toast animations */
 @keyframes slideUp {
   from { transform: translateY(16px); opacity: 0; }

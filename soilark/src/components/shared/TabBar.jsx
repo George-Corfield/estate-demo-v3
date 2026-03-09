@@ -1,11 +1,11 @@
 export default function TabBar({ tabs, activeTab, onChange }) {
   return (
-    <div className="flex gap-0" style={{ borderBottom: '1px solid var(--color-surface-300)' }}>
+    <div className="flex gap-0 overflow-x-auto items-stretch thin-scrollbar" style={{ borderBottom: '1px solid var(--color-surface-300)', minHeight: '48px' }}>
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => onChange(tab.id)}
-          className="relative"
+          className="relative flex-shrink-0"
           style={{
             padding: '12px 20px',
             fontFamily: 'var(--font-body)',
