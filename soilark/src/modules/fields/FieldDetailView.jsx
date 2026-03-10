@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
 import { useApp } from '../../context/AppContext'
-import { CATEGORY_COLORS } from '../../constants/colors'
 import TabBar from '../../components/shared/TabBar'
 import FieldOverviewTab from './FieldOverviewTab'
 import FieldHistoryTab from './FieldHistoryTab'
@@ -11,14 +10,15 @@ const TABS = [
 ]
 
 export default function FieldDetailView({ fieldId, onBack }) {
-  const { fields } = useApp()
+  const { fields, usages } = useApp()
   const [activeTab, setActiveTab] = useState('overview')
 
   const field = useMemo(() => fields.find(f => f.id === fieldId), [fields, fieldId])
 
   if (!field) return null
 
-  const colors = CATEGORY_COLORS[field.category]
+  const usageEntry = usages.find(u => u.name === field.usage)
+  const colors = usageEntry ? { bg: usageEntry.bg, border: usageEntry.border } : null
 
   return (
     <div className="flex flex-col h-full">
@@ -39,7 +39,7 @@ export default function FieldDetailView({ fieldId, onBack }) {
           />
           <div>
             <h2 className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{field.name}</h2>
-            <p className="text-body-small" style={{ color: 'var(--color-slate-500)' }}>{field.category} · {field.sizeHectares} ha</p>
+            <p className="text-body-small" style={{ color: 'var(--color-slate-500)' }}>{field.usage} · {field.sizeHectares} ha</p>
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { initialEvents } from '../data/events'
 import { initialMachinery } from '../data/machinery'
 import { initialStaff } from '../data/staff'
 import { initialAbsences } from '../data/absences'
+import { initialUsages } from '../data/usages'
 
 const AppContext = createContext(null)
 
@@ -15,6 +16,7 @@ const initialState = {
   machinery: initialMachinery,
   staff: initialStaff,
   absences: initialAbsences,
+  usages: initialUsages,
   toasts: [],
 }
 
@@ -160,6 +162,24 @@ function reducer(state, action) {
       }
     case 'ADD_CUSTOM_EVENT':
       return { ...state, customEvents: [...state.customEvents, action.event] }
+    case 'UPDATE_USAGE': {
+      const oldUsage = state.usages.find(u => u.id === action.id)
+      const nameChanged = oldUsage && oldUsage.name !== action.updates.name
+      const newUsages = state.usages.map(u =>
+        u.id === action.id ? { ...u, ...action.updates } : u
+      )
+      const newFields = nameChanged
+        ? state.fields.map(f => {
+            const updates = {}
+            if (f.usage === oldUsage.name) updates.usage = action.updates.name
+            if (f.currentCrop === oldUsage.name) updates.currentCrop = action.updates.name
+            return Object.keys(updates).length ? { ...f, ...updates } : f
+          })
+        : state.fields
+      return { ...state, usages: newUsages, fields: newFields }
+    }
+    case 'ADD_USAGE':
+      return { ...state, usages: [...state.usages, action.usage] }
     case 'SHOW_TOAST':
       return { ...state, toasts: [...state.toasts, action.toast] }
     case 'DISMISS_TOAST':
@@ -258,6 +278,14 @@ export function AppProvider({ children }) {
     dispatch({ type: 'UPDATE_ABSENCE', id, updates })
   }, [])
 
+  const updateUsage = useCallback((id, updates) => {
+    dispatch({ type: 'UPDATE_USAGE', id, updates })
+  }, [])
+
+  const addUsage = useCallback((usage) => {
+    dispatch({ type: 'ADD_USAGE', usage })
+  }, [])
+
   const addCustomEvent = useCallback((event) => {
     dispatch({ type: 'ADD_CUSTOM_EVENT', event })
   }, [])
@@ -288,6 +316,8 @@ export function AppProvider({ children }) {
     endSickLeave,
     addAbsence,
     updateAbsence,
+    updateUsage,
+    addUsage,
     addCustomEvent,
     showToast,
   }

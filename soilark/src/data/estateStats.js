@@ -1,31 +1,31 @@
 export const estateStats = {
   name: 'Landark Estate',
-  totalHectares: 545,
+  totalHectares: 418,
   categories: [
     {
-      name: 'Grassland',
-      hectares: 360,
+      name: 'Cereals',
+      hectares: 214,
       subcategories: [
-        { name: 'Permanent Pasture', hectares: 180, fieldCount: 4 },
-        { name: 'Temporary Leys', hectares: 120, fieldCount: 2 },
-        { name: 'Hay Meadows', hectares: 60, fieldCount: 1 },
+        { name: 'Wheat', hectares: 72, fieldCount: 4 },
+        { name: 'Barley', hectares: 59, fieldCount: 4 },
+        { name: 'Oats', hectares: 64, fieldCount: 4 },
+        { name: 'Maize', hectares: 47, fieldCount: 3 },
       ],
     },
     {
-      name: 'Crops',
-      hectares: 120,
+      name: 'Grass',
+      hectares: 80,
       subcategories: [
-        { name: 'Winter Wheat', hectares: 62, fieldCount: 3 },
-        { name: 'Spring Barley', hectares: 38, fieldCount: 2 },
-        { name: 'Oilseed Rape', hectares: 20, fieldCount: 2 },
+        { name: 'Silage & Hay', hectares: 39, fieldCount: 2 },
+        { name: 'Meadow & Conservation', hectares: 35, fieldCount: 2 },
       ],
     },
     {
-      name: 'Forestry',
-      hectares: 65,
+      name: 'Root & Industrial Crops',
+      hectares: 104,
       subcategories: [
-        { name: 'Ancient Woodland', hectares: 35, fieldCount: 1 },
-        { name: 'New Planting', hectares: 30, fieldCount: 2 },
+        { name: 'Potatoes', hectares: 51, fieldCount: 3 },
+        { name: 'Oilseed Rape', hectares: 53, fieldCount: 3 },
       ],
     },
     {

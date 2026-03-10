@@ -1,18 +1,20 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useApp } from '../../context/AppContext'
-import { CATEGORY_COLORS } from '../../constants/colors'
 
-const CATEGORY_ICONS = {
-  Arable: 'grain',
-  Pastoral: 'pets',
-  Grassland: 'grass',
-  Forestry: 'park',
+const USAGE_ICONS = {
+  Wheat: 'grain',
+  Barley: 'grain',
+  Maize: 'spa',
+  Oats: 'grain',
+  Grass: 'grass',
+  Potatoes: 'nutrition',
+  'Oilseed rape': 'local_florist',
 }
 
-export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }) {
-  const { fields } = useApp()
+export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, onManageUsages, onCategoryChange }) {
+  const { fields, usages } = useApp()
   const [expandedCategories, setExpandedCategories] = useState(
-    initialOpenCategory ? [initialOpenCategory] : ['Arable']
+    initialOpenCategory ? [initialOpenCategory] : ['Wheat']
   )
   const [search, setSearch] = useState('')
 
@@ -22,11 +24,17 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
     }
   }, [initialOpenCategory])
 
+  const usageColorMap = useMemo(() => {
+    const map = {}
+    usages.forEach(u => { map[u.name] = { bg: u.bg, border: u.border } })
+    return map
+  }, [usages])
+
   const categories = useMemo(() => {
     const cats = {}
     fields.forEach(f => {
-      if (!cats[f.category]) cats[f.category] = []
-      cats[f.category].push(f)
+      if (!cats[f.usage]) cats[f.usage] = []
+      cats[f.usage].push(f)
     })
     return Object.entries(cats).map(([name, items]) => ({
       name,
@@ -42,16 +50,15 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
       ...cat,
       fields: cat.fields.filter(f =>
         f.name.toLowerCase().includes(s) ||
-        (f.currentCrop && f.currentCrop.toLowerCase().includes(s)) ||
-        (f.livestock && f.livestock.toLowerCase().includes(s))
+        (f.currentCrop && f.currentCrop.toLowerCase().includes(s))
       ),
     })).filter(cat => cat.fields.length > 0)
   }, [categories, search])
 
   const toggleCategory = (name) => {
-    setExpandedCategories(prev =>
-      prev.includes(name) ? [] : [name]
-    )
+    const next = expandedCategories.includes(name) ? [] : [name]
+    setExpandedCategories(next)
+    onCategoryChange?.(next[0] || null)
   }
 
   const totalHectares = fields.reduce((sum, f) => sum + f.sizeHectares, 0)
@@ -65,7 +72,17 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
             <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-green-500)' }}>layers</span>
             Fields
           </h2>
-          <span className="text-label" style={{ color: 'var(--color-slate-400)' }}>{fields.length} fields</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onManageUsages}
+              className="btn btn-ghost flex items-center justify-center"
+              style={{ padding: 4, width: 28, height: 28 }}
+              title="Manage Usages"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-slate-400)' }}>palette</span>
+            </button>
+            <span className="text-label" style={{ color: 'var(--color-slate-400)' }}>{fields.length} fields</span>
+          </div>
         </div>
         <div className="relative">
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2" style={{ fontSize: 16, color: 'var(--color-slate-400)' }}>search</span>
@@ -84,7 +101,7 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
       <div className="flex-1 overflow-y-auto custom-scrollbar" style={{ padding: 16 }}>
         <div className="flex flex-col gap-3">
           {filteredCategories.map(cat => {
-            const colors = CATEGORY_COLORS[cat.name]
+            const colors = usageColorMap[cat.name]
             const expanded = expandedCategories.includes(cat.name)
             return (
               <div
@@ -103,9 +120,9 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
                   }}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined" style={{ fontSize: 20, color: colors.border }}>
-                      {CATEGORY_ICONS[cat.name]}
-                    </span>
+                    <span
+                      style={{ width: 16, height: 16, borderRadius: 3, backgroundColor: colors?.bg, border: `2px solid ${colors?.border}`, flexShrink: 0 }}
+                    />
                     <span className="text-heading-4" style={{ color: 'var(--color-slate-900)' }}>
                       {cat.name}
                       <span className="text-body-small ml-2" style={{ color: 'var(--color-slate-500)', fontWeight: 400 }}>
@@ -151,7 +168,7 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory }
                           <span className="text-data" style={{ fontSize: 12, color: 'var(--color-slate-400)' }}>{field.sizeHectares} ha</span>
                         </div>
                         <p className="text-body-small" style={{ color: 'var(--color-slate-500)', marginTop: 2 }}>
-                          {field.currentCrop || field.livestock || 'No current use'}
+                          {field.currentCrop || 'No current use'}
                         </p>
                       </button>
                     ))}

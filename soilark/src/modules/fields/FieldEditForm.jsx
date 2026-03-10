@@ -1,15 +1,13 @@
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
 
-const SOIL_TYPES = ['Clay Loam', 'Sandy Loam', 'Silty Loam', 'Chalk', 'Peat', 'Loamy Sand', 'Sandy Clay', 'Heavy Clay']
-const DRAINAGE_OPTIONS = ['Excellent', 'Good', 'Fair', 'Poor']
-const CATEGORIES = ['Arable', 'Pastoral', 'Grassland', 'Forestry']
-
+const SOIL_TYPES = ['Sandy', 'Clay', 'Loam', 'Silt', 'Peat', 'Chalk']
+const DRAINAGE_OPTIONS = ['Very Poor', 'Poor', 'Fair', 'Good', 'Very Good']
 export default function FieldEditForm({ field, onCancel, onSave }) {
-  const { updateField, showToast } = useApp()
+  const { updateField, showToast, usages } = useApp()
   const [form, setForm] = useState({
     name: field.name,
-    category: field.category,
+    usage: field.usage,
     sizeHectares: field.sizeHectares,
     soilType: field.soilType,
     drainage: field.drainage,
@@ -40,9 +38,9 @@ export default function FieldEditForm({ field, onCancel, onSave }) {
       </FormField>
 
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Category">
-          <select value={form.category} onChange={e => update('category', e.target.value)} className="form-select">
-            {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+        <FormField label="Usage">
+          <select value={form.usage} onChange={e => update('usage', e.target.value)} className="form-select">
+            {usages.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
           </select>
         </FormField>
         <FormField label="Size (ha)">

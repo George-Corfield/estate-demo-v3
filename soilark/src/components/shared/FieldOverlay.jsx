@@ -1,17 +1,21 @@
-import { CATEGORY_COLORS } from '../../constants/colors'
+import { useApp } from '../../context/AppContext'
 
 export default function FieldOverlay({ field, isHighlighted, isWhiteHighlighted, isSelected, onClick }) {
-  const colors = CATEGORY_COLORS[field.category] || CATEGORY_COLORS.Arable
+  const { usages } = useApp()
+  const usageEntry = usages.find(u => u.name === field.usage)
+  const colors = usageEntry
+    ? { bg: usageEntry.bg, border: usageEntry.border }
+    : { bg: '#fcd34d', border: '#f59e0b' }
   const pos = field.mapPosition
   const active = isHighlighted || isSelected || isWhiteHighlighted
 
   // Design system: selected = green-500 30% fill + 2px stroke, attention = amber-400
-  const bgColor = isWhiteHighlighted ? 'rgba(255,255,255,0.45)'
+  const bgColor = isWhiteHighlighted ? `${colors.bg}CC`
     : isSelected ? 'rgba(78,140,53,0.3)'
-    : active ? `${colors.bg}80` : `${colors.bg}40`
-  const borderColor = isWhiteHighlighted ? 'rgba(255,255,255,0.9)'
+    : active ? `${colors.bg}BF` : `${colors.bg}80`
+  const borderColor = isWhiteHighlighted ? colors.border
     : isSelected ? 'var(--color-green-500)'
-    : active ? colors.border : `${colors.border}BF`
+    : active ? colors.border : `${colors.border}E6`
 
   return (
     <button

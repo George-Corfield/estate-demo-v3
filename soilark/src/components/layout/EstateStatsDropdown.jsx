@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { estateStats } from '../../data/estateStats'
 
 const CATEGORY_ICONS = {
-  Grassland: 'grass',
-  Crops: 'grain',
-  Forestry: 'park',
+  Cereals: 'grain',
+  Grass: 'grass',
+  'Root & Industrial Crops': 'nutrition',
   Buildings: 'home_work',
 }
 

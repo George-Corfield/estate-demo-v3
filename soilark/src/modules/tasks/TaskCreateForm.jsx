@@ -384,7 +384,7 @@ export default function TaskCreateForm({
                     onChange={() => toggleField(f.id)}
                   />
                   <span>{f.name}</span>
-                  <span className="text-data" style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-slate-400)' }}>{f.category}</span>
+                  <span className="text-data" style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-slate-400)' }}>{f.usage}</span>
                 </label>
               ))}
             </div>

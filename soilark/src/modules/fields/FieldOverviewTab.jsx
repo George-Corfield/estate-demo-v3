@@ -28,7 +28,7 @@ export default function FieldOverviewTab({ field }) {
           </button>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <PropItem label="Category" value={field.category} />
+          <PropItem label="Usage" value={field.usage} />
           <PropItem label="Size" value={`${field.sizeHectares} ha`} mono />
           <PropItem label="Soil Type" value={field.soilType} />
           <PropItem label="Drainage" value={field.drainage} />

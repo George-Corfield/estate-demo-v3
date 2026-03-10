@@ -70,13 +70,6 @@ const Gray500 = '#6b7280'
 const Primary = '#13ec13'
 
 
-export const CATEGORY_COLORS = {
-  Arable: { bg: Amber300, border: Amber400, text: Slate900 },
-  Pastoral: { bg: Green700, border: Green800, text: Slate50},
-  Grassland: { bg: Green400, border: Green500, text: Slate900 },
-  Forestry: { bg: earth400, border: earth500, text: Slate50},
-}
-
 export const PRIORITY_COLORS = {
   high: { bg: Red100, text: Red700 },
   medium: { bg: Amber100, text: Amber700 },
