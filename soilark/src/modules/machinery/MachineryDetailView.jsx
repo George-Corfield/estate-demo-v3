@@ -27,7 +27,10 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
     t.assignedMachinery.includes(equipment.name)
   )
 
-  const isOverdue = equipment.hours >= equipment.nextServiceDue
+  const schedule = equipment.serviceSchedule || { type: 'hours', interval: 250 }
+  const isOverdue = schedule.type === 'hours'
+    ? equipment.hours >= equipment.nextServiceDue
+    : new Date() >= new Date(equipment.nextServiceDue)
   const badgeClass = MACHINERY_STATUS_COLORS[equipment.status] || 'badge-neutral'
 
   // Cost calculations
@@ -173,11 +176,22 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
         {activeTab === 'service' && (
           <div style={{ padding: 16 }} className="flex flex-col gap-5">
             {/* Service Summary — field rows instead of stat cards */}
+            <ServiceScheduleSettings
+              equipment={equipment}
+              onUpdate={(updates) => {
+                updateMachinery(equipment.id, updates)
+                showToast('Service schedule updated')
+              }}
+            />
             <div style={{ border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
               <FieldRow label="Current Hours" value={equipment.hours.toLocaleString()} mono />
               <FieldRow
                 label="Next Service Due"
-                value={`${equipment.nextServiceDue.toLocaleString()} hrs`}
+                value={
+                  schedule.type === 'hours'
+                    ? `${Number(equipment.nextServiceDue).toLocaleString()} hrs`
+                    : formatShortDate(equipment.nextServiceDue)
+                }
                 mono
                 highlight={isOverdue}
               />
@@ -204,10 +218,23 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
                 currentHours={equipment.hours}
                 onSave={(record) => {
                   addServiceRecord(equipment.id, record)
+                  const hours = record.hoursAtService || equipment.hours
+                  let nextServiceDue
+                  if (schedule.type === 'hours') {
+                    nextServiceDue = hours + schedule.interval
+                  } else {
+                    const serviceDate = new Date(record.date)
+                    if (schedule.type === 'months') {
+                      serviceDate.setMonth(serviceDate.getMonth() + schedule.interval)
+                    } else {
+                      serviceDate.setFullYear(serviceDate.getFullYear() + schedule.interval)
+                    }
+                    nextServiceDue = serviceDate.toISOString().split('T')[0]
+                  }
                   updateMachinery(equipment.id, {
                     lastServiceDate: record.date,
-                    hours: record.hoursAtService || equipment.hours,
-                    nextServiceDue: (record.hoursAtService || equipment.hours) + 250,
+                    hours,
+                    nextServiceDue,
                   })
                   setShowServiceForm(false)
                   showToast('Service record added')
@@ -312,6 +339,150 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+/* Collapsible service schedule settings panel */
+function ServiceScheduleSettings({ equipment, onUpdate }) {
+  const [expanded, setExpanded] = useState(false)
+  const schedule = equipment.serviceSchedule || { type: 'hours', interval: 250 }
+  const [selectedType, setSelectedType] = useState(schedule.type)
+  const [interval, setInterval] = useState(String(schedule.interval))
+
+  const summaryText = schedule.type === 'hours'
+    ? `Every ${schedule.interval.toLocaleString()} hours`
+    : schedule.type === 'months'
+      ? `Every ${schedule.interval} month${schedule.interval !== 1 ? 's' : ''}`
+      : `Every ${schedule.interval} year${schedule.interval !== 1 ? 's' : ''}`
+
+  const handleSave = () => {
+    const parsed = parseInt(interval) || 1
+    const newSchedule = { type: selectedType, interval: parsed }
+
+    let nextServiceDue
+    if (selectedType === 'hours') {
+      const lastServiceRecord = equipment.serviceHistory?.[0]
+      const lastHours = lastServiceRecord?.hoursAtService || equipment.hours
+      nextServiceDue = lastHours + parsed
+    } else {
+      const lastDate = equipment.lastServiceDate || new Date().toISOString().split('T')[0]
+      const date = new Date(lastDate)
+      if (selectedType === 'months') {
+        date.setMonth(date.getMonth() + parsed)
+      } else {
+        date.setFullYear(date.getFullYear() + parsed)
+      }
+      nextServiceDue = date.toISOString().split('T')[0]
+    }
+
+    onUpdate({ serviceSchedule: newSchedule, nextServiceDue })
+    setExpanded(false)
+  }
+
+  const options = [
+    { value: 'hours', label: 'Hourly Service', unit: 'hours' },
+    { value: 'months', label: 'Monthly Service', unit: 'months' },
+    { value: 'years', label: 'Annual Service', unit: 'years' },
+  ]
+
+  return (
+    <div style={{
+      border: '1px solid var(--color-surface-300)',
+      borderRadius: 'var(--radius-md)',
+      overflow: 'hidden',
+    }}>
+      {/* Collapsed header */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between"
+        style={{
+          padding: '12px 16px',
+          background: 'var(--color-surface-100)',
+          border: 'none',
+          cursor: 'pointer',
+          fontFamily: 'var(--font-body)',
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-slate-400)' }}>settings</span>
+          <span className="text-label" style={{ color: 'var(--color-slate-400)' }}>Service Schedule</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span style={{ fontSize: 13, color: 'var(--color-slate-900)', fontWeight: 500 }}>{summaryText}</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-slate-400)' }}>
+            {expanded ? 'expand_less' : 'expand_more'}
+          </span>
+        </div>
+      </button>
+
+      {/* Expanded settings */}
+      {expanded && (
+        <div style={{
+          padding: '16px',
+          borderTop: '1px solid var(--color-surface-300)',
+          background: 'var(--color-surface-50)',
+        }}>
+          <div className="flex flex-col gap-3">
+            {options.map(opt => (
+              <label
+                key={opt.value}
+                className="flex items-center gap-3"
+                style={{
+                  padding: '10px 12px',
+                  borderRadius: 'var(--radius-sm)',
+                  background: selectedType === opt.value ? 'rgba(78,140,53,0.08)' : 'transparent',
+                  cursor: 'pointer',
+                  transition: 'background 120ms ease',
+                }}
+              >
+                <input
+                  type="radio"
+                  name="scheduleType"
+                  value={opt.value}
+                  checked={selectedType === opt.value}
+                  onChange={() => {
+                    setSelectedType(opt.value)
+                    if (opt.value !== schedule.type) {
+                      setInterval(opt.value === 'hours' ? '250' : opt.value === 'months' ? '6' : '1')
+                    }
+                  }}
+                  style={{ accentColor: 'var(--color-primary)' }}
+                />
+                <span style={{ fontSize: 13, color: 'var(--color-slate-900)', flex: 1 }}>{opt.label}</span>
+                {selectedType === opt.value && (
+                  <div className="flex items-center gap-2">
+                    <span style={{ fontSize: 12, color: 'var(--color-slate-500)' }}>Every</span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={interval}
+                      onChange={e => setInterval(e.target.value)}
+                      className="form-input"
+                      style={{ width: 64, padding: '4px 8px', fontSize: 13, textAlign: 'center' }}
+                    />
+                    <span style={{ fontSize: 12, color: 'var(--color-slate-500)' }}>{opt.unit}</span>
+                  </div>
+                )}
+              </label>
+            ))}
+          </div>
+          <div className="flex justify-end gap-2" style={{ marginTop: 12 }}>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedType(schedule.type)
+                setInterval(String(schedule.interval))
+                setExpanded(false)
+              }}
+              className="btn btn-secondary"
+            >
+              Cancel
+            </button>
+            <button type="button" onClick={handleSave} className="btn btn-primary">Save</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -16,6 +16,7 @@ export const initialMachinery = [
     numberPlate: '',
     lastServiceDate: '2025-10-12',
     nextServiceDue: 1500,
+    serviceSchedule: { type: 'hours', interval: 250 },
     specifications: {
       horsepower: '155 HP',
       weight: '5,460 kg',
@@ -85,6 +86,7 @@ export const initialMachinery = [
     numberPlate: '',
     lastServiceDate: '2025-11-05',
     nextServiceDue: 500,
+    serviceSchedule: { type: 'hours', interval: 250 },
     specifications: {
       capacity: '6,000 L',
       spreadWidth: '10-36 m',
@@ -138,6 +140,7 @@ export const initialMachinery = [
     numberPlate: '',
     lastServiceDate: '2025-08-15',
     nextServiceDue: 3500,
+    serviceSchedule: { type: 'hours', interval: 250 },
     specifications: {
       horsepower: '270 HP',
       weight: '8,200 kg',
@@ -197,6 +200,7 @@ export const initialMachinery = [
     numberPlate: '',
     lastServiceDate: '2025-09-28',
     nextServiceDue: 1000,
+    serviceSchedule: { type: 'hours', interval: 250 },
     specifications: {
       horsepower: '1,156 HP',
       theoreticalChopLength: '4-22 mm',
@@ -253,6 +257,7 @@ export const initialMachinery = [
     numberPlate: '',
     lastServiceDate: '2025-11-01',
     nextServiceDue: 2100,
+    serviceSchedule: { type: 'hours', interval: 250 },
     specifications: {
       horsepower: '340 HP',
       weight: '11,800 kg',
@@ -311,6 +316,7 @@ export const initialMachinery = [
     numberPlate: '',
     lastServiceDate: '2025-09-15',
     nextServiceDue: 500,
+    serviceSchedule: { type: 'hours', interval: 250 },
     specifications: {
       horsepower: '790 HP',
       grainTankCapacity: '18,000 L',
