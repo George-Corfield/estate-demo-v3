@@ -349,6 +349,10 @@ function ServiceScheduleSettings({ equipment, onUpdate }) {
   const schedule = equipment.serviceSchedule || { type: 'hours', interval: 250 }
   const [selectedType, setSelectedType] = useState(schedule.type)
   const [interval, setInterval] = useState(String(schedule.interval))
+  const [reminderEnabled, setReminderEnabled] = useState(schedule.reminderEnabled || false)
+  const [reminderLeadTime, setReminderLeadTime] = useState(
+    String(schedule.reminderLeadTime ?? (schedule.type === 'hours' ? 25 : 7))
+  )
 
   const summaryText = schedule.type === 'hours'
     ? `Every ${schedule.interval.toLocaleString()} hours`
@@ -356,9 +360,16 @@ function ServiceScheduleSettings({ equipment, onUpdate }) {
       ? `Every ${schedule.interval} month${schedule.interval !== 1 ? 's' : ''}`
       : `Every ${schedule.interval} year${schedule.interval !== 1 ? 's' : ''}`
 
+  const reminderUnit = schedule.type === 'hours' ? 'hours' : 'days'
+
   const handleSave = () => {
     const parsed = parseInt(interval) || 1
-    const newSchedule = { type: selectedType, interval: parsed }
+    const newSchedule = {
+      type: selectedType,
+      interval: parsed,
+      reminderEnabled,
+      reminderLeadTime: parseInt(reminderLeadTime) || 1,
+    }
 
     let nextServiceDue
     if (selectedType === 'hours') {
@@ -409,7 +420,14 @@ function ServiceScheduleSettings({ equipment, onUpdate }) {
           <span className="text-label" style={{ color: 'var(--color-slate-400)' }}>Service Schedule</span>
         </div>
         <div className="flex items-center gap-2">
-          <span style={{ fontSize: 13, color: 'var(--color-slate-900)', fontWeight: 500 }}>{summaryText}</span>
+          <div className="flex flex-col items-end">
+            <span style={{ fontSize: 13, color: 'var(--color-slate-900)', fontWeight: 500 }}>{summaryText}</span>
+            <span style={{ fontSize: 11, color: 'var(--color-slate-400)' }}>
+              {schedule.reminderEnabled
+                ? `Reminder: ${schedule.reminderLeadTime} ${reminderUnit} before`
+                : 'No reminders'}
+            </span>
+          </div>
           <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-slate-400)' }}>
             {expanded ? 'expand_less' : 'expand_more'}
           </span>
@@ -445,6 +463,7 @@ function ServiceScheduleSettings({ equipment, onUpdate }) {
                     setSelectedType(opt.value)
                     if (opt.value !== schedule.type) {
                       setInterval(opt.value === 'hours' ? '250' : opt.value === 'months' ? '6' : '1')
+                      setReminderLeadTime(opt.value === 'hours' ? '25' : '7')
                     }
                   }}
                   style={{ accentColor: 'var(--color-primary)' }}
@@ -467,12 +486,78 @@ function ServiceScheduleSettings({ equipment, onUpdate }) {
               </label>
             ))}
           </div>
+          {/* Service reminders */}
+          <div style={{ marginTop: 12 }} className="flex flex-col gap-3">
+            <label
+              className="flex items-center gap-3"
+              style={{
+                padding: '10px 12px',
+                borderRadius: 'var(--radius-sm)',
+                background: reminderEnabled ? 'rgba(78,140,53,0.08)' : 'transparent',
+                cursor: 'pointer',
+                transition: 'background 120ms ease',
+              }}
+            >
+              <div
+                onClick={(e) => { e.preventDefault(); setReminderEnabled(!reminderEnabled) }}
+                style={{
+                  width: 36,
+                  height: 20,
+                  borderRadius: 10,
+                  background: reminderEnabled ? 'var(--color-primary)' : 'var(--color-surface-300)',
+                  position: 'relative',
+                  cursor: 'pointer',
+                  transition: 'background 150ms ease',
+                  flexShrink: 0,
+                }}
+              >
+                <div style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: '50%',
+                  background: '#fff',
+                  position: 'absolute',
+                  top: 2,
+                  left: reminderEnabled ? 18 : 2,
+                  transition: 'left 150ms ease',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                }} />
+              </div>
+              <span style={{ fontSize: 13, color: 'var(--color-slate-900)', flex: 1 }}>Service reminders</span>
+              <span style={{ fontSize: 12, color: 'var(--color-slate-500)' }}>{reminderEnabled ? 'On' : 'Off'}</span>
+            </label>
+            {reminderEnabled && (
+              <div
+                className="flex items-center gap-2"
+                style={{
+                  padding: '10px 12px',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'var(--color-surface-100)',
+                }}
+              >
+                <span style={{ fontSize: 12, color: 'var(--color-slate-500)' }}>Remind me</span>
+                <input
+                  type="number"
+                  min="1"
+                  value={reminderLeadTime}
+                  onChange={e => setReminderLeadTime(e.target.value)}
+                  className="form-input"
+                  style={{ width: 64, padding: '4px 8px', fontSize: 13, textAlign: 'center' }}
+                />
+                <span style={{ fontSize: 12, color: 'var(--color-slate-500)' }}>
+                  {selectedType === 'hours' ? 'hours' : 'days'} before
+                </span>
+              </div>
+            )}
+          </div>
           <div className="flex justify-end gap-2" style={{ marginTop: 12 }}>
             <button
               type="button"
               onClick={() => {
                 setSelectedType(schedule.type)
                 setInterval(String(schedule.interval))
+                setReminderEnabled(schedule.reminderEnabled || false)
+                setReminderLeadTime(String(schedule.reminderLeadTime ?? (schedule.type === 'hours' ? 25 : 7)))
                 setExpanded(false)
               }}
               className="btn btn-secondary"
