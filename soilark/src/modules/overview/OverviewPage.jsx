@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import EstateMap from '../../components/shared/EstateMap'
 import Calendar from '../../components/shared/Calendar'
 import { useApp } from '../../context/AppContext'
+import { formatShortDate } from '../../utils/dates'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -343,7 +344,7 @@ export default function OverviewPage() {
   const [expandedDay, setExpandedDay] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const { tasks = [], staff = [], machinery = [], fields = [] } = useApp()
+  const { tasks = [], staff = [], machinery = [], fields = [], absences = [] } = useApp()
 
   useEffect(() => {
     if (location.state?.openCalendar) {
@@ -479,6 +480,8 @@ export default function OverviewPage() {
     m.status === 'Service Due' || (m.nextServiceDue && m.hours >= m.nextServiceDue - 50)
   )
   const maintenanceMachinery = machinery.filter(m => m.status === 'Maintenance')
+  const storedMachinery = machinery.filter(m => m.status === 'Stored')
+  const soldMachinery = machinery.filter(m => m.status === 'Sold')
 
   const availableStaff = staff.filter(s => s.status === 'Available')
   const onTaskStaff = staff.filter(s => s.status === 'On Task')
@@ -725,6 +728,13 @@ export default function OverviewPage() {
       case 'staff': {
         const renderStaffRow = (s) => {
           const task = tasks.find(t => t.status === 'in-progress' && (t.assigneeId === s.id || t.assignee === s.name))
+          const todayDate = today()
+          const activeHoliday = s.status === 'On Holiday'
+            ? absences.find(a => a.staffId === s.id && a.type === 'holiday' && a.status !== 'cancelled' && a.startDate <= todayDate && a.endDate >= todayDate)
+            : null
+          const returnDate = activeHoliday?.endDate
+            ? (() => { const d = new Date(activeHoliday.endDate); d.setDate(d.getDate() + 1); return d })()
+            : null
           return (
             <DrawerRow
               key={s.id}
@@ -732,6 +742,7 @@ export default function OverviewPage() {
               iconColor="var(--color-slate-400)"
               title={s.name}
               subtitle={task ? task.name : s.role}
+              meta={returnDate ? `Back ${formatShortDate(returnDate)}` : null}
               badge={s.status === 'Pending Sick Confirmation' ? 'Confirm' : null}
               badgeColor="var(--color-red-500)"
               onClick={() => navigate('/staff', { state: { openStaffId: s.id } })}
@@ -773,49 +784,49 @@ export default function OverviewPage() {
         )
       }
 
-      case 'machinery':
+      case 'machinery': {
+        const renderMachinerySection = (label, items, icon, iconColor, subtitleFn, labelColor) => (
+          <>
+            <div style={{ padding: '6px 14px 4px', background: 'var(--color-surface-100)' }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: labelColor || 'var(--color-slate-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                {label}
+              </span>
+            </div>
+            {items.length === 0 ? (
+              <div style={{ padding: '9px 14px', fontSize: 12, color: 'var(--color-slate-400)', borderBottom: '1px solid var(--color-surface-100)' }}>
+                No equipment
+              </div>
+            ) : items.map(m => (
+              <DrawerRow
+                key={m.id}
+                icon={icon}
+                iconColor={iconColor}
+                title={m.name}
+                subtitle={subtitleFn(m)}
+                onClick={() => navigate('/machinery', { state: { openEquipmentId: m.id } })}
+              />
+            ))}
+          </>
+        )
+
         return (
           <WidgetExpanded title="Equipment Status" icon="agriculture" onBack={() => setExpandedWidget(null)}>
-            {activeMachinery.length > 0 && (
-              <div style={{ padding: '6px 14px 4px' }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-deep-500)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active</span>
-              </div>
+            {renderMachinerySection('Active', activeMachinery, 'agriculture', 'var(--color-deep-400)',
+              m => tasks.find(t => t.status === 'in-progress' && (t.machineryId === m.id || t.machinery === m.name))?.name || 'Available',
+              'var(--color-green-800)'
             )}
-            {activeMachinery.map(m => (
-              <DrawerRow
-                key={m.id}
-                icon="agriculture"
-                iconColor="var(--color-deep-400)"
-                title={m.name}
-                subtitle={tasks.find(t => t.status === 'in-progress' && (t.machineryId === m.id || t.machinery === m.name))?.name || 'On task'}
-                onClick={() => navigate('/machinery', { state: { openEquipmentId: m.id } })}
-              />
-            ))}
-            {serviceDueMachinery.length > 0 && (
-              <div style={{ padding: '6px 14px 4px', background: 'var(--color-amber-50, #fffbeb)' }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-amber-600)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Service Due</span>
-              </div>
+            {renderMachinerySection('Service Due', serviceDueMachinery, 'build', 'var(--color-amber-500)',
+              m => `${m.hours} hrs · service at ${m.nextServiceDue} hrs`,
+              'var(--color-amber-700)'
             )}
-            {serviceDueMachinery.map(m => (
-              <DrawerRow
-                key={m.id}
-                icon="build"
-                iconColor="var(--color-amber-500)"
-                title={m.name}
-                subtitle={`${m.hours} hrs · service at ${m.nextServiceDue} hrs`}
-                onClick={() => navigate('/machinery', { state: { openEquipmentId: m.id } })}
-              />
-            ))}
-            {maintenanceMachinery.map(m => (
-              <DrawerRow
-                key={m.id}
-                icon="construction"
-                iconColor="var(--color-red-400)"
-                title={m.name}
-                subtitle="In maintenance"
-                onClick={() => navigate('/machinery', { state: { openEquipmentId: m.id } })}
-              />
-            ))}
+            {renderMachinerySection('Maintenance', maintenanceMachinery, 'construction', 'var(--color-red-400)',
+              () => 'In maintenance',
+              'var(--color-red-700)'
+            )}
+            {renderMachinerySection('Stored', storedMachinery, 'warehouse', 'var(--color-slate-500)',
+              () => 'In storage',
+              'var(--color-slate-600)'
+            )}
             <div style={{ padding: '8px 14px', borderTop: '1px solid var(--color-surface-200)' }}>
               <button
                 onClick={() => navigate('/machinery')}
@@ -826,6 +837,7 @@ export default function OverviewPage() {
             </div>
           </WidgetExpanded>
         )
+      }
 
       case 'alerts':
         return (
@@ -1027,6 +1039,8 @@ export default function OverviewPage() {
                     secondary={[
                       serviceDueMachinery.length > 0 && `${serviceDueMachinery.length} service due`,
                       maintenanceMachinery.length > 0 && `${maintenanceMachinery.length} maintenance`,
+                      storedMachinery.length > 0 && `${storedMachinery.length} stored`,
+                      soldMachinery.length > 0 && `${soldMachinery.length} sold`,
                     ].filter(Boolean).join(' · ') || 'All available'}
                     badge={serviceDueMachinery.length > 0 ? serviceDueMachinery.length : null}
                     badgeColor="var(--color-amber-500)"
