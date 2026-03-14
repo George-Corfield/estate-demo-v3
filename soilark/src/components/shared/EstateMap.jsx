@@ -5,6 +5,7 @@ export default function EstateMap({
   highlightedFieldId,
   highlightedFieldIds = [],
   selectedFieldIds = [],
+  alertFieldIds = [],
   onFieldClick,
   interactive = true,
 }) {
@@ -33,6 +34,7 @@ export default function EstateMap({
           isHighlighted={highlightedFieldId === field.id}
           isWhiteHighlighted={highlightedFieldIds.includes(field.id)}
           isSelected={selectedFieldIds.includes(field.id)}
+          isAlert={alertFieldIds.includes(field.id)}
           onClick={interactive ? onFieldClick : undefined}
         />
       ))}

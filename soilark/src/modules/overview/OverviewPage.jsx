@@ -246,8 +246,8 @@ function buildAlerts(tasks, machinery, staff) {
     id: `alert-task-${t.id}`,
     icon: 'warning',
     iconColor: 'var(--color-red-500)',
-    title: `${t.title} overdue`,
-    subtitle: t.field || t.linkedField || null,
+    title: `${t.name} overdue`,
+    subtitle: null,
     severity: 'danger',
     type: 'task',
     ref: t.id,
@@ -296,7 +296,7 @@ function buildActivityFeed(tasks, fields, staff) {
         time: '10:24',
         icon: 'task_alt',
         iconColor: 'var(--color-deep-400)',
-        text: `${t.title} completed`,
+        text: `${t.name} completed`,
         sub: worker ? worker.name : null,
       })
     })
@@ -489,7 +489,11 @@ export default function OverviewPage() {
   const activityFeed = buildActivityFeed(tasks, fields, staff)
 
   const fieldsWithTasks = fields.filter(f =>
-    inProgressTasks.some(t => t.linkedField === f.id || t.field === f.name)
+    inProgressTasks.some(t => t.fieldIds?.includes(f.id))
+  ).map(f => f.id)
+
+  const fieldsWithOverdueTasks = fields.filter(f =>
+    overdueTasks.some(t => t.fieldIds?.includes(f.id))
   ).map(f => f.id)
 
   const handleWidgetExpand = (widget) => {
@@ -662,54 +666,48 @@ export default function OverviewPage() {
         )
       }
 
-      case 'tasks':
-        return (
-          <WidgetExpanded title="Today's Tasks" icon="assignment" onBack={() => setExpandedWidget(null)}>
-            {todayTasks.length === 0 && overdueTasks.length === 0 ? (
-              <div style={{ padding: 14, color: 'var(--color-slate-400)', fontSize: 12, textAlign: 'center' }}>
-                No tasks scheduled today
+      case 'tasks': {
+        const todoTasks = tasks.filter(t => t.status === 'todo')
+        const ipTasks = tasks.filter(t => t.status === 'in-progress')
+        const doneTasks = tasks.filter(t => t.status === 'done')
+        const resolveFieldNames = (t) => {
+          if (!t.fieldIds || t.fieldIds.length === 0) return 'No field'
+          return t.fieldIds.map(fid => fields.find(f => f.id === fid)?.name).filter(Boolean).join(', ') || 'No field'
+        }
+
+        const isOverdue = (t) => t.dueDate && t.dueDate < todayStr && t.status !== 'done' && t.status !== 'cancelled'
+
+        const renderTaskSection = (label, sectionTasks, icon, iconColor) => (
+          <>
+            <div style={{ padding: '6px 14px 4px', background: 'var(--color-surface-100)' }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-slate-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                {label}
+              </span>
+            </div>
+            {sectionTasks.length === 0 ? (
+              <div style={{ padding: '9px 14px', fontSize: 12, color: 'var(--color-slate-400)', borderBottom: '1px solid var(--color-surface-100)' }}>
+                No tasks
               </div>
-            ) : (
-              <>
-                {overdueTasks.length > 0 && (
-                  <div style={{ padding: '6px 14px 4px', background: 'var(--color-red-50, #fef2f2)' }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-red-500)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Overdue
-                    </span>
-                  </div>
-                )}
-                {overdueTasks.map(t => (
-                  <DrawerRow
-                    key={t.id}
-                    icon="warning"
-                    iconColor="var(--color-red-400)"
-                    title={t.title}
-                    subtitle={t.field || t.linkedFieldName || 'No field'}
-                    meta={t.dueDate}
-                    badge={t.status}
-                    onClick={() => navigate('/tasks', { state: { openTaskId: t.id } })}
-                  />
-                ))}
-                {todayTasks.length > 0 && (
-                  <div style={{ padding: '6px 14px 4px', background: 'var(--color-surface-100)' }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-slate-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Scheduled
-                    </span>
-                  </div>
-                )}
-                {todayTasks.map(t => (
-                  <DrawerRow
-                    key={t.id}
-                    icon={t.status === 'in-progress' ? 'play_circle' : 'radio_button_unchecked'}
-                    iconColor={t.status === 'in-progress' ? 'var(--color-deep-400)' : 'var(--color-slate-300)'}
-                    title={t.title}
-                    subtitle={t.assignee || 'Unassigned'}
-                    meta={t.dueDate}
-                    onClick={() => navigate('/tasks', { state: { openTaskId: t.id } })}
-                  />
-                ))}
-              </>
-            )}
+            ) : sectionTasks.map(t => (
+              <DrawerRow
+                key={t.id}
+                icon={icon}
+                iconColor={iconColor}
+                title={t.name}
+                subtitle={resolveFieldNames(t)}
+                meta={t.status === 'done' ? t.completedDate || t.dueDate : t.dueDate}
+                badge={isOverdue(t) ? 'Overdue' : null}
+                badgeColor={isOverdue(t) ? 'var(--color-red-500)' : null}
+                onClick={() => navigate('/tasks', { state: { openTaskId: t.id } })}
+              />
+            ))}
+          </>
+        )
+
+        return (
+          <WidgetExpanded title="Tasks" icon="assignment" onBack={() => setExpandedWidget(null)}>
+            {renderTaskSection('Todo', todoTasks, 'radio_button_unchecked', 'var(--color-slate-300)')}
+            {renderTaskSection('In Progress', ipTasks, 'play_circle', 'var(--color-deep-400)')}
             <div style={{ padding: '8px 14px', borderTop: '1px solid var(--color-surface-200)' }}>
               <button
                 onClick={() => navigate('/tasks')}
@@ -720,6 +718,7 @@ export default function OverviewPage() {
             </div>
           </WidgetExpanded>
         )
+      }
 
       case 'staff':
         return (
@@ -749,7 +748,7 @@ export default function OverviewPage() {
                   icon={statusIcon}
                   iconColor={statusColor}
                   title={s.name}
-                  subtitle={task ? task.title : s.role}
+                  subtitle={task ? task.name : s.role}
                   badge={s.status === 'Pending Sick Confirmation' ? 'Confirm' : null}
                   badgeColor="var(--color-red-500)"
                   onClick={() => navigate('/staff', { state: { openStaffId: s.id } })}
@@ -781,7 +780,7 @@ export default function OverviewPage() {
                 icon="agriculture"
                 iconColor="var(--color-deep-400)"
                 title={m.name}
-                subtitle={tasks.find(t => t.status === 'in-progress' && (t.machineryId === m.id || t.machinery === m.name))?.title || 'On task'}
+                subtitle={tasks.find(t => t.status === 'in-progress' && (t.machineryId === m.id || t.machinery === m.name))?.name || 'On task'}
                 onClick={() => navigate('/machinery', { state: { openEquipmentId: m.id } })}
               />
             ))}
@@ -876,6 +875,7 @@ export default function OverviewPage() {
             <EstateMap
               onFieldClick={handleFieldClick}
               highlightedFieldIds={highlightedFieldIds}
+              alertFieldIds={expandedWidget === 'tasks' ? fieldsWithOverdueTasks : []}
             />
 
             {/* Toggle buttons — visible when tray is closed */}
