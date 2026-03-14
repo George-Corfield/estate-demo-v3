@@ -483,6 +483,8 @@ export default function OverviewPage() {
   const availableStaff = staff.filter(s => s.status === 'Available')
   const onTaskStaff = staff.filter(s => s.status === 'On Task')
   const sickStaff = staff.filter(s => s.status === 'Sick' || s.status === 'Pending Sick Confirmation')
+  const onHolidayStaff = staff.filter(s => s.status === 'On Holiday')
+  const offDutyStaff = staff.filter(s => s.status === 'Off Duty')
   const activeStaff = staff.filter(s => !['Archived', 'Off Duty'].includes(s.status))
 
   const alerts = buildAlerts(tasks, machinery, staff)
@@ -720,41 +722,45 @@ export default function OverviewPage() {
         )
       }
 
-      case 'staff':
+      case 'staff': {
+        const renderStaffRow = (s) => {
+          const task = tasks.find(t => t.status === 'in-progress' && (t.assigneeId === s.id || t.assignee === s.name))
+          return (
+            <DrawerRow
+              key={s.id}
+              icon="person"
+              iconColor="var(--color-slate-400)"
+              title={s.name}
+              subtitle={task ? task.name : s.role}
+              badge={s.status === 'Pending Sick Confirmation' ? 'Confirm' : null}
+              badgeColor="var(--color-red-500)"
+              onClick={() => navigate('/staff', { state: { openStaffId: s.id } })}
+            />
+          )
+        }
+
+        const renderStaffSection = (label, sectionStaff, emptyMessage, labelColor) => (
+          <>
+            <div style={{ padding: '6px 14px 4px', background: 'var(--color-surface-100)' }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: labelColor || 'var(--color-slate-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                {label}
+              </span>
+            </div>
+            {sectionStaff.length === 0 ? (
+              <div style={{ padding: '9px 14px', fontSize: 12, color: 'var(--color-slate-400)', borderBottom: '1px solid var(--color-surface-100)' }}>
+                {emptyMessage}
+              </div>
+            ) : sectionStaff.map(renderStaffRow)}
+          </>
+        )
+
         return (
           <WidgetExpanded title="Workforce Today" icon="group" onBack={() => setExpandedWidget(null)}>
-            {activeStaff.filter(s => s.status !== 'Off Duty' && s.status !== 'Archived').map(s => {
-              const statusIcon = {
-                'Available': 'check_circle',
-                'On Task': 'play_circle',
-                'Sick': 'sick',
-                'Pending Sick Confirmation': 'sick',
-                'On Holiday': 'beach_access',
-              }[s.status] || 'radio_button_unchecked'
-
-              const statusColor = {
-                'Available': 'var(--color-deep-400)',
-                'On Task': 'var(--color-amber-500)',
-                'Sick': 'var(--color-red-400)',
-                'Pending Sick Confirmation': 'var(--color-red-400)',
-                'On Holiday': 'var(--color-slate-400)',
-              }[s.status] || 'var(--color-slate-300)'
-
-              const task = tasks.find(t => t.status === 'in-progress' && (t.assigneeId === s.id || t.assignee === s.name))
-
-              return (
-                <DrawerRow
-                  key={s.id}
-                  icon={statusIcon}
-                  iconColor={statusColor}
-                  title={s.name}
-                  subtitle={task ? task.name : s.role}
-                  badge={s.status === 'Pending Sick Confirmation' ? 'Confirm' : null}
-                  badgeColor="var(--color-red-500)"
-                  onClick={() => navigate('/staff', { state: { openStaffId: s.id } })}
-                />
-              )
-            })}
+            {renderStaffSection('Available', availableStaff, 'No staff available', 'var(--color-green-800)')}
+            {renderStaffSection('On Task', onTaskStaff, 'No staff on task', 'var(--color-amber-700)')}
+            {renderStaffSection('Sick Leave', sickStaff, 'No staff on sick leave', 'var(--color-red-700)')}
+            {renderStaffSection('On Holiday', onHolidayStaff, 'No staff on holiday', 'var(--color-slate-600)')}
+            {renderStaffSection('Off Duty', offDutyStaff, 'No staff off duty', 'var(--color-slate-600)')}
             <div style={{ padding: '8px 14px', borderTop: '1px solid var(--color-surface-200)' }}>
               <button
                 onClick={() => navigate('/staff')}
@@ -765,6 +771,7 @@ export default function OverviewPage() {
             </div>
           </WidgetExpanded>
         )
+      }
 
       case 'machinery':
         return (
