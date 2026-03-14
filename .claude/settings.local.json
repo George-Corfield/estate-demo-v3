@@ -11,7 +11,9 @@
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(wc:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(npx eslint:*)",
+      "WebFetch(domain:open-meteo.com)"
     ]
   }
 }

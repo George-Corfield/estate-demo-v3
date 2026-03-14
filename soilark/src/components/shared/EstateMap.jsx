@@ -5,6 +5,7 @@ export default function EstateMap({
   highlightedFieldId,
   highlightedFieldIds = [],
   selectedFieldIds = [],
+  alertFieldIds = [],
   onFieldClick,
   interactive = true,
 }) {
@@ -33,12 +34,13 @@ export default function EstateMap({
           isHighlighted={highlightedFieldId === field.id}
           isWhiteHighlighted={highlightedFieldIds.includes(field.id)}
           isSelected={selectedFieldIds.includes(field.id)}
+          isAlert={alertFieldIds.includes(field.id)}
           onClick={interactive ? onFieldClick : undefined}
         />
       ))}
 
       {/* Map controls */}
-      <div className="absolute flex flex-col gap-2 z-20" style={{ bottom: 16, right: 16 }}>
+      <div className="absolute flex flex-col gap-2 z-20" style={{ bottom: 16, left: 16 }}>
         <div
           className="flex flex-col overflow-hidden"
           style={{
