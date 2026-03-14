@@ -38,7 +38,7 @@ export default function EstateMap({
       ))}
 
       {/* Map controls */}
-      <div className="absolute flex flex-col gap-2 z-20" style={{ bottom: 16, right: 16 }}>
+      <div className="absolute flex flex-col gap-2 z-20" style={{ bottom: 16, left: 16 }}>
         <div
           className="flex flex-col overflow-hidden"
           style={{
