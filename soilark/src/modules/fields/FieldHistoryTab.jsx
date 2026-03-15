@@ -441,7 +441,17 @@ export default function FieldHistoryTab({ field }) {
                     {entry.completedBy && ` · ${entry.completedBy}`}
                   </p>
                   {entry.details && (
-                    <p className="text-body-small" style={{ color: 'var(--color-slate-600)', marginTop: 6 }}>
+                    <p className="text-body-small" style={{
+                      color: 'var(--color-slate-600)',
+                      marginTop: 6,
+                      ...(isExpanded ? {
+                        background: 'var(--color-surface-100, #f8fafc)',
+                        borderLeft: '2px solid var(--color-surface-300)',
+                        margin: '8px 0 0 0',
+                        padding: '8px 12px',
+                        borderRadius: '0 var(--radius-sm, 4px) 0 0',
+                      } : {}),
+                    }}>
                       {entry.details}
                     </p>
                   )}
@@ -450,11 +460,11 @@ export default function FieldHistoryTab({ field }) {
                   {isExpanded && (
                     <div
                       style={{
-                        marginTop: 10,
-                        padding: 14,
-                        borderRadius: 'var(--radius-md)',
+                        padding: '0 12px 12px 12px',
+                        borderLeft: '2px solid var(--color-surface-300)',
                         background: 'var(--color-surface-100, #f8fafc)',
-                        border: '1px solid var(--color-surface-300)',
+                        borderRadius: entry.details ? '0 0 var(--radius-sm, 4px) 0' : 'var(--radius-sm, 4px)',
+                        ...(!entry.details ? { marginTop: 8, paddingTop: 12 } : {}),
                       }}
                     >
                       <div className="flex flex-col gap-3">
