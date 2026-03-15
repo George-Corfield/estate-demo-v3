@@ -11,9 +11,9 @@ const TABS = [
   { id: 'history', label: 'History' },
 ]
 
-export default function FieldDetailView({ fieldId, onBack }) {
+export default function FieldDetailView({ fieldId, onBack, initialTab }) {
   const { fields, usages } = useApp()
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState(initialTab || 'overview')
 
   const field = useMemo(() => fields.find(f => f.id === fieldId), [fields, fieldId])
 

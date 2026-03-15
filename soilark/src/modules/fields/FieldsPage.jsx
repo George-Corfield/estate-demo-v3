@@ -10,6 +10,7 @@ import Calendar from '../../components/shared/Calendar'
 export default function FieldsPage() {
   const { fields } = useApp()
   const [selectedFieldId, setSelectedFieldId] = useState(null)
+  const [selectedFieldTab, setSelectedFieldTab] = useState(null)
   const [showUsageManager, setShowUsageManager] = useState(false)
   const [rightView, setRightView] = useState('map')
   const [openCategory, setOpenCategory] = useState(null)
@@ -20,6 +21,7 @@ export default function FieldsPage() {
   useEffect(() => {
     if (location.state?.openFieldId) {
       setSelectedFieldId(location.state.openFieldId)
+      setSelectedFieldTab(location.state.openTab || null)
       navigate('.', { replace: true, state: {} })
     }
     if (location.state?.openCategory) {
@@ -50,7 +52,8 @@ export default function FieldsPage() {
     leftPanel = (
       <FieldDetailView
         fieldId={selectedFieldId}
-        onBack={() => setSelectedFieldId(null)}
+        initialTab={selectedFieldTab}
+        onBack={() => { setSelectedFieldId(null); setSelectedFieldTab(null) }}
       />
     )
   } else {
