@@ -30,6 +30,7 @@ export const initialEvents = [
     type: 'reminder',
     description: 'Check all field water troughs across sectors',
     time: '09:00',
+    fieldIds: ['field-16', 'field-17', 'field-18', 'field-19'],
   },
   {
     id: 'evt-06',
@@ -45,13 +46,15 @@ export const initialEvents = [
     title: 'Soil Testing',
     type: 'reminder',
     description: 'Collect soil samples from North Field and Church Field for lab analysis',
+    fieldIds: ['field-01', 'field-03'],
   },
   {
     id: 'evt-08',
     date: '2026-02-19',
     title: 'Irrigation Check',
     type: 'reminder',
-    description: 'Inspect irrigation lines in South Arable before spring planting',
+    description: 'Inspect irrigation lines in Brook Field before spring planting',
+    fieldIds: ['field-22'],
   },
   {
     id: 'evt-10',
@@ -82,5 +85,6 @@ export const initialEvents = [
     title: 'Drainage Inspection',
     type: 'reminder',
     description: 'Walk field drains in low-lying fields before wet season',
+    fieldIds: ['field-09', 'field-14', 'field-19'],
   },
 ]

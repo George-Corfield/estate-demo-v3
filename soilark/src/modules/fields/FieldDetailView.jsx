@@ -8,7 +8,7 @@ import FieldTasksTab from './FieldTasksTab'
 const TABS = [
   { id: 'overview', label: 'Overview' },
   { id: 'tasks', label: 'Tasks' },
-  { id: 'history', label: 'Activity History' },
+  { id: 'history', label: 'History' },
 ]
 
 export default function FieldDetailView({ fieldId, onBack }) {
