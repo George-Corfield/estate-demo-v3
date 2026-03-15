@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
 
 const SOIL_TYPES = ['Sandy', 'Clay', 'Loam', 'Silt', 'Peat', 'Chalk']
-const DRAINAGE_OPTIONS = ['Very Poor', 'Poor', 'Fair', 'Good', 'Very Good']
 export default function FieldEditForm({ field, onCancel, onSave }) {
   const { updateField, showToast, usages } = useApp()
   const [form, setForm] = useState({
@@ -10,7 +9,6 @@ export default function FieldEditForm({ field, onCancel, onSave }) {
     usage: field.usage,
     sizeHectares: field.sizeHectares,
     soilType: field.soilType,
-    drainage: field.drainage,
     currentCrop: field.currentCrop || '',
     livestock: field.livestock || '',
     description: field.description || '',
@@ -54,16 +52,10 @@ export default function FieldEditForm({ field, onCancel, onSave }) {
             {SOIL_TYPES.map(s => <option key={s}>{s}</option>)}
           </select>
         </FormField>
-        <FormField label="Drainage">
-          <select value={form.drainage} onChange={e => update('drainage', e.target.value)} className="form-select">
-            {DRAINAGE_OPTIONS.map(d => <option key={d}>{d}</option>)}
-          </select>
+        <FormField label="Current Crop">
+          <input type="text" value={form.currentCrop} onChange={e => update('currentCrop', e.target.value)} className="form-input" />
         </FormField>
       </div>
-
-      <FormField label="Current Crop">
-        <input type="text" value={form.currentCrop} onChange={e => update('currentCrop', e.target.value)} className="form-input" />
-      </FormField>
 
       <FormField label="Livestock">
         <input type="text" value={form.livestock} onChange={e => update('livestock', e.target.value)} className="form-input" />

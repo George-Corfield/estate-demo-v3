@@ -3,9 +3,11 @@ import { useApp } from '../../context/AppContext'
 import TabBar from '../../components/shared/TabBar'
 import FieldOverviewTab from './FieldOverviewTab'
 import FieldHistoryTab from './FieldHistoryTab'
+import FieldTasksTab from './FieldTasksTab'
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
+  { id: 'tasks', label: 'Tasks' },
   { id: 'history', label: 'Activity History' },
 ]
 
@@ -38,8 +40,8 @@ export default function FieldDetailView({ fieldId, onBack }) {
             style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: colors?.border }}
           />
           <div>
-            <h2 className="text-heading-3" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{field.name}</h2>
-            <p className="text-body-small" style={{ color: 'var(--color-slate-500)' }}>{field.usage} · {field.sizeHectares} ha</p>
+            <h2 className="text-heading-2" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{field.name}</h2>
+            <p className="text-body" style={{ color: 'var(--color-slate-500)', fontWeight: 500 }}>{field.usage} · {field.sizeHectares} ha</p>
           </div>
         </div>
       </div>
@@ -48,6 +50,7 @@ export default function FieldDetailView({ fieldId, onBack }) {
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {activeTab === 'overview' && <FieldOverviewTab field={field} />}
+        {activeTab === 'tasks' && <FieldTasksTab field={field} />}
         {activeTab === 'history' && <FieldHistoryTab field={field} />}
       </div>
     </div>
