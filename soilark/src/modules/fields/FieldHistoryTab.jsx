@@ -75,16 +75,22 @@ export default function FieldHistoryTab({ field }) {
   const [showForm, setShowForm] = useState(false)
   const [activeFilter, setActiveFilter] = useState('all')
   const [expandedId, setExpandedId] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchUser, setSearchUser] = useState('')
+  const [searchDateFrom, setSearchDateFrom] = useState('')
+  const [searchDateTo, setSearchDateTo] = useState('')
+  const [displayLimit, setDisplayLimit] = useState(20)
+  const nowTime = () => {
+    const d = new Date()
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  }
+
   const [form, setForm] = useState({
+    type: 'note',
     title: '',
     details: '',
     date: formatDateKey(new Date()),
-    time: '12:00',
-    machineryUsed: '',
-    inputUsed: '',
-    quantity: '',
-    rate: '',
-    units: '',
+    time: nowTime(),
     files: [],
   })
 
@@ -118,9 +124,51 @@ export default function FieldHistoryTab({ field }) {
     )
   }, [field.activities, customEvents, field.id])
 
-  const filtered = activeFilter === 'all'
-    ? timeline
-    : timeline.filter(e => e.type === activeFilter)
+  const uniqueUsers = useMemo(() => {
+    const users = new Set()
+    timeline.forEach(e => { if (e.completedBy) users.add(e.completedBy) })
+    return [...users].sort()
+  }, [timeline])
+
+  const isSearchActive = searchQuery || searchUser || searchDateFrom || searchDateTo
+
+  const filtered = useMemo(() => {
+    let results = activeFilter === 'all'
+      ? timeline
+      : timeline.filter(e => e.type === activeFilter)
+
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase()
+      results = results.filter(e =>
+        e.title?.toLowerCase().includes(q)
+        || e.details?.toLowerCase().includes(q)
+        || e.notes?.toLowerCase().includes(q)
+        || e.machineryUsed?.toLowerCase().includes(q)
+        || e.inputUsed?.toLowerCase().includes(q)
+      )
+    }
+
+    if (searchUser) {
+      results = results.filter(e => e.completedBy === searchUser)
+    }
+
+    if (searchDateFrom) {
+      const from = new Date(searchDateFrom)
+      from.setHours(0, 0, 0, 0)
+      results = results.filter(e => new Date(e.timestamp) >= from)
+    }
+
+    if (searchDateTo) {
+      const to = new Date(searchDateTo)
+      to.setHours(23, 59, 59, 999)
+      results = results.filter(e => new Date(e.timestamp) <= to)
+    }
+
+    return results
+  }, [timeline, activeFilter, searchQuery, searchUser, searchDateFrom, searchDateTo])
+
+  const totalCount = filtered.length
+  const displayed = isSearchActive ? filtered : filtered.slice(0, displayLimit)
 
   const findStaffByName = (name) => {
     if (!name || !staff) return null
@@ -138,6 +186,8 @@ export default function FieldHistoryTab({ field }) {
     return tasks.find(t => t.id === taskId)
   }
 
+  const TYPE_LABELS = { note: 'Note', observation: 'Observation', inspection: 'Inspection' }
+
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!form.title.trim()) return
@@ -148,7 +198,7 @@ export default function FieldHistoryTab({ field }) {
     addFieldActivity(field.id, {
       id: `hist-${Date.now()}`,
       timestamp,
-      type: 'note',
+      type: form.type,
       title: form.title,
       completedBy: 'John Smith',
       details: form.details,
@@ -156,17 +206,17 @@ export default function FieldHistoryTab({ field }) {
       linkedTaskId: null,
       taskAction: null,
       linkedEventId: null,
-      machineryUsed: form.machineryUsed || null,
-      inputUsed: form.inputUsed || null,
-      quantity: form.quantity ? Number(form.quantity) : null,
-      rate: form.rate ? Number(form.rate) : null,
-      units: form.units || null,
+      machineryUsed: null,
+      inputUsed: null,
+      quantity: null,
+      rate: null,
+      units: null,
       evidence,
       source: 'manual',
     })
 
-    showToast('Note added')
-    setForm({ title: '', details: '', date: formatDateKey(new Date()), time: '12:00', machineryUsed: '', inputUsed: '', quantity: '', rate: '', units: '', files: [] })
+    showToast(`${TYPE_LABELS[form.type]} added`)
+    setForm({ type: 'note', title: '', details: '', date: formatDateKey(new Date()), time: nowTime(), files: [] })
     setShowForm(false)
   }
 
@@ -181,13 +231,50 @@ export default function FieldHistoryTab({ field }) {
         {showForm ? (
           <form onSubmit={handleSubmit} className="card" style={{ padding: 16 }}>
             <div className="flex flex-col gap-3">
+              {/* Type selector */}
+              <div>
+                <label className="form-label">Type</label>
+                <div className="flex gap-2">
+                  {[
+                    { id: 'note', icon: 'note', label: 'Note' },
+                    { id: 'observation', icon: 'visibility', label: 'Observation' },
+                    { id: 'inspection', icon: 'fact_check', label: 'Inspection' },
+                  ].map(t => {
+                    const selected = form.type === t.id
+                    const typeColor = TYPE_CONFIG[t.id]?.color || 'var(--color-slate-500)'
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setForm({ ...form, type: t.id })}
+                        className="flex items-center gap-1 flex-1 justify-center"
+                        style={{
+                          padding: '6px 0',
+                          borderRadius: 'var(--radius-md)',
+                          border: `1.5px solid ${selected ? typeColor : 'var(--color-surface-300)'}`,
+                          background: selected ? `${typeColor}12` : 'transparent',
+                          color: selected ? typeColor : 'var(--color-slate-500)',
+                          fontSize: 12,
+                          fontWeight: 500,
+                          fontFamily: 'var(--font-body)',
+                          cursor: 'pointer',
+                          transition: 'all 120ms ease',
+                        }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 15 }}>{t.icon}</span>
+                        {t.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
               <div>
                 <label className="form-label">Title</label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={e => setForm({ ...form, title: e.target.value })}
-                  placeholder="e.g. Soil Sampling"
+                  placeholder={form.type === 'observation' ? 'e.g. Crop Walk — Pest Sighting' : form.type === 'inspection' ? 'e.g. Soil Sampling' : 'e.g. Fertiliser Application'}
                   className="form-input"
                   required
                 />
@@ -197,7 +284,7 @@ export default function FieldHistoryTab({ field }) {
                 <textarea
                   value={form.details}
                   onChange={e => setForm({ ...form, details: e.target.value })}
-                  placeholder="Describe the activity..."
+                  placeholder="Describe what was done or observed..."
                   rows={3}
                   className="form-textarea"
                 />
@@ -223,63 +310,6 @@ export default function FieldHistoryTab({ field }) {
                 </div>
               </div>
               <div>
-                <label className="form-label">Machinery Used</label>
-                <select
-                  value={form.machineryUsed}
-                  onChange={e => setForm({ ...form, machineryUsed: e.target.value })}
-                  className="form-input"
-                >
-                  <option value="">None</option>
-                  {(machinery || []).map(m => (
-                    <option key={m.id} value={m.name}>{m.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <label className="form-label">Input / Product</label>
-                  <input
-                    type="text"
-                    value={form.inputUsed}
-                    onChange={e => setForm({ ...form, inputUsed: e.target.value })}
-                    placeholder="e.g. NPK 20-10-10"
-                    className="form-input"
-                  />
-                </div>
-                <div style={{ width: 90 }}>
-                  <label className="form-label">Quantity</label>
-                  <input
-                    type="number"
-                    value={form.quantity}
-                    onChange={e => setForm({ ...form, quantity: e.target.value })}
-                    className="form-input"
-                    step="any"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div style={{ width: 90 }}>
-                  <label className="form-label">Rate</label>
-                  <input
-                    type="number"
-                    value={form.rate}
-                    onChange={e => setForm({ ...form, rate: e.target.value })}
-                    className="form-input"
-                    step="any"
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="form-label">Units</label>
-                  <input
-                    type="text"
-                    value={form.units}
-                    onChange={e => setForm({ ...form, units: e.target.value })}
-                    placeholder="e.g. kg/ha"
-                    className="form-input"
-                  />
-                </div>
-              </div>
-              <div>
                 <label className="form-label">Attachments</label>
                 <input
                   type="file"
@@ -295,14 +325,17 @@ export default function FieldHistoryTab({ field }) {
                 )}
               </div>
               <div className="flex gap-2">
-                <button type="submit" className="btn btn-primary flex-1">Save Note</button>
+                <button type="submit" className="btn btn-primary flex-1">Save {TYPE_LABELS[form.type]}</button>
                 <button type="button" onClick={() => setShowForm(false)} className="btn btn-secondary">Cancel</button>
               </div>
             </div>
           </form>
         ) : (
           <button
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setForm({ type: 'note', title: '', details: '', date: formatDateKey(new Date()), time: nowTime(), files: [] })
+              setShowForm(true)
+            }}
             className="w-full"
             style={{
               padding: '10px 0',
@@ -325,7 +358,7 @@ export default function FieldHistoryTab({ field }) {
               e.currentTarget.style.color = 'var(--color-slate-500)'
             }}
           >
-            + Add Field Note
+            + Add Entry
           </button>
         )}
       </div>
@@ -359,19 +392,93 @@ export default function FieldHistoryTab({ field }) {
         })}
       </div>
 
+      {/* Search bar */}
+      <div style={{ marginBottom: 16 }}>
+        <div className="flex gap-2 items-center" style={{ marginBottom: 8 }}>
+          <div className="flex-1" style={{ position: 'relative' }}>
+            <span
+              className="material-symbols-outlined"
+              style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', fontSize: 16, color: 'var(--color-slate-400)' }}
+            >search</span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => { setSearchQuery(e.target.value); setDisplayLimit(20) }}
+              placeholder="Search history..."
+              className="form-input"
+              style={{ paddingLeft: 30, fontSize: 13 }}
+            />
+          </div>
+          <select
+            value={searchUser}
+            onChange={e => { setSearchUser(e.target.value); setDisplayLimit(20) }}
+            className="form-input"
+            style={{ width: 'auto', minWidth: 130, fontSize: 13 }}
+          >
+            <option value="">All people</option>
+            {uniqueUsers.map(u => (
+              <option key={u} value={u}>{u}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-1 flex-1">
+            <label className="text-body-small" style={{ color: 'var(--color-slate-400)', whiteSpace: 'nowrap', fontSize: 12 }}>From</label>
+            <input
+              type="date"
+              value={searchDateFrom}
+              onChange={e => { setSearchDateFrom(e.target.value); setDisplayLimit(20) }}
+              className="form-input"
+              style={{ fontSize: 12, padding: '4px 6px' }}
+            />
+          </div>
+          <div className="flex items-center gap-1 flex-1">
+            <label className="text-body-small" style={{ color: 'var(--color-slate-400)', whiteSpace: 'nowrap', fontSize: 12 }}>To</label>
+            <input
+              type="date"
+              value={searchDateTo}
+              onChange={e => { setSearchDateTo(e.target.value); setDisplayLimit(20) }}
+              className="form-input"
+              style={{ fontSize: 12, padding: '4px 6px' }}
+            />
+          </div>
+          {isSearchActive && (
+            <button
+              onClick={() => { setSearchQuery(''); setSearchUser(''); setSearchDateFrom(''); setSearchDateTo(''); setDisplayLimit(20) }}
+              className="flex items-center gap-1"
+              style={{
+                padding: '4px 8px',
+                border: 'none',
+                background: 'none',
+                fontSize: 12,
+                color: 'var(--color-slate-500)',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-body)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
+              Clear
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Timeline header */}
       <h3 className="text-label mb-4" style={{ color: 'var(--color-slate-400)' }}>
         History
-        <span style={{ color: 'var(--color-slate-400)', marginLeft: 4 }}>({filtered.length})</span>
+        <span style={{ color: 'var(--color-slate-400)', marginLeft: 4 }}>
+          ({isSearchActive ? `${totalCount} result${totalCount !== 1 ? 's' : ''}` : `${Math.min(displayLimit, totalCount)} of ${totalCount}`})
+        </span>
       </h3>
 
-      {filtered.length === 0 ? (
+      {displayed.length === 0 ? (
         <p className="text-body" style={{ color: 'var(--color-slate-400)', textAlign: 'center', padding: '32px 0' }}>
-          No entries found
+          {isSearchActive ? 'No matching entries found' : 'No entries found'}
         </p>
       ) : (
         <div className="flex flex-col">
-          {filtered.map((entry, i) => {
+          {displayed.map((entry, i) => {
             const config = TYPE_CONFIG[entry.type] || TYPE_CONFIG.note
             const isExpanded = expandedId === entry.id
             const matchedStaff = findStaffByName(entry.completedBy)
@@ -400,7 +507,7 @@ export default function FieldHistoryTab({ field }) {
                       {config.icon}
                     </span>
                   </div>
-                  {i < filtered.length - 1 && (
+                  {i < displayed.length - 1 && (
                     <div className="flex-1 mt-1" style={{ width: 1, background: 'var(--color-surface-300)' }} />
                   )}
                 </div>
@@ -566,6 +673,52 @@ export default function FieldHistoryTab({ field }) {
               </div>
             )
           })}
+
+          {/* Show more / Show all */}
+          {!isSearchActive && totalCount > displayLimit && (
+            <div className="flex gap-2 justify-center" style={{ paddingTop: 8 }}>
+              <button
+                onClick={() => setDisplayLimit(prev => prev + 20)}
+                className="flex items-center gap-1"
+                style={{
+                  padding: '6px 14px',
+                  border: '1px solid var(--color-surface-300)',
+                  borderRadius: 'var(--radius-md)',
+                  background: 'transparent',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  fontFamily: 'var(--font-body)',
+                  color: 'var(--color-slate-600)',
+                  cursor: 'pointer',
+                  transition: 'all 120ms ease',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-green-500)'; e.currentTarget.style.color = 'var(--color-green-600, #166534)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-surface-300)'; e.currentTarget.style.color = 'var(--color-slate-600)' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>expand_more</span>
+                Show more ({totalCount - displayLimit} remaining)
+              </button>
+              <button
+                onClick={() => setDisplayLimit(totalCount)}
+                style={{
+                  padding: '6px 14px',
+                  border: '1px solid var(--color-surface-300)',
+                  borderRadius: 'var(--radius-md)',
+                  background: 'transparent',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  fontFamily: 'var(--font-body)',
+                  color: 'var(--color-slate-500)',
+                  cursor: 'pointer',
+                  transition: 'all 120ms ease',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-green-500)'; e.currentTarget.style.color = 'var(--color-green-600, #166534)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-surface-300)'; e.currentTarget.style.color = 'var(--color-slate-500)' }}
+              >
+                Show all
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
