@@ -381,6 +381,16 @@ export default function OverviewPage() {
     }
   }, [location.state, navigate])
 
+  // Close tray when FAB opens
+  useEffect(() => {
+    const handleFabOpen = () => {
+      setTrayOpen(false)
+      setExpandedWidget(null)
+    }
+    window.addEventListener('fab-open', handleFabOpen)
+    return () => window.removeEventListener('fab-open', handleFabOpen)
+  }, [])
+
   // Weather fetch — 8-day agricultural forecast
   useEffect(() => {
     const url = 'https://api.open-meteo.com/v1/forecast'
@@ -939,7 +949,7 @@ export default function OverviewPage() {
               transition: 'opacity 200ms ease',
             }}>
               <button
-                onClick={() => setTrayOpen(true)}
+                onClick={() => { setTrayOpen(true); window.dispatchEvent(new CustomEvent('overview-tray-open')) }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',

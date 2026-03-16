@@ -1,44 +1,72 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const ACTIONS = [
-  { icon: 'event', label: 'Calendar Event', color: 'bg-indigo-500', action: 'calendar' },
-  { icon: 'receipt_long', label: 'Add Expense', color: 'bg-amber-500', action: 'expense', disabled: true },
-  { icon: 'note_add', label: 'Field Note', color: 'bg-emerald-500', action: 'fieldNote' },
   { icon: 'add_task', label: 'Add Task', color: 'bg-blue-500', action: 'task' },
+  { icon: 'visibility', label: 'Add Observation', color: 'bg-teal-500', action: 'observation' },
+  { icon: 'note_add', label: 'Add Note', color: 'bg-emerald-500', action: 'note' },
+  { icon: 'landscape', label: 'Add Field', color: 'bg-green-600', action: 'field' },
+  { icon: 'receipt_long', label: 'Add Expense', color: 'bg-amber-500', action: 'expense' },
+  { icon: 'build', label: 'Book Service', color: 'bg-indigo-500', action: 'bookService' },
+  { icon: 'healing', label: 'Report Sick', color: 'bg-red-500', action: 'reportSick' },
 ]
+
+const CLICK_BUFFER = 12 // px buffer around the FAB container for misclicks
 
 export default function FAB() {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
+  const containerRef = useRef(null)
+
+  // Close FAB when overview tray opens
+  useEffect(() => {
+    const handleTrayOpen = () => setOpen(false)
+    window.addEventListener('overview-tray-open', handleTrayOpen)
+    return () => window.removeEventListener('overview-tray-open', handleTrayOpen)
+  }, [])
+
+  // Close FAB when clicking outside (with buffer zone)
+  useEffect(() => {
+    if (!open) return
+    const handleClickOutside = (e) => {
+      const el = containerRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const inBuffer =
+        e.clientX >= rect.left - CLICK_BUFFER &&
+        e.clientX <= rect.right + CLICK_BUFFER &&
+        e.clientY >= rect.top - CLICK_BUFFER &&
+        e.clientY <= rect.bottom + CLICK_BUFFER
+      if (!inBuffer) setOpen(false)
+    }
+    document.addEventListener('pointerdown', handleClickOutside)
+    return () => document.removeEventListener('pointerdown', handleClickOutside)
+  }, [open])
+
+  const toggleOpen = useCallback(() => {
+    const next = !open
+    setOpen(next)
+    if (next) {
+      window.dispatchEvent(new CustomEvent('fab-open'))
+    }
+  }, [open])
 
   const handleAction = (action) => {
     setOpen(false)
-    switch (action) {
-      case 'task':
-        navigate('/tasks', { state: { createTask: true } })
-        break
-      case 'fieldNote':
-        navigate('/fields', { state: { addNote: true } })
-        break
-      case 'calendar':
-        navigate('/', { state: { openCalendar: true, addEvent: true } })
-        break
-      default:
-        break
-    }
+    // TODO: wire up each action to its respective flow
+    console.log(`FAB action: ${action}`)
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col-reverse items-end gap-3">
+    <div ref={containerRef} className="fixed bottom-6 right-6 z-50 flex flex-col-reverse items-end gap-3">
       {/* Main FAB button */}
       <button
-        onClick={() => setOpen(!open)}
+        onClick={toggleOpen}
         className={`w-14 h-14 rounded-full bg-primary text-emerald-950 shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 ${
           open ? 'rotate-45' : ''
         }`}
       >
-        <span className="material-icons text-2xl">add</span>
+        <span className="material-symbols-outlined" style={{ fontSize: "30px"}}>add</span>
       </button>
 
       {/* Action buttons */}
@@ -57,7 +85,7 @@ export default function FAB() {
           }}
         >
           <span className="text-sm font-medium">{item.label}</span>
-          <span className={`material-icons text-white p-1.5 rounded-full text-sm ${item.disabled ? 'bg-slate-300' : item.color}`}>
+          <span className={`material-symbols-outlined text-white p-1.5 rounded-full text-sm ${item.disabled ? 'bg-slate-300' : item.color}`}>
             {item.icon}
           </span>
         </button>
