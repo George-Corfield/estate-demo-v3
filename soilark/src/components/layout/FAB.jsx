@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const ACTIONS = [
   { icon: 'add_task', label: 'Add Task', color: 'bg-blue-500', action: 'task' },
@@ -16,6 +16,7 @@ const CLICK_BUFFER = 12 // px buffer around the FAB container for misclicks
 export default function FAB() {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
   const containerRef = useRef(null)
 
   // Close FAB when overview tray opens
@@ -53,7 +54,15 @@ export default function FAB() {
 
   const handleAction = (action) => {
     setOpen(false)
-    // TODO: wire up each action to its respective flow
+    if (action === 'task') {
+      const path = location.pathname
+      if (path === '/tasks' || path === '/fields') {
+        window.dispatchEvent(new CustomEvent('fab-add-task'))
+      } else {
+        navigate('/tasks', { state: { createTask: true } })
+      }
+      return
+    }
     console.log(`FAB action: ${action}`)
   }
 

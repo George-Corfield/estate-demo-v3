@@ -15,6 +15,7 @@ export default function TasksPage() {
   const [filters, setFilters] = useState({ priority: 'all', type: 'all', field: 'all' })
   const [selectedFieldIds, setSelectedFieldIds] = useState([])
   const [dueDate, setDueDate] = useState('')
+  const [formKey, setFormKey] = useState(0)
   const { tasks } = useApp()
   const location = useLocation()
   const navigate = useNavigate()
@@ -28,6 +29,9 @@ export default function TasksPage() {
   useEffect(() => {
     if (location.state?.createTask) {
       setActiveView('create')
+      if (location.state.prefillFieldIds) {
+        setSelectedFieldIds(location.state.prefillFieldIds)
+      }
       navigate('.', { replace: true, state: {} })
     }
     if (location.state?.openTaskId) {
@@ -36,6 +40,25 @@ export default function TasksPage() {
       navigate('.', { replace: true, state: {} })
     }
   }, [location.state, navigate])
+
+  useEffect(() => {
+    const handleFabAddTask = () => {
+      if (activeView === 'create') {
+        if (window.confirm('Discard current task draft?')) {
+          setSelectedFieldIds([])
+          setDueDate('')
+          setFormKey(k => k + 1)
+        }
+      } else {
+        setActiveView('create')
+        setSelectedFieldIds([])
+        setDueDate('')
+        setFormKey(k => k + 1)
+      }
+    }
+    window.addEventListener('fab-add-task', handleFabAddTask)
+    return () => window.removeEventListener('fab-add-task', handleFabAddTask)
+  }, [activeView])
 
   const handleFieldToggle = (field) => {
     if (activeView === 'create') {
@@ -88,6 +111,7 @@ export default function TasksPage() {
         )}
         {activeView === 'create' && (
           <TaskCreateForm
+            key={formKey}
             selectedFieldIds={selectedFieldIds}
             setSelectedFieldIds={setSelectedFieldIds}
             dueDate={dueDate}

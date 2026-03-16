@@ -8,7 +8,7 @@ import EstateMap from '../../components/shared/EstateMap'
 import Calendar from '../../components/shared/Calendar'
 
 export default function FieldsPage() {
-  const { fields } = useApp()
+  const { fields, showToast } = useApp()
   const [selectedFieldId, setSelectedFieldId] = useState(null)
   const [selectedFieldTab, setSelectedFieldTab] = useState(null)
   const [showUsageManager, setShowUsageManager] = useState(false)
@@ -32,6 +32,20 @@ export default function FieldsPage() {
       navigate('.', { replace: true, state: {} })
     }
   }, [location.state, navigate])
+
+  useEffect(() => {
+    const handleFabAddTask = () => {
+      if (selectedFieldId) {
+        const field = fields.find(f => f.id === selectedFieldId)
+        navigate('/tasks', { state: { createTask: true, prefillFieldIds: [selectedFieldId] } })
+        if (field) showToast(`Task linked to ${field.name}`)
+      } else {
+        navigate('/tasks', { state: { createTask: true } })
+      }
+    }
+    window.addEventListener('fab-add-task', handleFabAddTask)
+    return () => window.removeEventListener('fab-add-task', handleFabAddTask)
+  }, [selectedFieldId, fields, navigate, showToast])
 
   const usageHighlightedIds = useMemo(() => {
     if (!expandedUsage || selectedFieldId || showUsageManager) return []
