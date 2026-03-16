@@ -11,15 +11,15 @@ const TABS = [
   { id: 'history', label: 'History' },
 ]
 
-export default function FieldDetailView({ fieldId, onBack, initialTab, openObservationForm, onObservationFormOpened }) {
+export default function FieldDetailView({ fieldId, onBack, initialTab, openObservationForm, onObservationFormOpened, openNoteForm, onNoteFormOpened }) {
   const { fields, usages } = useApp()
   const [activeTab, setActiveTab] = useState(initialTab || 'overview')
 
   useEffect(() => {
-    if (openObservationForm) {
+    if (openObservationForm || openNoteForm) {
       setActiveTab('history')
     }
-  }, [openObservationForm])
+  }, [openObservationForm, openNoteForm])
 
   const field = useMemo(() => fields.find(f => f.id === fieldId), [fields, fieldId])
 
@@ -57,7 +57,7 @@ export default function FieldDetailView({ fieldId, onBack, initialTab, openObser
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {activeTab === 'overview' && <FieldOverviewTab field={field} />}
         {activeTab === 'tasks' && <FieldTasksTab field={field} />}
-        {activeTab === 'history' && <FieldHistoryTab field={field} openObservationForm={openObservationForm} onObservationFormOpened={onObservationFormOpened} />}
+        {activeTab === 'history' && <FieldHistoryTab field={field} openObservationForm={openObservationForm} onObservationFormOpened={onObservationFormOpened} openNoteForm={openNoteForm} onNoteFormOpened={onNoteFormOpened} />}
       </div>
     </div>
   )

@@ -69,7 +69,7 @@ function DetailRow({ icon, label, value }) {
   )
 }
 
-export default function FieldHistoryTab({ field, openObservationForm, onObservationFormOpened }) {
+export default function FieldHistoryTab({ field, openObservationForm, onObservationFormOpened, openNoteForm, onNoteFormOpened }) {
   const { addFieldActivity, addTask, linkActivityTask, showToast, customEvents, machinery, tasks, staff } = useApp()
   const navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
@@ -101,6 +101,14 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
       onObservationFormOpened?.()
     }
   }, [openObservationForm])
+
+  useEffect(() => {
+    if (openNoteForm) {
+      setForm({ type: 'note', title: '', details: '', date: formatDateKey(new Date()), time: nowTime(), files: [] })
+      setShowForm(true)
+      onNoteFormOpened?.()
+    }
+  }, [openNoteForm])
 
   const timeline = useMemo(() => {
     const entries = [...(field.activities || [])]

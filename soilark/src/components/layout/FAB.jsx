@@ -5,26 +5,36 @@ const ACTIONS = [
   { icon: 'add_task', label: 'Add Task', color: 'bg-blue-500', action: 'task' },
   { icon: 'visibility', label: 'Add Observation', color: 'bg-teal-500', action: 'observation' },
   { icon: 'note_add', label: 'Add Note', color: 'bg-emerald-500', action: 'note' },
-  { icon: 'landscape', label: 'Add Field', color: 'bg-green-600', action: 'field' },
-  { icon: 'receipt_long', label: 'Add Expense', color: 'bg-amber-500', action: 'expense' },
-  { icon: 'build', label: 'Book Service', color: 'bg-indigo-500', action: 'bookService' },
-  { icon: 'healing', label: 'Report Sick', color: 'bg-red-500', action: 'reportSick' },
+  { icon: 'landscape', label: 'Add Field', color: 'bg-green-600', action: 'field', disabled: true },
+  { icon: 'receipt_long', label: 'Add Expense', color: 'bg-amber-500', action: 'expense', disabled: true },
+  { icon: 'build', label: 'Book Service', color: 'bg-indigo-500', action: 'bookService', disabled: true },
+  { icon: 'healing', label: 'Report Sick', color: 'bg-red-500', action: 'reportSick', disabled: true },
 ]
 
 const CLICK_BUFFER = 12 // px buffer around the FAB container for misclicks
 
 export default function FAB() {
   const [open, setOpen] = useState(false)
+  const [closing, setClosing] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const containerRef = useRef(null)
 
+  const closeFab = useCallback(() => {
+    if (!open || closing) return
+    setClosing(true)
+    setTimeout(() => {
+      setOpen(false)
+      setClosing(false)
+    }, 150)
+  }, [open, closing])
+
   // Close FAB when overview tray opens
   useEffect(() => {
-    const handleTrayOpen = () => setOpen(false)
+    const handleTrayOpen = () => closeFab()
     window.addEventListener('overview-tray-open', handleTrayOpen)
     return () => window.removeEventListener('overview-tray-open', handleTrayOpen)
-  }, [])
+  }, [closeFab])
 
   // Close FAB when clicking outside (with buffer zone)
   useEffect(() => {
@@ -38,22 +48,23 @@ export default function FAB() {
         e.clientX <= rect.right + CLICK_BUFFER &&
         e.clientY >= rect.top - CLICK_BUFFER &&
         e.clientY <= rect.bottom + CLICK_BUFFER
-      if (!inBuffer) setOpen(false)
+      if (!inBuffer) closeFab()
     }
     document.addEventListener('pointerdown', handleClickOutside)
     return () => document.removeEventListener('pointerdown', handleClickOutside)
-  }, [open])
+  }, [open, closeFab])
 
   const toggleOpen = useCallback(() => {
-    const next = !open
-    setOpen(next)
-    if (next) {
+    if (open) {
+      closeFab()
+    } else {
+      setOpen(true)
       window.dispatchEvent(new CustomEvent('fab-open'))
     }
-  }, [open])
+  }, [open, closeFab])
 
   const handleAction = (action) => {
-    setOpen(false)
+    closeFab()
     if (action === 'task') {
       const path = location.pathname
       if (path === '/tasks' || path === '/fields') {
@@ -71,6 +82,14 @@ export default function FAB() {
       }
       return
     }
+    if (action === 'note') {
+      if (location.pathname === '/fields') {
+        window.dispatchEvent(new CustomEvent('fab-add-note'))
+      } else {
+        navigate('/fields', { state: { selectFieldForNote: true } })
+      }
+      return
+    }
     console.log(`FAB action: ${action}`)
   }
 
@@ -80,7 +99,7 @@ export default function FAB() {
       <button
         onClick={toggleOpen}
         className={`w-14 h-14 rounded-full bg-primary text-emerald-950 shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 ${
-          open ? 'rotate-45' : ''
+          open && !closing ? 'rotate-45' : ''
         }`}
       >
         <span className="material-symbols-outlined" style={{ fontSize: "30px"}}>add</span>
@@ -98,7 +117,9 @@ export default function FAB() {
               : 'bg-white text-slate-800 hover:shadow-xl'
           }`}
           style={{
-            animation: `fadeInUp 0.2s ease-out ${i * 0.05}s both`,
+            animation: closing
+              ? `fadeOutDown 0.15s ease-in ${(ACTIONS.length - 1 - i) * 0.02}s both`
+              : `fadeInUp 0.2s ease-out ${i * 0.05}s both`,
           }}
         >
           <span className="text-sm font-medium">{item.label}</span>
@@ -112,6 +133,10 @@ export default function FAB() {
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOutDown {
+          from { opacity: 1; transform: translateY(0); }
+          to { opacity: 0; transform: translateY(8px); }
         }
       `}</style>
     </div>

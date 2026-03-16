@@ -16,6 +16,7 @@ export default function FieldsPage() {
   const [openCategory, setOpenCategory] = useState(null)
   const [expandedUsage, setExpandedUsage] = useState('Wheat')
   const [pendingObservation, setPendingObservation] = useState(false)
+  const [pendingNote, setPendingNote] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -38,6 +39,15 @@ export default function FieldsPage() {
         setPendingObservation(true)
       } else {
         setPendingObservation(true)
+      }
+      navigate('.', { replace: true, state: {} })
+    }
+    if (location.state?.selectFieldForNote) {
+      if (selectedFieldId) {
+        setSelectedFieldTab('history')
+        setPendingNote(true)
+      } else {
+        setPendingNote(true)
       }
       navigate('.', { replace: true, state: {} })
     }
@@ -70,6 +80,19 @@ export default function FieldsPage() {
     return () => window.removeEventListener('fab-add-observation', handleFabAddObservation)
   }, [selectedFieldId])
 
+  useEffect(() => {
+    const handleFabAddNote = () => {
+      if (selectedFieldId) {
+        setSelectedFieldTab('history')
+        setPendingNote(true)
+      } else {
+        setPendingNote(true)
+      }
+    }
+    window.addEventListener('fab-add-note', handleFabAddNote)
+    return () => window.removeEventListener('fab-add-note', handleFabAddNote)
+  }, [selectedFieldId])
+
   const usageHighlightedIds = useMemo(() => {
     if (!expandedUsage || selectedFieldId || showUsageManager) return []
     return fields.filter(f => f.usage === expandedUsage).map(f => f.id)
@@ -78,14 +101,14 @@ export default function FieldsPage() {
   const handleFieldClick = (field) => {
     setSelectedFieldId(field.id)
     setShowUsageManager(false)
-    if (pendingObservation) {
+    if (pendingObservation || pendingNote) {
       setSelectedFieldTab('history')
     }
   }
 
   const handleFieldSelect = (id) => {
     setSelectedFieldId(id)
-    if (pendingObservation) {
+    if (pendingObservation || pendingNote) {
       setSelectedFieldTab('history')
     }
   }
@@ -100,9 +123,11 @@ export default function FieldsPage() {
       <FieldDetailView
         fieldId={selectedFieldId}
         initialTab={selectedFieldTab}
-        onBack={() => { setSelectedFieldId(null); setSelectedFieldTab(null); setPendingObservation(false) }}
+        onBack={() => { setSelectedFieldId(null); setSelectedFieldTab(null); setPendingObservation(false); setPendingNote(false) }}
         openObservationForm={pendingObservation}
         onObservationFormOpened={() => setPendingObservation(false)}
+        openNoteForm={pendingNote}
+        onNoteFormOpened={() => setPendingNote(false)}
       />
     )
   } else {
@@ -114,6 +139,8 @@ export default function FieldsPage() {
         onCategoryChange={setExpandedUsage}
         selectFieldForObservation={pendingObservation}
         onCancelObservation={() => setPendingObservation(false)}
+        selectFieldForNote={pendingNote}
+        onCancelNote={() => setPendingNote(false)}
       />
     )
   }
