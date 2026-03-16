@@ -12,7 +12,7 @@ const USAGE_ICONS = {
   'Oilseed rape': 'local_florist',
 }
 
-export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, onManageUsages, onCategoryChange }) {
+export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, onManageUsages, onCategoryChange, selectFieldForObservation, onCancelObservation }) {
   const { fields, usages, tasks } = useApp()
 
   const overdueFieldIds = useMemo(() => {
@@ -107,6 +107,36 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, 
           />
         </div>
       </div>
+
+      {/* Observation pick banner */}
+      {selectFieldForObservation && (
+        <div
+          className="flex items-center justify-between"
+          style={{
+            padding: '10px 16px',
+            background: 'rgba(20, 184, 166, 0.1)',
+            borderBottom: '1px solid rgba(20, 184, 166, 0.3)',
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-teal-500, #14b8a6)' }}>visibility</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-teal-700, #0f766e)' }}>Select a field to log an observation</span>
+          </div>
+          <button
+            onClick={onCancelObservation}
+            style={{
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              padding: 4,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-teal-500, #14b8a6)' }}>close</span>
+          </button>
+        </div>
+      )}
 
       {/* Category list */}
       <div className="flex-1 overflow-y-auto custom-scrollbar" style={{ padding: 16 }}>

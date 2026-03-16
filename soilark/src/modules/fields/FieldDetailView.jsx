@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useApp } from '../../context/AppContext'
 import TabBar from '../../components/shared/TabBar'
 import FieldOverviewTab from './FieldOverviewTab'
@@ -11,9 +11,15 @@ const TABS = [
   { id: 'history', label: 'History' },
 ]
 
-export default function FieldDetailView({ fieldId, onBack, initialTab }) {
+export default function FieldDetailView({ fieldId, onBack, initialTab, openObservationForm, onObservationFormOpened }) {
   const { fields, usages } = useApp()
   const [activeTab, setActiveTab] = useState(initialTab || 'overview')
+
+  useEffect(() => {
+    if (openObservationForm) {
+      setActiveTab('history')
+    }
+  }, [openObservationForm])
 
   const field = useMemo(() => fields.find(f => f.id === fieldId), [fields, fieldId])
 
@@ -51,7 +57,7 @@ export default function FieldDetailView({ fieldId, onBack, initialTab }) {
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {activeTab === 'overview' && <FieldOverviewTab field={field} />}
         {activeTab === 'tasks' && <FieldTasksTab field={field} />}
-        {activeTab === 'history' && <FieldHistoryTab field={field} />}
+        {activeTab === 'history' && <FieldHistoryTab field={field} openObservationForm={openObservationForm} onObservationFormOpened={onObservationFormOpened} />}
       </div>
     </div>
   )

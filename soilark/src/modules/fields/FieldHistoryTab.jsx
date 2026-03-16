@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import { formatDateWithTime, formatDateKey } from '../../utils/dates'
@@ -69,7 +69,7 @@ function DetailRow({ icon, label, value }) {
   )
 }
 
-export default function FieldHistoryTab({ field }) {
+export default function FieldHistoryTab({ field, openObservationForm, onObservationFormOpened }) {
   const { addFieldActivity, addTask, linkActivityTask, showToast, customEvents, machinery, tasks, staff } = useApp()
   const navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
@@ -93,6 +93,14 @@ export default function FieldHistoryTab({ field }) {
     time: nowTime(),
     files: [],
   })
+
+  useEffect(() => {
+    if (openObservationForm) {
+      setForm({ type: 'observation', title: '', details: '', date: formatDateKey(new Date()), time: nowTime(), files: [] })
+      setShowForm(true)
+      onObservationFormOpened?.()
+    }
+  }, [openObservationForm])
 
   const timeline = useMemo(() => {
     const entries = [...(field.activities || [])]

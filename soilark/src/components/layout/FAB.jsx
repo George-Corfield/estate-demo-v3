@@ -63,6 +63,14 @@ export default function FAB() {
       }
       return
     }
+    if (action === 'observation') {
+      if (location.pathname === '/fields') {
+        window.dispatchEvent(new CustomEvent('fab-add-observation'))
+      } else {
+        navigate('/fields', { state: { selectFieldForObservation: true } })
+      }
+      return
+    }
     console.log(`FAB action: ${action}`)
   }
 
