@@ -21,14 +21,17 @@ export function aggregateEvents(fields, tasks, customEvents = [], machinery = []
 
   fields.forEach(field => {
     (field.activities || []).forEach(activity => {
+      const actDate = activity.timestamp
+        ? activity.timestamp.split('T')[0]
+        : activity.date
       events.push({
         id: `field-${activity.id}`,
-        date: activity.date,
+        date: actDate,
         title: activity.title,
         type: 'task',
         subType: activity.type?.toLowerCase() || 'task',
         fieldName: field.name,
-        user: activity.user,
+        user: activity.completedBy || activity.user,
         details: activity.details,
         sourceId: field.id,
       })

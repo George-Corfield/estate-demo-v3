@@ -40,8 +40,41 @@ function reducer(state, action) {
             : f
         ),
       }
-    case 'ADD_TASK':
-      return { ...state, tasks: [...state.tasks, action.task] }
+    case 'ADD_TASK': {
+      const newTask = action.task
+      const fieldIdsForTask = newTask.fieldIds || []
+      if (fieldIdsForTask.length === 0) {
+        return { ...state, tasks: [...state.tasks, newTask] }
+      }
+      const now = new Date().toISOString()
+      return {
+        ...state,
+        tasks: [...state.tasks, newTask],
+        fields: state.fields.map(f => {
+          if (!fieldIdsForTask.includes(f.id)) return f
+          const entry = {
+            id: `hist-${Date.now()}-${f.id}`,
+            timestamp: now,
+            type: 'task',
+            title: `${newTask.name} — Task Created`,
+            completedBy: 'System',
+            details: `Task "${newTask.name}" was created and linked to this field.`,
+            notes: null,
+            linkedTaskId: newTask.id,
+            taskAction: 'created',
+            linkedEventId: null,
+            machineryUsed: null,
+            inputUsed: null,
+            quantity: null,
+            rate: null,
+            units: null,
+            evidence: [],
+            source: 'task-system',
+          }
+          return { ...f, activities: [entry, ...f.activities] }
+        }),
+      }
+    }
     case 'UPDATE_TASK':
       return {
         ...state,
@@ -49,7 +82,45 @@ function reducer(state, action) {
           t.id === action.id ? { ...t, ...action.updates } : t
         ),
       }
-    case 'MOVE_TASK':
+    case 'MOVE_TASK': {
+      const movedTask = state.tasks.find(t => t.id === action.id)
+      const taskFieldIds = movedTask?.fieldIds || []
+      const nowMove = new Date().toISOString()
+      const isStarted = action.status === 'inProgress'
+      const isCompleted = action.status === 'done'
+      const shouldAddHistory = (isStarted || isCompleted) && taskFieldIds.length > 0
+
+      let taskActionLabel = null
+      let taskActionTitle = null
+      let historyDetails = ''
+      let histMachinery = null
+      let histInput = null
+      let histQuantity = null
+      let histRate = null
+      let histUnits = null
+
+      if (shouldAddHistory && movedTask) {
+        if (isStarted) {
+          taskActionLabel = 'started'
+          taskActionTitle = `${movedTask.name} — Started`
+          historyDetails = `Task "${movedTask.name}" has been started.`
+        } else {
+          taskActionLabel = 'completed'
+          taskActionTitle = `${movedTask.name} — Completed`
+          historyDetails = `Task "${movedTask.name}" has been completed.`
+          if (movedTask.typeFields) {
+            const tf = movedTask.typeFields
+            histInput = tf.product || tf.cropMix || tf.crop || null
+            histQuantity = tf.totalApplied || tf.totalSeeds || null
+            histRate = tf.applicationRate || tf.seedRate || null
+            histUnits = tf.rateUnit || (tf.applicationRate ? 'kg/ha' : null)
+          }
+          if (movedTask.assignedMachinery?.length) {
+            histMachinery = movedTask.assignedMachinery.join(', ')
+          }
+        }
+      }
+
       return {
         ...state,
         tasks: state.tasks.map(t =>
@@ -57,11 +128,37 @@ function reducer(state, action) {
             ? {
                 ...t,
                 status: action.status,
-                completedDate: action.status === 'done' ? new Date().toISOString().split('T')[0] : null,
+                completedDate: isCompleted ? new Date().toISOString().split('T')[0] : null,
               }
             : t
         ),
+        fields: shouldAddHistory
+          ? state.fields.map(f => {
+              if (!taskFieldIds.includes(f.id)) return f
+              const entry = {
+                id: `hist-${Date.now()}-${f.id}`,
+                timestamp: nowMove,
+                type: 'task',
+                title: taskActionTitle,
+                completedBy: movedTask.assignedTo?.[0] || 'System',
+                details: historyDetails,
+                notes: null,
+                linkedTaskId: movedTask.id,
+                taskAction: taskActionLabel,
+                linkedEventId: null,
+                machineryUsed: histMachinery,
+                inputUsed: histInput,
+                quantity: histQuantity,
+                rate: histRate,
+                units: histUnits,
+                evidence: [],
+                source: 'task-system',
+              }
+              return { ...f, activities: [entry, ...f.activities] }
+            })
+          : state.fields,
       }
+    }
     case 'ADD_COMMENT':
       return {
         ...state,
@@ -158,6 +255,22 @@ function reducer(state, action) {
         ...state,
         absences: state.absences.map(a =>
           a.id === action.id ? { ...a, ...action.updates } : a
+        ),
+      }
+    case 'LINK_ACTIVITY_TASK':
+      return {
+        ...state,
+        fields: state.fields.map(f =>
+          f.id === action.fieldId
+            ? {
+                ...f,
+                activities: f.activities.map(a =>
+                  a.id === action.activityId
+                    ? { ...a, linkedTaskId: action.taskId }
+                    : a
+                ),
+              }
+            : f
         ),
       }
     case 'ADD_CUSTOM_EVENT':
@@ -286,6 +399,10 @@ export function AppProvider({ children }) {
     dispatch({ type: 'ADD_USAGE', usage })
   }, [])
 
+  const linkActivityTask = useCallback((fieldId, activityId, taskId) => {
+    dispatch({ type: 'LINK_ACTIVITY_TASK', fieldId, activityId, taskId })
+  }, [])
+
   const addCustomEvent = useCallback((event) => {
     dispatch({ type: 'ADD_CUSTOM_EVENT', event })
   }, [])
@@ -318,6 +435,7 @@ export function AppProvider({ children }) {
     updateAbsence,
     updateUsage,
     addUsage,
+    linkActivityTask,
     addCustomEvent,
     showToast,
   }

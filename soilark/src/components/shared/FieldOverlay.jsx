@@ -12,7 +12,7 @@ export default function FieldOverlay({ field, isHighlighted, isWhiteHighlighted,
   // Design system: selected = green-500 30% fill + 2px stroke, attention = amber-400
   const bgColor = isAlert ? 'rgba(239, 68, 68, 0.3)'
     : isWhiteHighlighted ? `${colors.bg}CC`
-    : isSelected ? 'rgba(78,140,53,0.3)'
+    : isSelected ? 'rgba(78,140,53,0.4)'
     : active ? `${colors.bg}BF` : `${colors.bg}80`
   const borderColor = isAlert ? 'var(--color-red-500)'
     : isWhiteHighlighted ? colors.border
@@ -38,12 +38,13 @@ export default function FieldOverlay({ field, isHighlighted, isWhiteHighlighted,
           width: `${pos.width}%`,
           height: `${pos.height}%`,
           backgroundColor: bgColor,
-          border: `${isAlert ? '3px dashed' : '2px solid'} ${borderColor}`,
+          border: `${isAlert ? '3px dashed' : isSelected ? '3px solid' : '2px solid'} ${borderColor}`,
           borderRadius: 'var(--radius-md)',
-          transform: active ? 'scale(1.02)' : 'scale(1)',
+          transform: isSelected ? 'scale(1.04)' : active ? 'scale(1.02)' : 'scale(1)',
           zIndex: active ? 10 : 1,
           transition: 'all 200ms ease',
           cursor: 'pointer',
+          boxShadow: isSelected ? '0 0 12px 3px rgba(19, 236, 19, 0.4)' : 'none',
           animation: isAlert ? 'field-alert-pulse 2s ease-in-out infinite' : 'none',
         }}
       >

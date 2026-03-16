@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import Toast from './Toast'
+import FAB from './FAB'
 
 export default function Shell() {
   return (
@@ -14,6 +15,7 @@ export default function Shell() {
         </main>
       </div>
       <Toast />
+      <FAB />
     </div>
   )
 }

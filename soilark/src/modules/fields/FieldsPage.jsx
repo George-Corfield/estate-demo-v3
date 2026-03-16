@@ -8,18 +8,22 @@ import EstateMap from '../../components/shared/EstateMap'
 import Calendar from '../../components/shared/Calendar'
 
 export default function FieldsPage() {
-  const { fields } = useApp()
+  const { fields, showToast } = useApp()
   const [selectedFieldId, setSelectedFieldId] = useState(null)
+  const [selectedFieldTab, setSelectedFieldTab] = useState(null)
   const [showUsageManager, setShowUsageManager] = useState(false)
   const [rightView, setRightView] = useState('map')
   const [openCategory, setOpenCategory] = useState(null)
   const [expandedUsage, setExpandedUsage] = useState('Wheat')
+  const [pendingObservation, setPendingObservation] = useState(false)
+  const [pendingNote, setPendingNote] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
 
   useEffect(() => {
     if (location.state?.openFieldId) {
       setSelectedFieldId(location.state.openFieldId)
+      setSelectedFieldTab(location.state.openTab || null)
       navigate('.', { replace: true, state: {} })
     }
     if (location.state?.openCategory) {
@@ -29,7 +33,65 @@ export default function FieldsPage() {
     if (location.state?.addNote) {
       navigate('.', { replace: true, state: {} })
     }
-  }, [location.state, navigate])
+    if (location.state?.selectFieldForObservation) {
+      if (selectedFieldId) {
+        setSelectedFieldTab('history')
+        setPendingObservation(true)
+      } else {
+        setPendingObservation(true)
+      }
+      navigate('.', { replace: true, state: {} })
+    }
+    if (location.state?.selectFieldForNote) {
+      if (selectedFieldId) {
+        setSelectedFieldTab('history')
+        setPendingNote(true)
+      } else {
+        setPendingNote(true)
+      }
+      navigate('.', { replace: true, state: {} })
+    }
+  }, [location.state, navigate, selectedFieldId])
+
+  useEffect(() => {
+    const handleFabAddTask = () => {
+      if (selectedFieldId) {
+        const field = fields.find(f => f.id === selectedFieldId)
+        navigate('/tasks', { state: { createTask: true, prefillFieldIds: [selectedFieldId] } })
+        if (field) showToast(`Task linked to ${field.name}`)
+      } else {
+        navigate('/tasks', { state: { createTask: true } })
+      }
+    }
+    window.addEventListener('fab-add-task', handleFabAddTask)
+    return () => window.removeEventListener('fab-add-task', handleFabAddTask)
+  }, [selectedFieldId, fields, navigate, showToast])
+
+  useEffect(() => {
+    const handleFabAddObservation = () => {
+      if (selectedFieldId) {
+        setSelectedFieldTab('history')
+        setPendingObservation(true)
+      } else {
+        setPendingObservation(true)
+      }
+    }
+    window.addEventListener('fab-add-observation', handleFabAddObservation)
+    return () => window.removeEventListener('fab-add-observation', handleFabAddObservation)
+  }, [selectedFieldId])
+
+  useEffect(() => {
+    const handleFabAddNote = () => {
+      if (selectedFieldId) {
+        setSelectedFieldTab('history')
+        setPendingNote(true)
+      } else {
+        setPendingNote(true)
+      }
+    }
+    window.addEventListener('fab-add-note', handleFabAddNote)
+    return () => window.removeEventListener('fab-add-note', handleFabAddNote)
+  }, [selectedFieldId])
 
   const usageHighlightedIds = useMemo(() => {
     if (!expandedUsage || selectedFieldId || showUsageManager) return []
@@ -39,6 +101,16 @@ export default function FieldsPage() {
   const handleFieldClick = (field) => {
     setSelectedFieldId(field.id)
     setShowUsageManager(false)
+    if (pendingObservation || pendingNote) {
+      setSelectedFieldTab('history')
+    }
+  }
+
+  const handleFieldSelect = (id) => {
+    setSelectedFieldId(id)
+    if (pendingObservation || pendingNote) {
+      setSelectedFieldTab('history')
+    }
   }
 
   let leftPanel
@@ -50,16 +122,25 @@ export default function FieldsPage() {
     leftPanel = (
       <FieldDetailView
         fieldId={selectedFieldId}
-        onBack={() => setSelectedFieldId(null)}
+        initialTab={selectedFieldTab}
+        onBack={() => { setSelectedFieldId(null); setSelectedFieldTab(null); setPendingObservation(false); setPendingNote(false) }}
+        openObservationForm={pendingObservation}
+        onObservationFormOpened={() => setPendingObservation(false)}
+        openNoteForm={pendingNote}
+        onNoteFormOpened={() => setPendingNote(false)}
       />
     )
   } else {
     leftPanel = (
       <FieldCategoryList
-        onFieldSelect={(id) => setSelectedFieldId(id)}
+        onFieldSelect={handleFieldSelect}
         initialOpenCategory={openCategory}
         onManageUsages={() => { setShowUsageManager(true); setSelectedFieldId(null) }}
         onCategoryChange={setExpandedUsage}
+        selectFieldForObservation={pendingObservation}
+        onCancelObservation={() => setPendingObservation(false)}
+        selectFieldForNote={pendingNote}
+        onCancelNote={() => setPendingNote(false)}
       />
     )
   }

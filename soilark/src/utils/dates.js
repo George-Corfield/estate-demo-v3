@@ -113,4 +113,12 @@ export function formatDateKey(date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+export function formatDateWithTime(timestamp) {
+  const d = new Date(timestamp)
+  const day = d.getDate()
+  const hours = String(d.getHours()).padStart(2, '0')
+  const mins = String(d.getMinutes()).padStart(2, '0')
+  return `${DAYS_SHORT[d.getDay()]} ${day} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()} · ${hours}:${mins}`
+}
+
 export { MONTHS, MONTHS_SHORT, DAYS_SHORT, DAYS_SHORT_MON }

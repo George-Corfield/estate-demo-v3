@@ -58,7 +58,7 @@ function TypeSpecificFields({ task, tf }) {
         <div className="flex flex-col gap-4">
           <h3 className="text-label" style={{ color: 'var(--color-slate-400)' }}>Maintenance Details</h3>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Est. Hours" value={`${tf.estimatedHours}h`} />
+            <Field label="Est. Hours" value={tf.estimatedHours != null ? `${tf.estimatedHours}h` : 'Not set'} />
             <Field label="Urgency" value={tf.urgency} />
             <Field label="Type" value={tf.maintenanceType} />
             <Field label="Equipment" value={tf.equipment} />

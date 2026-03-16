@@ -285,51 +285,78 @@ function buildAlerts(tasks, machinery, staff) {
 
 // ─── Activity Feed ────────────────────────────────────────────────────────────
 
+const ACTIVITY_TYPE_ICONS = {
+  task: { icon: 'task', color: 'var(--color-blue-500, #3b82f6)' },
+  observation: { icon: 'visibility', color: 'var(--color-amber-500, #f59e0b)' },
+  inspection: { icon: 'fact_check', color: 'var(--color-teal-500, #14b8a6)' },
+  note: { icon: 'note', color: 'var(--color-surface-500)' },
+}
+
+function extractTime(timestamp) {
+  if (!timestamp) return ''
+  const d = new Date(timestamp)
+  if (isNaN(d)) return ''
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
 function buildActivityFeed(tasks, fields, staff) {
   const items = []
+  const todayStr = today()
 
+  // Field history entries from today
+  fields.forEach(f => {
+    (f.activities || []).forEach(a => {
+      const actDate = a.timestamp ? a.timestamp.split('T')[0] : null
+      if (actDate !== todayStr) return
+      const typeConfig = ACTIVITY_TYPE_ICONS[a.type] || ACTIVITY_TYPE_ICONS.note
+      items.push({
+        id: `act-field-${a.id}`,
+        time: extractTime(a.timestamp),
+        icon: typeConfig.icon,
+        iconColor: typeConfig.color,
+        text: `${f.name} – ${a.title}`,
+        sub: a.completedBy || null,
+        timestamp: a.timestamp,
+        fieldId: f.id,
+      })
+    })
+  })
+
+  // Tasks completed today (that don't already have a history entry)
   tasks
-    .filter(t => t.status === 'done' && t.completedDate === today())
+    .filter(t => t.status === 'done' && t.completedDate === todayStr)
     .forEach(t => {
+      const alreadyInHistory = items.some(i => i.id.includes(t.id))
+      if (alreadyInHistory) return
       const worker = staff.find(s => s.id === t.assigneeId || s.name === t.assignee)
       items.push({
         id: `act-task-${t.id}`,
-        time: '10:24',
+        time: '',
         icon: 'task_alt',
         iconColor: 'var(--color-deep-400)',
         text: `${t.name} completed`,
         sub: worker ? worker.name : null,
+        timestamp: `${todayStr}T23:59:00`,
       })
     })
 
-  fields.forEach(f => {
-    f.activities
-      ?.filter(a => a.date >= new Date(Date.now() - 2 * 86400000).toISOString().split('T')[0])
-      .slice(0, 1)
-      .forEach(a => {
-        items.push({
-          id: `act-field-${a.id}`,
-          time: '08:12',
-          icon: 'grass',
-          iconColor: 'var(--color-surface-500)',
-          text: `${a.title} – ${f.name}`,
-          sub: a.user,
-        })
-      })
-  })
-
+  // Staff sick status
   staff
     .filter(s => s.status === 'Sick' || s.status === 'Pending Sick Confirmation')
     .forEach(s => items.push({
       id: `act-sick-${s.id}`,
-      time: '07:20',
+      time: '',
       icon: 'sick',
       iconColor: 'var(--color-red-400)',
       text: `${s.name} reported sick`,
       sub: s.role,
+      timestamp: `${todayStr}T00:00:00`,
     }))
 
-  return items.slice(0, 8)
+  // Sort by timestamp descending (most recent first)
+  items.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+
+  return items.slice(0, 12)
 }
 
 // ─── Main Component ────────────────────────────────────────────────────────────
@@ -353,6 +380,16 @@ export default function OverviewPage() {
       navigate('.', { replace: true, state: {} })
     }
   }, [location.state, navigate])
+
+  // Close tray when FAB opens
+  useEffect(() => {
+    const handleFabOpen = () => {
+      setTrayOpen(false)
+      setExpandedWidget(null)
+    }
+    window.addEventListener('fab-open', handleFabOpen)
+    return () => window.removeEventListener('fab-open', handleFabOpen)
+  }, [])
 
   // Weather fetch — 8-day agricultural forecast
   useEffect(() => {
@@ -386,6 +423,7 @@ export default function OverviewPage() {
           const hStart = i * 24
           const hEnd = hStart + 24
           const noonIdx = hStart + 12
+          console.log(d);
 
           // Weather code → icon/label
           const wc = d.daily.weather_code[i]
@@ -875,6 +913,7 @@ export default function OverviewPage() {
                   title={item.text}
                   subtitle={item.sub}
                   meta={item.time}
+                  onClick={item.fieldId ? () => navigate('/fields', { state: { openFieldId: item.fieldId, openTab: 'history' } }) : undefined}
                 />
               ))
             )}
@@ -910,7 +949,7 @@ export default function OverviewPage() {
               transition: 'opacity 200ms ease',
             }}>
               <button
-                onClick={() => setTrayOpen(true)}
+                onClick={() => { setTrayOpen(true); window.dispatchEvent(new CustomEvent('overview-tray-open')) }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',

@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useApp } from '../../context/AppContext'
+import { isOverdue } from '../../utils/dates'
 
 const USAGE_ICONS = {
   Wheat: 'grain',
@@ -11,8 +12,18 @@ const USAGE_ICONS = {
   'Oilseed rape': 'local_florist',
 }
 
-export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, onManageUsages, onCategoryChange }) {
-  const { fields, usages } = useApp()
+export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, onManageUsages, onCategoryChange, selectFieldForObservation, onCancelObservation, selectFieldForNote, onCancelNote }) {
+  const { fields, usages, tasks } = useApp()
+
+  const overdueFieldIds = useMemo(() => {
+    const ids = new Set()
+    tasks.forEach(t => {
+      if (t.status !== 'done' && t.status !== 'cancelled' && t.dueDate && isOverdue(t.dueDate)) {
+        t.fieldIds?.forEach(fid => ids.add(fid))
+      }
+    })
+    return ids
+  }, [tasks])
   const [expandedCategories, setExpandedCategories] = useState(
     initialOpenCategory ? [initialOpenCategory] : ['Wheat']
   )
@@ -97,6 +108,66 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, 
         </div>
       </div>
 
+      {/* Observation pick banner */}
+      {selectFieldForObservation && (
+        <div
+          className="flex items-center justify-between"
+          style={{
+            padding: '10px 16px',
+            background: 'rgba(20, 184, 166, 0.1)',
+            borderBottom: '1px solid rgba(20, 184, 166, 0.3)',
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-teal-500, #14b8a6)' }}>visibility</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-teal-700, #0f766e)' }}>Select a field to log an observation</span>
+          </div>
+          <button
+            onClick={onCancelObservation}
+            style={{
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              padding: 4,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-teal-500, #14b8a6)' }}>close</span>
+          </button>
+        </div>
+      )}
+
+      {/* Note pick banner */}
+      {selectFieldForNote && (
+        <div
+          className="flex items-center justify-between"
+          style={{
+            padding: '10px 16px',
+            background: 'rgba(16, 185, 129, 0.1)',
+            borderBottom: '1px solid rgba(16, 185, 129, 0.3)',
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-emerald-500, #10b981)' }}>note_add</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-emerald-700, #047857)' }}>Select a field to add a note</span>
+          </div>
+          <button
+            onClick={onCancelNote}
+            style={{
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              padding: 4,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-emerald-500, #10b981)' }}>close</span>
+          </button>
+        </div>
+      )}
+
       {/* Category list */}
       <div className="flex-1 overflow-y-auto custom-scrollbar" style={{ padding: 16 }}>
         <div className="flex flex-col gap-3">
@@ -140,38 +211,45 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, 
 
                 {expanded && (
                   <div style={{ padding: 8 }} className="flex flex-col gap-1">
-                    {cat.fields.map(field => (
+                    {cat.fields.map(field => {
+                      const fieldOverdue = overdueFieldIds.has(field.id)
+                      return (
                       <button
                         key={field.id}
                         onClick={() => onFieldSelect(field.id)}
                         className="w-full text-left p-3"
                         style={{
                           borderRadius: 'var(--radius-sm)',
-                          borderLeft: '3px solid transparent',
-                          background: 'transparent',
+                          background: fieldOverdue ? 'var(--color-red-100)' : 'transparent',
                           border: 'none',
-                          borderLeft: '3px solid transparent',
+                          borderLeft: fieldOverdue ? '3px solid var(--color-red-400)' : '3px solid transparent',
                           cursor: 'pointer',
                           transition: 'all 120ms ease',
                         }}
                         onMouseEnter={e => {
-                          e.currentTarget.style.background = 'rgba(78,140,53,0.06)'
-                          e.currentTarget.style.borderLeftColor = 'var(--color-green-500)'
+                          e.currentTarget.style.background = fieldOverdue ? 'var(--color-red-100)' : 'rgba(78,140,53,0.06)'
+                          if (!fieldOverdue) e.currentTarget.style.borderLeftColor = 'var(--color-green-500)'
                         }}
                         onMouseLeave={e => {
-                          e.currentTarget.style.background = 'transparent'
-                          e.currentTarget.style.borderLeftColor = 'transparent'
+                          e.currentTarget.style.background = fieldOverdue ? 'var(--color-red-100)' : 'transparent'
+                          if (!fieldOverdue) e.currentTarget.style.borderLeftColor = 'transparent'
                         }}
                       >
                         <div className="flex justify-between items-start">
-                          <h4 className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{field.name}</h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0 }}>{field.name}</h4>
+                            {fieldOverdue && (
+                              <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--color-red-400)' }}>warning</span>
+                            )}
+                          </div>
                           <span className="text-data" style={{ fontSize: 12, color: 'var(--color-slate-400)' }}>{field.sizeHectares} ha</span>
                         </div>
-                        <p className="text-body-small" style={{ color: 'var(--color-slate-500)', marginTop: 2 }}>
-                          {field.currentCrop || 'No current use'}
+                        <p className="text-body-small" style={{ color: fieldOverdue ? 'var(--color-red-400)' : 'var(--color-slate-500)', marginTop: 2 }}>
+                          {fieldOverdue ? 'Overdue tasks' : (field.currentCrop || 'No current use')}
                         </p>
                       </button>
-                    ))}
+                      )
+                    })}
                   </div>
                 )}
               </div>
