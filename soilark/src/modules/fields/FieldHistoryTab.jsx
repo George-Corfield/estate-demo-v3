@@ -70,7 +70,7 @@ function DetailRow({ icon, label, value }) {
 }
 
 export default function FieldHistoryTab({ field }) {
-  const { addFieldActivity, showToast, customEvents, machinery, tasks, staff } = useApp()
+  const { addFieldActivity, addTask, linkActivityTask, showToast, customEvents, machinery, tasks, staff } = useApp()
   const navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
   const [activeFilter, setActiveFilter] = useState('all')
@@ -664,6 +664,47 @@ export default function FieldHistoryTab({ field }) {
                                 />
                               )}
                             </div>
+                          </div>
+                        )}
+
+                        {/* Create Task from observation */}
+                        {entry.type === 'observation' && !entry.linkedTaskId && (
+                          <div style={{ paddingTop: 4 }}>
+                            <LinkChip
+                              icon="add_task"
+                              label="Create Task"
+                              onClick={() => {
+                                const tomorrow = new Date()
+                                tomorrow.setDate(tomorrow.getDate() + 1)
+                                const taskId = `task-${Date.now()}`
+                                const task = {
+                                  id: taskId,
+                                  name: entry.title,
+                                  type: 'Maintenance',
+                                  status: 'todo',
+                                  priority: 'medium',
+                                  dueDate: tomorrow.toISOString().split('T')[0],
+                                  description: entry.details || '',
+                                  assignedTo: entry.completedBy ? [entry.completedBy] : [],
+                                  fieldIds: [field.id],
+                                  typeFields: {
+                                    estimatedHours: null,
+                                    urgency: 'Medium',
+                                    maintenanceType: 'Observation',
+                                    equipment: 'No equipment',
+                                    faultDescription: entry.details || '',
+                                    partsNeeded: '',
+                                  },
+                                  assignedMachinery: [],
+                                  comments: [],
+                                  completedDate: null,
+                                  sourceObservation: { fieldId: field.id, activityId: entry.id },
+                                }
+                                addTask(task)
+                                linkActivityTask(field.id, entry.id, taskId)
+                                showToast('Task created')
+                              }}
+                            />
                           </div>
                         )}
                       </div>

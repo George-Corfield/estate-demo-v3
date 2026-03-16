@@ -257,6 +257,22 @@ function reducer(state, action) {
           a.id === action.id ? { ...a, ...action.updates } : a
         ),
       }
+    case 'LINK_ACTIVITY_TASK':
+      return {
+        ...state,
+        fields: state.fields.map(f =>
+          f.id === action.fieldId
+            ? {
+                ...f,
+                activities: f.activities.map(a =>
+                  a.id === action.activityId
+                    ? { ...a, linkedTaskId: action.taskId }
+                    : a
+                ),
+              }
+            : f
+        ),
+      }
     case 'ADD_CUSTOM_EVENT':
       return { ...state, customEvents: [...state.customEvents, action.event] }
     case 'UPDATE_USAGE': {
@@ -383,6 +399,10 @@ export function AppProvider({ children }) {
     dispatch({ type: 'ADD_USAGE', usage })
   }, [])
 
+  const linkActivityTask = useCallback((fieldId, activityId, taskId) => {
+    dispatch({ type: 'LINK_ACTIVITY_TASK', fieldId, activityId, taskId })
+  }, [])
+
   const addCustomEvent = useCallback((event) => {
     dispatch({ type: 'ADD_CUSTOM_EVENT', event })
   }, [])
@@ -415,6 +435,7 @@ export function AppProvider({ children }) {
     updateAbsence,
     updateUsage,
     addUsage,
+    linkActivityTask,
     addCustomEvent,
     showToast,
   }
