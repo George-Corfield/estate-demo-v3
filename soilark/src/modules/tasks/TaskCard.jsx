@@ -3,6 +3,8 @@ import { formatRelativeDate, formatShortDate, isOverdue } from '../../utils/date
 import { PRIORITY_COLORS } from '../../constants/colors'
 
 function getDueDateStyle(task) {
+  if (task.status === 'cancelled') return { color: 'var(--color-red-600)', background: 'var(--color-red-100)' }
+  if (task.status === 'paused') return { color: 'var(--color-amber-700)', background: 'var(--color-amber-100)' }
   if (task.status === 'done') return { color: 'var(--color-green-600)', background: 'var(--color-green-100)' }
   if (isOverdue(task.dueDate)) return { color: 'var(--color-red-400)', background: 'var(--color-red-100)' }
   const now = new Date()
@@ -20,12 +22,18 @@ export default function TaskCard({ task, onClick }) {
   const priorityColor = PRIORITY_COLORS[task.priority]
   const taskFields = fields.filter(f => task.fieldIds.includes(f.id))
   const dueDateStyle = getDueDateStyle(task)
+  const isCancelled = task.status === 'cancelled'
 
   return (
     <button
       onClick={onClick}
       className="card w-full text-left"
-      style={{ padding: 12, cursor: 'pointer', transition: 'border-color 120ms ease' }}
+      style={{
+        padding: 12,
+        cursor: 'pointer',
+        transition: 'border-color 120ms ease',
+        opacity: isCancelled ? 0.5 : 1,
+      }}
       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-green-500)' }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-surface-300)' }}
     >
@@ -43,6 +51,18 @@ export default function TaskCard({ task, onClick }) {
       <div className="mb-2">
         <span className="badge badge-neutral">{task.type}</span>
       </div>
+
+      {/* Paused/Cancelled context */}
+      {task.status === 'paused' && task.pauseReason && (
+        <p className="text-body-small mb-2" style={{ color: 'var(--color-amber-700)', margin: '0 0 8px 0' }}>
+          Paused — {task.pauseReason}
+        </p>
+      )}
+      {isCancelled && task.cancelledDate && (
+        <p className="text-body-small mb-2" style={{ color: 'var(--color-red-600)', margin: '0 0 8px 0' }}>
+          Cancelled {task.cancelledDate}
+        </p>
+      )}
 
       {/* Fields list */}
       {taskFields.length > 0 && (
@@ -66,7 +86,9 @@ export default function TaskCard({ task, onClick }) {
       >
         {task.status === 'done'
           ? `Completed ${task.completedDate}`
-          : `${formatShortDate(task.dueDate)} · ${formatRelativeDate(task.dueDate)}`
+          : task.status === 'cancelled'
+            ? `Cancelled ${task.cancelledDate || ''}`
+            : `${formatShortDate(task.dueDate)} · ${formatRelativeDate(task.dueDate)}`
         }
       </div>
     </button>

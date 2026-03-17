@@ -88,7 +88,10 @@ function reducer(state, action) {
       const nowMove = new Date().toISOString()
       const isStarted = action.status === 'inProgress'
       const isCompleted = action.status === 'done'
-      const shouldAddHistory = (isStarted || isCompleted) && taskFieldIds.length > 0
+      const isPaused = action.status === 'paused'
+      const isCancelled = action.status === 'cancelled'
+      const isResumed = isStarted && movedTask?.status === 'paused'
+      const shouldAddHistory = (isStarted || isCompleted || isPaused || isCancelled) && taskFieldIds.length > 0
 
       let taskActionLabel = null
       let taskActionTitle = null
@@ -98,9 +101,24 @@ function reducer(state, action) {
       let histQuantity = null
       let histRate = null
       let histUnits = null
+      let histEvidence = []
 
       if (shouldAddHistory && movedTask) {
-        if (isStarted) {
+        if (isPaused) {
+          taskActionLabel = 'paused'
+          taskActionTitle = `${movedTask.name} - Paused: ${action.reason}`
+          historyDetails = action.note || `Task "${movedTask.name}" has been paused. Reason: ${action.reason}`
+          if (action.photo) histEvidence = [{ name: action.photo.name, type: 'image' }]
+        } else if (isCancelled) {
+          taskActionLabel = 'cancelled'
+          taskActionTitle = `${movedTask.name} - Cancelled: ${action.reason}`
+          historyDetails = action.note || `Task "${movedTask.name}" has been cancelled. Reason: ${action.reason}`
+          if (action.photo) histEvidence = [{ name: action.photo.name, type: 'image' }]
+        } else if (isResumed) {
+          taskActionLabel = 'resumed'
+          taskActionTitle = `${movedTask.name} - Resumed`
+          historyDetails = `Task "${movedTask.name}" has been resumed.`
+        } else if (isStarted) {
           taskActionLabel = 'started'
           taskActionTitle = `${movedTask.name} — Started`
           historyDetails = `Task "${movedTask.name}" has been started.`
@@ -121,16 +139,27 @@ function reducer(state, action) {
         }
       }
 
+      const taskUpdates = {
+        status: action.status,
+        completedDate: isCompleted ? new Date().toISOString().split('T')[0] : (movedTask?.completedDate || null),
+      }
+      if (isPaused) {
+        taskUpdates.pauseReason = action.reason
+        taskUpdates.pauseNote = action.note || null
+        taskUpdates.pausePhoto = action.photo || null
+        taskUpdates.pausedDate = new Date().toISOString().split('T')[0]
+      }
+      if (isCancelled) {
+        taskUpdates.cancelReason = action.reason
+        taskUpdates.cancelNote = action.note || null
+        taskUpdates.cancelPhoto = action.photo || null
+        taskUpdates.cancelledDate = new Date().toISOString().split('T')[0]
+      }
+
       return {
         ...state,
         tasks: state.tasks.map(t =>
-          t.id === action.id
-            ? {
-                ...t,
-                status: action.status,
-                completedDate: isCompleted ? new Date().toISOString().split('T')[0] : null,
-              }
-            : t
+          t.id === action.id ? { ...t, ...taskUpdates } : t
         ),
         fields: shouldAddHistory
           ? state.fields.map(f => {
@@ -151,7 +180,7 @@ function reducer(state, action) {
                 quantity: histQuantity,
                 rate: histRate,
                 units: histUnits,
-                evidence: [],
+                evidence: histEvidence,
                 source: 'task-system',
               }
               return { ...f, activities: [entry, ...f.activities] }
@@ -321,8 +350,8 @@ export function AppProvider({ children }) {
     dispatch({ type: 'UPDATE_TASK', id, updates })
   }, [])
 
-  const moveTask = useCallback((id, status) => {
-    dispatch({ type: 'MOVE_TASK', id, status })
+  const moveTask = useCallback((id, status, { reason, note, photo } = {}) => {
+    dispatch({ type: 'MOVE_TASK', id, status, reason, note, photo })
   }, [])
 
   const addComment = useCallback((taskId, comment) => {

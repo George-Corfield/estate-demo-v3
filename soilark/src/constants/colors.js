@@ -130,4 +130,6 @@ export const STATUS_COLORS = {
   todo: { bg: Slate200, text: Slate600, label: 'To Do' },
   inProgress: { bg: Blue100, text: Blue700, label: 'In Progress' },
   done: { bg: Green100, text: Deep700, label: 'Done' },
+  paused: { bg: Amber100, text: Amber700, label: 'Paused' },
+  cancelled: { bg: Red100, text: Red700, label: 'Cancelled' },
 }

@@ -5,7 +5,9 @@ import TaskCard from './TaskCard'
 const COLUMNS = [
   { id: 'todo', label: 'To Do', color: 'var(--color-slate-500)' },
   { id: 'inProgress', label: 'In Progress', color: 'var(--color-blue-400)' },
+  { id: 'paused', label: 'Paused', color: 'var(--color-amber-400)' },
   { id: 'done', label: 'Done', color: 'var(--color-green-600)' },
+  { id: 'cancelled', label: 'Cancelled', color: 'var(--color-red-400)' },
 ]
 
 export default function TaskKanban({ filters, onTaskClick }) {

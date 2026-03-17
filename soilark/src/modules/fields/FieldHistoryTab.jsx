@@ -24,6 +24,9 @@ const TASK_ACTION_COLORS = {
   created: { bg: 'rgba(59,130,246,0.1)', text: 'var(--color-blue-500, #3b82f6)' },
   started: { bg: 'rgba(245,158,11,0.1)', text: 'var(--color-amber-500, #f59e0b)' },
   completed: { bg: 'rgba(34,197,94,0.1)', text: 'var(--color-green-500)' },
+  paused: { bg: 'rgba(245,158,11,0.15)', text: 'var(--color-amber-700, #92400e)' },
+  cancelled: { bg: 'rgba(239,68,68,0.1)', text: 'var(--color-red-600, #dc2626)' },
+  resumed: { bg: 'rgba(59,130,246,0.1)', text: 'var(--color-blue-500, #3b82f6)' },
 }
 
 function LinkChip({ icon, label, onClick }) {
