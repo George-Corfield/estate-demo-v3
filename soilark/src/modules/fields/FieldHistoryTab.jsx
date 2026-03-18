@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import { ROLES } from '../../constants/roles'
 import { formatDateWithTime, formatDateKey } from '../../utils/dates'
+import { isTaskVisibleToUser } from '../../utils/visibility'
 
 const TYPE_CONFIG = {
   task: { icon: 'task', color: 'var(--color-blue-500, #3b82f6)', label: 'Tasks' },
@@ -619,7 +620,7 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
                                 <LinkChip
                                   icon="task"
                                   label={matchedTask.name}
-                                  onClick={() => navigate('/tasks', { state: { openTaskId: matchedTask.id } })}
+                                  onClick={isTaskVisibleToUser(matchedTask, currentUser, staff) ? () => navigate('/tasks', { state: { openTaskId: matchedTask.id } }) : undefined}
                                 />
                               )}
                               {matchedMachinery?.map(m => (

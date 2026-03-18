@@ -29,7 +29,7 @@ const STATUS_FLOW = [
 ]
 
 export default function TaskDetailView({ taskId, onBack }) {
-  const { tasks, fields, machinery, moveTask, addComment, showToast, currentUser } = useApp()
+  const { tasks, fields, machinery, staff, moveTask, addComment, showToast, currentUser } = useApp()
   const isManager = currentUser.role === ROLES.FARM_MANAGER
   const [activeTab, setActiveTab] = useState('details')
   const [newComment, setNewComment] = useState('')
@@ -450,19 +450,64 @@ export default function TaskDetailView({ taskId, onBack }) {
             <div>
               <h3 className="text-label mb-2" style={{ color: 'var(--color-slate-400)' }}>Assigned Staff</h3>
               <div className="flex flex-col gap-1">
-                {task.assignedTo.map(name => (
-                  <div key={name} className="flex items-center gap-2 text-body py-1" style={{ color: 'var(--color-slate-600)' }}>
+                {task.assignedTo.map(name => {
+                  const member = staff.find(s => s.name === name)
+                  const avatar = (
                     <div
                       className="flex items-center justify-center shrink-0"
                       style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(78,140,53,0.15)', color: 'var(--color-green-600)', fontSize: 10, fontWeight: 700 }}
                     >
                       {name.split(' ').map(n => n[0]).join('')}
                     </div>
-                    {name}
-                  </div>
-                ))}
+                  )
+                  return (isManager && member) ? (
+                    <button
+                      key={name}
+                      onClick={() => navigate('/staff', { state: { openStaffId: member.id } })}
+                      className="flex items-center gap-2 text-body w-full text-left"
+                      style={{
+                        padding: '4px 12px',
+                        background: 'var(--color-surface-100)',
+                        borderRadius: 'var(--radius-sm)',
+                        color: 'var(--color-slate-600)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 120ms ease',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(78,140,53,0.08)'; e.currentTarget.style.color = 'var(--color-green-500)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-surface-100)'; e.currentTarget.style.color = 'var(--color-slate-600)' }}
+                    >
+                      {avatar}
+                      {name}
+                    </button>
+                  ) : (
+                    <div key={name} className="flex items-center gap-2 text-body py-1" style={{ padding: '4px 12px', color: 'var(--color-slate-600)' }}>
+                      {avatar}
+                      {name}
+                    </div>
+                  )
+                })}
               </div>
             </div>
+
+            {/* Assigned Teams */}
+            {task.assignedTeams?.length > 0 && (
+              <div>
+                <h3 className="text-label mb-2" style={{ color: 'var(--color-slate-400)' }}>Assigned Teams</h3>
+                <div className="flex flex-wrap gap-2">
+                  {task.assignedTeams.map(team => (
+                    <span key={team} className="flex items-center gap-1" style={{
+                      fontSize: 12, padding: '4px 10px', borderRadius: 99,
+                      background: 'var(--color-surface-100)', color: 'var(--color-slate-600)',
+                      border: '1px solid var(--color-surface-300)',
+                    }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 13 }}>group</span>
+                      {team}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Machinery */}
             {task.assignedMachinery.length > 0 && (

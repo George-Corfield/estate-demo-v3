@@ -5,6 +5,7 @@ import Calendar from '../../components/shared/Calendar'
 import { useApp } from '../../context/AppContext'
 import { formatShortDate } from '../../utils/dates'
 import { ROLES } from '../../constants/roles'
+import { isTaskVisibleToUser } from '../../utils/visibility'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -510,13 +511,15 @@ export default function OverviewPage() {
 
   const todayStr = today()
 
-  const todayTasks = tasks.filter(t =>
+  const visibleTasks = tasks.filter(t => isTaskVisibleToUser(t, currentUser, staff))
+
+  const todayTasks = visibleTasks.filter(t =>
     t.status !== 'cancelled' && (t.dueDate === todayStr || t.status === 'in-progress')
   )
-  const overdueTasks = tasks.filter(t =>
+  const overdueTasks = visibleTasks.filter(t =>
     t.status !== 'done' && t.status !== 'cancelled' && t.dueDate && t.dueDate < todayStr
   )
-  const inProgressTasks = tasks.filter(t => t.status === 'in-progress')
+  const inProgressTasks = visibleTasks.filter(t => t.status === 'in-progress')
 
   const activeMachinery = machinery.filter(m => m.status === 'Active')
   const serviceDueMachinery = machinery.filter(m =>
@@ -533,7 +536,7 @@ export default function OverviewPage() {
   const offDutyStaff = staff.filter(s => s.status === 'Off Duty')
   const activeStaff = staff.filter(s => !['Archived', 'Off Duty'].includes(s.status))
 
-  const allAlerts = buildAlerts(tasks, machinery, staff)
+  const allAlerts = buildAlerts(visibleTasks, machinery, staff)
   const alerts = isManager ? allAlerts : allAlerts.filter(a => a.type !== 'machinery' && a.type !== 'staff')
   const allActivity = buildActivityFeed(tasks, fields, staff)
   const activityFeed = isManager ? allActivity : allActivity.filter(a => !a.id.startsWith('act-sick-'))
@@ -717,8 +720,8 @@ export default function OverviewPage() {
       }
 
       case 'tasks': {
-        const todoTasks = tasks.filter(t => t.status === 'todo')
-        const ipTasks = tasks.filter(t => t.status === 'in-progress')
+        const todoTasks = visibleTasks.filter(t => t.status === 'todo')
+        const ipTasks = visibleTasks.filter(t => t.status === 'in-progress')
         const doneTasks = tasks.filter(t => t.status === 'done')
         const resolveFieldNames = (t) => {
           if (!t.fieldIds || t.fieldIds.length === 0) return 'No field'

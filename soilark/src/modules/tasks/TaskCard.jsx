@@ -75,6 +75,30 @@ export default function TaskCard({ task, onClick }) {
         </div>
       )}
 
+      {/* Assigned staff & teams */}
+      {(task.assignedTo?.length > 0 || task.assignedTeams?.length > 0) && (
+        <div className="flex flex-wrap gap-1 mb-2">
+          {task.assignedTo?.map(name => (
+            <span key={name} className="flex items-center gap-1" style={{
+              fontSize: 11, padding: '2px 7px', borderRadius: 99,
+              background: 'rgba(78,140,53,0.10)', color: 'var(--color-green-600)',
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 11 }}>person</span>
+              {name}
+            </span>
+          ))}
+          {task.assignedTeams?.map(team => (
+            <span key={team} className="flex items-center gap-1" style={{
+              fontSize: 11, padding: '2px 7px', borderRadius: 99,
+              background: 'rgba(100,116,139,0.10)', color: 'var(--color-slate-500)',
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 11 }}>group</span>
+              {team}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Due date */}
       <div
         className="text-label-small inline-block"

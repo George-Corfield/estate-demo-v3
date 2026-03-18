@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useApp } from '../../context/AppContext'
+import { isTaskVisibleToUser } from '../../utils/visibility'
 import TaskCard from './TaskCard'
 
 const COLUMNS = [
@@ -11,16 +12,18 @@ const COLUMNS = [
 ]
 
 export default function TaskKanban({ filters, onTaskClick }) {
-  const { tasks } = useApp()
+  const { tasks, currentUser, staff } = useApp()
 
   const filtered = useMemo(() => {
-    return tasks.filter(t => {
-      if (filters.priority !== 'all' && t.priority !== filters.priority) return false
-      if (filters.type !== 'all' && t.type !== filters.type) return false
-      if (filters.field !== 'all' && !t.fieldIds.includes(filters.field)) return false
-      return true
-    })
-  }, [tasks, filters])
+    return tasks
+      .filter(t => isTaskVisibleToUser(t, currentUser, staff))
+      .filter(t => {
+        if (filters.priority !== 'all' && t.priority !== filters.priority) return false
+        if (filters.type !== 'all' && t.type !== filters.type) return false
+        if (filters.field !== 'all' && !t.fieldIds.includes(filters.field)) return false
+        return true
+      })
+  }, [tasks, currentUser, staff, filters])
 
   return (
     <div className="flex flex-col gap-6" style={{ padding: 16 }}>
