@@ -1,18 +1,20 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { NAV_ITEMS } from '../../constants/navigation'
+import { useApp } from '../../context/AppContext'
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const { currentUser } = useApp()
 
   const isActive = (path) => {
     if (path === '/') return location.pathname === '/'
     return location.pathname.startsWith(path)
   }
 
-  const enabledItems = NAV_ITEMS.filter(i => i.enabled)
+  const enabledItems = NAV_ITEMS.filter(i => i.enabled && i.allowedRoles.includes(currentUser.role))
   const disabledItems = NAV_ITEMS.filter(i => !i.enabled)
 
   return (

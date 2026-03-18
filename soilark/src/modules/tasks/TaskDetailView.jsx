@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
+import { ROLES } from '../../constants/roles'
 import { formatRelativeDate, formatShortDate } from '../../utils/dates'
 import { PriorityBadge, StatusBadge } from '../../components/shared/Badge'
 import TabBar from '../../components/shared/TabBar'
@@ -28,7 +29,8 @@ const STATUS_FLOW = [
 ]
 
 export default function TaskDetailView({ taskId, onBack }) {
-  const { tasks, fields, machinery, moveTask, addComment, showToast } = useApp()
+  const { tasks, fields, machinery, moveTask, addComment, showToast, currentUser } = useApp()
+  const isManager = currentUser.role === ROLES.FARM_MANAGER
   const [activeTab, setActiveTab] = useState('details')
   const [newComment, setNewComment] = useState('')
   const [expandedPanel, setExpandedPanel] = useState(null) // 'paused' | 'cancelled' | null
@@ -469,7 +471,7 @@ export default function TaskDetailView({ taskId, onBack }) {
                 <div className="flex flex-col gap-1">
                   {task.assignedMachinery.map(m => {
                     const match = machinery.find(eq => eq.name === m)
-                    return match ? (
+                    return (match && isManager) ? (
                       <button
                         key={m}
                         onClick={() => navigate('/machinery', { state: { openEquipmentId: match.id } })}

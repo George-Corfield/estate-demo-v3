@@ -6,6 +6,7 @@ import { initialMachinery } from '../data/machinery'
 import { initialStaff } from '../data/staff'
 import { initialAbsences } from '../data/absences'
 import { initialUsages } from '../data/usages'
+import { DEFAULT_USER } from '../constants/roles'
 
 const AppContext = createContext(null)
 
@@ -18,6 +19,7 @@ const initialState = {
   absences: initialAbsences,
   usages: initialUsages,
   toasts: [],
+  currentUser: DEFAULT_USER,
 }
 
 let toastId = 0
@@ -322,6 +324,8 @@ function reducer(state, action) {
     }
     case 'ADD_USAGE':
       return { ...state, usages: [...state.usages, action.usage] }
+    case 'SWITCH_USER':
+      return { ...state, currentUser: action.user }
     case 'SHOW_TOAST':
       return { ...state, toasts: [...state.toasts, action.toast] }
     case 'DISMISS_TOAST':
@@ -436,6 +440,10 @@ export function AppProvider({ children }) {
     dispatch({ type: 'ADD_CUSTOM_EVENT', event })
   }, [])
 
+  const switchUser = useCallback((user) => {
+    dispatch({ type: 'SWITCH_USER', user })
+  }, [])
+
   const showToast = useCallback((message, type = 'success') => {
     const id = ++toastId
     dispatch({ type: 'SHOW_TOAST', toast: { id, message, toastType: type } })
@@ -466,6 +474,7 @@ export function AppProvider({ children }) {
     addUsage,
     linkActivityTask,
     addCustomEvent,
+    switchUser,
     showToast,
   }
 

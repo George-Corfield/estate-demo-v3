@@ -4,6 +4,7 @@ import EstateMap from '../../components/shared/EstateMap'
 import Calendar from '../../components/shared/Calendar'
 import { useApp } from '../../context/AppContext'
 import { formatShortDate } from '../../utils/dates'
+import { ROLES } from '../../constants/roles'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -369,7 +370,8 @@ export default function OverviewPage() {
   const [expandedDay, setExpandedDay] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const { tasks = [], staff = [], machinery = [], fields = [], absences = [] } = useApp()
+  const { tasks = [], staff = [], machinery = [], fields = [], absences = [], currentUser } = useApp()
+  const isManager = currentUser.role === ROLES.FARM_MANAGER
 
   useEffect(() => {
     if (location.state?.openCalendar) {
@@ -490,6 +492,11 @@ export default function OverviewPage() {
       })
   }, [])
 
+  // Reset expanded widget if it's role-restricted
+  const effectiveExpandedWidget = (!isManager && (expandedWidget === 'staff' || expandedWidget === 'machinery'))
+    ? null
+    : expandedWidget
+
   const handleFieldClick = (field) => {
     navigate('/fields', { state: { openFieldId: field.id } })
   }
@@ -526,8 +533,10 @@ export default function OverviewPage() {
   const offDutyStaff = staff.filter(s => s.status === 'Off Duty')
   const activeStaff = staff.filter(s => !['Archived', 'Off Duty'].includes(s.status))
 
-  const alerts = buildAlerts(tasks, machinery, staff)
-  const activityFeed = buildActivityFeed(tasks, fields, staff)
+  const allAlerts = buildAlerts(tasks, machinery, staff)
+  const alerts = isManager ? allAlerts : allAlerts.filter(a => a.type !== 'machinery' && a.type !== 'staff')
+  const allActivity = buildActivityFeed(tasks, fields, staff)
+  const activityFeed = isManager ? allActivity : allActivity.filter(a => !a.id.startsWith('act-sick-'))
 
   const fieldsWithTasks = fields.filter(f =>
     inProgressTasks.some(t => t.fieldIds?.includes(f.id))
@@ -550,7 +559,7 @@ export default function OverviewPage() {
   // ── Expanded widget content ───────────────────────────────────────────────
 
   const renderExpandedContent = () => {
-    switch (expandedWidget) {
+    switch (effectiveExpandedWidget) {
       case 'weather': {
         const days = weather || []
         const tw = days[0]
@@ -931,7 +940,7 @@ export default function OverviewPage() {
             <EstateMap
               onFieldClick={handleFieldClick}
               highlightedFieldIds={highlightedFieldIds}
-              alertFieldIds={expandedWidget === 'tasks' ? fieldsWithOverdueTasks : []}
+              alertFieldIds={effectiveExpandedWidget === 'tasks' ? fieldsWithOverdueTasks : []}
             />
 
             {/* Toggle buttons — visible when tray is closed */}
@@ -1028,9 +1037,9 @@ export default function OverviewPage() {
               open={trayOpen}
               onClose={() => setTrayOpen(false)}
               onToggleCalendar={toggleView}
-              expandedWidget={expandedWidget}
+              expandedWidget={effectiveExpandedWidget}
             >
-              {expandedWidget ? (
+              {effectiveExpandedWidget ? (
                 renderExpandedContent()
               ) : (
                 <>
@@ -1058,31 +1067,35 @@ export default function OverviewPage() {
                   />
 
                   {/* Staff */}
-                  <WidgetCard
-                    icon="group"
-                    label="Staff"
-                    primary={`${availableStaff.length + onTaskStaff.length} Working`}
-                    secondary={`${onTaskStaff.length} on task${sickStaff.length > 0 ? ` · ${sickStaff.length} sick` : ''}`}
-                    badge={sickStaff.filter(s => s.status === 'Pending Sick Confirmation').length > 0 ? '!' : null}
-                    badgeColor="var(--color-red-500)"
-                    onClick={() => handleWidgetExpand('staff')}
-                  />
+                  {isManager && (
+                    <WidgetCard
+                      icon="group"
+                      label="Staff"
+                      primary={`${availableStaff.length + onTaskStaff.length} Working`}
+                      secondary={`${onTaskStaff.length} on task${sickStaff.length > 0 ? ` · ${sickStaff.length} sick` : ''}`}
+                      badge={sickStaff.filter(s => s.status === 'Pending Sick Confirmation').length > 0 ? '!' : null}
+                      badgeColor="var(--color-red-500)"
+                      onClick={() => handleWidgetExpand('staff')}
+                    />
+                  )}
 
                   {/* Machinery */}
-                  <WidgetCard
-                    icon="agriculture"
-                    label="Machinery"
-                    primary={`${activeMachinery.length} Active`}
-                    secondary={[
-                      serviceDueMachinery.length > 0 && `${serviceDueMachinery.length} service due`,
-                      maintenanceMachinery.length > 0 && `${maintenanceMachinery.length} maintenance`,
-                      storedMachinery.length > 0 && `${storedMachinery.length} stored`,
-                      soldMachinery.length > 0 && `${soldMachinery.length} sold`,
-                    ].filter(Boolean).join(' · ') || 'All available'}
-                    badge={serviceDueMachinery.length > 0 ? serviceDueMachinery.length : null}
-                    badgeColor="var(--color-amber-500)"
-                    onClick={() => handleWidgetExpand('machinery')}
-                  />
+                  {isManager && (
+                    <WidgetCard
+                      icon="agriculture"
+                      label="Machinery"
+                      primary={`${activeMachinery.length} Active`}
+                      secondary={[
+                        serviceDueMachinery.length > 0 && `${serviceDueMachinery.length} service due`,
+                        maintenanceMachinery.length > 0 && `${maintenanceMachinery.length} maintenance`,
+                        storedMachinery.length > 0 && `${storedMachinery.length} stored`,
+                        soldMachinery.length > 0 && `${soldMachinery.length} sold`,
+                      ].filter(Boolean).join(' · ') || 'All available'}
+                      badge={serviceDueMachinery.length > 0 ? serviceDueMachinery.length : null}
+                      badgeColor="var(--color-amber-500)"
+                      onClick={() => handleWidgetExpand('machinery')}
+                    />
+                  )}
 
                   {/* Alerts */}
                   {alerts.length > 0 && (
