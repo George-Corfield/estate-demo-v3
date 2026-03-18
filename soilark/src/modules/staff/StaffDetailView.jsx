@@ -49,6 +49,7 @@ export default function StaffDetailView({ staffId, onClose }) {
   const qualifications = (member.documents || []).filter(d => d.type === 'Qualifications & Certificates')
 
   const pendingAbsence = absences.find(a => a.staffId === member.id && a.type === 'sick' && a.status === 'pending')
+  const isSelfReported = pendingAbsence?.selfReported === true
 
   const handleArchive = () => {
     if (archiveStep === 0) {
@@ -66,7 +67,7 @@ export default function StaffDetailView({ staffId, onClose }) {
       setSickReportStep(1)
       setTimeout(() => setSickReportStep(0), 5000)
     } else {
-      reportSick(member.id)
+      reportSick(member.id, member.name, { selfReported: false })
       showToast(`${member.name} reported sick`)
       setSickReportStep(0)
     }
@@ -86,7 +87,7 @@ export default function StaffDetailView({ staffId, onClose }) {
   const handleCancelSick = () => {
     if (!pendingAbsence) return
     cancelSickReport(member.id, pendingAbsence.id)
-    showToast(`Sick report cancelled for ${member.name}`)
+    showToast(isSelfReported ? `Sick leave denied for ${member.name}` : `Sick report cancelled for ${member.name}`)
   }
 
   const handleEndSick = () => {
@@ -178,7 +179,14 @@ export default function StaffDetailView({ staffId, onClose }) {
         {/* Pending Sick Confirmation form */}
         {member.status === 'Pending Sick Confirmation' && (
           <div style={{ marginTop: 12, padding: 12, background: 'var(--color-surface-200)', borderRadius: 'var(--radius-md)' }}>
-            <p className="text-label" style={{ color: 'var(--color-amber-400)', marginBottom: 8 }}>Confirm Sick Report</p>
+            <p className="text-label" style={{ color: 'var(--color-amber-400)', marginBottom: isSelfReported ? 4 : 8 }}>
+              {isSelfReported ? 'Sick leave requested' : 'Confirm Sick Report'}
+            </p>
+            {isSelfReported && (
+              <p className="text-body-small" style={{ color: 'var(--color-slate-500)', marginBottom: 8 }}>
+                {member.name} has self-reported sick — awaiting your approval
+              </p>
+            )}
             <div className="flex items-center gap-4" style={{ marginBottom: 8 }}>
               <label className="flex items-center gap-1" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-slate-700)' }}>
                 <input
@@ -209,8 +217,8 @@ export default function StaffDetailView({ staffId, onClose }) {
               style={{ width: '100%', minHeight: 48, marginBottom: 8 }}
             />
             <div className="flex gap-2">
-              <button onClick={handleConfirmSick} className="btn btn-primary" style={{ fontSize: 12 }}>Confirm Sick</button>
-              <button onClick={handleCancelSick} className="btn btn-secondary" style={{ fontSize: 12 }}>Cancel Report</button>
+              <button onClick={handleConfirmSick} className="btn btn-primary" style={{ fontSize: 12 }}>{isSelfReported ? 'Approve' : 'Confirm Sick'}</button>
+              <button onClick={handleCancelSick} className="btn btn-secondary" style={{ fontSize: 12 }}>{isSelfReported ? 'Deny' : 'Cancel Report'}</button>
             </div>
           </div>
         )}

@@ -6,6 +6,7 @@ import EstateStatsDropdown from './EstateStatsDropdown'
 import { formatOrdinalDate } from '../../utils/dates'
 import { useApp } from '../../context/AppContext'
 import { USERS } from '../../constants/roles'
+import NotificationBell from './NotificationBell'
 
 export default function TopBar() {
   const location = useLocation()
@@ -181,23 +182,7 @@ export default function TopBar() {
       {/* Right: Notifications + Avatar */}
       <div className="flex items-center gap-3">
         <div className="text-body opacity-90" style={{color: 'white'}}>{dateStr}</div>
-        <button
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 4,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <span
-            className="material-symbols-outlined"
-            style={{ fontSize: 16, color: 'white' }}
-          >
-            notifications
-          </span>
-        </button>
+        <NotificationBell />
         <div className="relative" ref={userSwitchRef}>
           <button
             onClick={toggleUserSwitch}

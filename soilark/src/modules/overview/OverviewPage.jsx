@@ -239,52 +239,6 @@ function WidgetTray({ open, onClose, onToggleCalendar, expandedWidget, children 
   )
 }
 
-// ─── Alerts Builder ──────────────────────────────────────────────────────────
-
-function buildAlerts(tasks, machinery, staff) {
-  const alerts = []
-
-  const overdue = tasks.filter(t => t.status !== 'done' && t.status !== 'cancelled' && t.dueDate && t.dueDate < today())
-  overdue.forEach(t => alerts.push({
-    id: `alert-task-${t.id}`,
-    icon: 'warning',
-    iconColor: 'var(--color-red-500)',
-    title: `${t.name} overdue`,
-    subtitle: null,
-    severity: 'danger',
-    type: 'task',
-    ref: t.id,
-  }))
-
-  machinery
-    .filter(m => m.status === 'Service Due' || (m.nextServiceDue && m.hours >= m.nextServiceDue - 50))
-    .forEach(m => alerts.push({
-      id: `alert-mach-${m.id}`,
-      icon: 'build',
-      iconColor: 'var(--color-amber-500)',
-      title: `${m.name} service due`,
-      subtitle: `${m.hours} hrs · next at ${m.nextServiceDue} hrs`,
-      severity: 'warning',
-      type: 'machinery',
-      ref: m.id,
-    }))
-
-  staff
-    .filter(s => s.status === 'Pending Sick Confirmation')
-    .forEach(s => alerts.push({
-      id: `alert-sick-${s.id}`,
-      icon: 'sick',
-      iconColor: 'var(--color-red-500)',
-      title: `${s.name} reported sick`,
-      subtitle: 'Awaiting manager confirmation',
-      severity: 'danger',
-      type: 'staff',
-      ref: s.id,
-    }))
-
-  return alerts
-}
-
 // ─── Activity Feed ────────────────────────────────────────────────────────────
 
 const ACTIVITY_TYPE_ICONS = {
@@ -371,7 +325,7 @@ export default function OverviewPage() {
   const [expandedDay, setExpandedDay] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const { tasks = [], staff = [], machinery = [], fields = [], absences = [], currentUser } = useApp()
+  const { tasks = [], staff = [], machinery = [], fields = [], absences = [], currentUser, notifications = [], markAllNotificationsRead } = useApp()
   const isManager = currentUser.role === ROLES.FARM_MANAGER
 
   useEffect(() => {
@@ -536,8 +490,8 @@ export default function OverviewPage() {
   const offDutyStaff = staff.filter(s => s.status === 'Off Duty')
   const activeStaff = staff.filter(s => !['Archived', 'Off Duty'].includes(s.status))
 
-  const allAlerts = buildAlerts(visibleTasks, machinery, staff)
-  const alerts = isManager ? allAlerts : allAlerts.filter(a => a.type !== 'machinery' && a.type !== 'staff')
+  const userNotifs = notifications.filter(n => n.forUserId === currentUser.id)
+  const unreadCount = userNotifs.filter(n => !n.read).length
   const allActivity = buildActivityFeed(tasks, fields, staff)
   const activityFeed = isManager ? allActivity : allActivity.filter(a => !a.id.startsWith('act-sick-'))
 
@@ -552,6 +506,9 @@ export default function OverviewPage() {
   const handleWidgetExpand = (widget) => {
     if (widget === 'tasks') {
       setHighlightedFieldIds(fieldsWithTasks)
+    }
+    if (widget === 'notifications') {
+      markAllNotificationsRead(currentUser.id)
     }
     setExpandedWidget(widget)
   }
@@ -887,23 +844,32 @@ export default function OverviewPage() {
         )
       }
 
-      case 'alerts':
+      case 'notifications':
         return (
-          <WidgetExpanded title="Active Alerts" icon="notifications_active" onBack={() => setExpandedWidget(null)}>
-            {alerts.map(a => (
-              <DrawerRow
-                key={a.id}
-                icon={a.icon}
-                iconColor={a.iconColor}
-                title={a.title}
-                subtitle={a.subtitle}
-                onClick={() => {
-                  if (a.type === 'task') navigate('/tasks', { state: { openTaskId: a.ref } })
-                  else if (a.type === 'machinery') navigate('/machinery', { state: { openEquipmentId: a.ref } })
-                  else if (a.type === 'staff') navigate('/staff', { state: { openStaffId: a.ref } })
-                }}
-              />
-            ))}
+          <WidgetExpanded title="Notifications" icon="notifications" onBack={() => setExpandedWidget(null)}>
+            {userNotifs.length === 0 ? (
+              <div style={{ padding: 14, color: 'var(--color-slate-400)', fontSize: 12, textAlign: 'center' }}>
+                No notifications
+              </div>
+            ) : (
+              userNotifs.map(n => {
+                const iconMap = { success: 'check_circle', warning: 'warning', info: 'info' }
+                const colorMap = { success: 'var(--color-green-500)', warning: 'var(--color-amber-400)', info: 'var(--color-slate-400)' }
+                const diff = Date.now() - new Date(n.timestamp).getTime()
+                const mins = Math.floor(diff / 60000)
+                const meta = mins < 1 ? 'just now' : mins < 60 ? `${mins}m ago` : mins < 1440 ? `${Math.floor(mins / 60)}h ago` : `${Math.floor(mins / 1440)}d ago`
+                return (
+                  <DrawerRow
+                    key={n.id}
+                    icon={iconMap[n.type] || 'info'}
+                    iconColor={colorMap[n.type] || colorMap.info}
+                    title={n.message}
+                    meta={meta}
+                    onClick={n.staffId ? () => navigate('/staff', { state: { openStaffId: n.staffId } }) : undefined}
+                  />
+                )
+              })
+            )}
           </WidgetExpanded>
         )
 
@@ -1100,21 +1066,17 @@ export default function OverviewPage() {
                     />
                   )}
 
-                  {/* Alerts */}
-                  {alerts.length > 0 && (
-                    <WidgetCard
-                      icon="notifications_active"
-                      iconColor="var(--color-amber-500)"
-                      label="Alerts"
-                      primary={`${alerts.length} Warning${alerts.length > 1 ? 's' : ''}`}
-                      secondary={alerts.filter(a => a.severity === 'danger').length > 0
-                        ? `${alerts.filter(a => a.severity === 'danger').length} critical`
-                        : 'Review required'}
-                      badge={alerts.filter(a => a.severity === 'danger').length || null}
-                      badgeColor="var(--color-red-500)"
-                      onClick={() => handleWidgetExpand('alerts')}
-                    />
-                  )}
+                  {/* Notifications */}
+                  <WidgetCard
+                    icon={unreadCount > 0 ? 'notifications_active' : 'notifications'}
+                    iconColor={unreadCount > 0 ? 'var(--color-amber-500)' : 'var(--color-slate-400)'}
+                    label="Notifications"
+                    primary={userNotifs.length === 0 ? 'No notifications' : `${userNotifs.length} notification${userNotifs.length > 1 ? 's' : ''}`}
+                    secondary={unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
+                    badge={unreadCount > 0 ? unreadCount : null}
+                    badgeColor="var(--color-amber-500)"
+                    onClick={() => handleWidgetExpand('notifications')}
+                  />
 
                   {/* Activity */}
                   <WidgetCard

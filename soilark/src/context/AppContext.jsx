@@ -19,6 +19,7 @@ const initialState = {
   absences: initialAbsences,
   usages: initialUsages,
   toasts: [],
+  notifications: [],
   currentUser: DEFAULT_USER,
 }
 
@@ -233,15 +234,37 @@ function reducer(state, action) {
           s.id === action.id ? { ...s, status: 'Archived' } : s
         ),
       }
-    case 'REPORT_SICK':
+    case 'REPORT_SICK': {
+      const managerNotif = {
+        id: `notif-${Date.now()}`,
+        forUserId: 'staff-01',
+        message: `${action.workerName} has requested sick leave`,
+        type: 'warning',
+        read: false,
+        timestamp: new Date().toISOString(),
+        relatedAbsenceId: action.absence.id,
+        staffId: action.staffId,
+      }
       return {
         ...state,
         staff: state.staff.map(s =>
           s.id === action.staffId ? { ...s, status: 'Pending Sick Confirmation' } : s
         ),
         absences: [...state.absences, action.absence],
+        notifications: [managerNotif, ...state.notifications],
       }
-    case 'CONFIRM_SICK':
+    }
+    case 'CONFIRM_SICK': {
+      const workerApprovedNotif = {
+        id: `notif-${Date.now()}`,
+        forUserId: action.staffId,
+        message: `Your sick leave has been approved (${action.paidStatus})`,
+        type: 'success',
+        read: false,
+        timestamp: new Date().toISOString(),
+        relatedAbsenceId: action.absenceId,
+        staffId: action.staffId,
+      }
       return {
         ...state,
         staff: state.staff.map(s =>
@@ -252,8 +275,20 @@ function reducer(state, action) {
             ? { ...a, status: 'confirmed', paidStatus: action.paidStatus, confirmedBy: action.confirmedBy, confirmedAt: new Date().toISOString(), notes: action.notes || a.notes }
             : a
         ),
+        notifications: [workerApprovedNotif, ...state.notifications],
       }
-    case 'CANCEL_SICK_REPORT':
+    }
+    case 'CANCEL_SICK_REPORT': {
+      const workerDeniedNotif = {
+        id: `notif-${Date.now()}`,
+        forUserId: action.staffId,
+        message: 'Your sick leave request was not approved',
+        type: 'warning',
+        read: false,
+        timestamp: new Date().toISOString(),
+        relatedAbsenceId: action.absenceId,
+        staffId: action.staffId,
+      }
       return {
         ...state,
         staff: state.staff.map(s =>
@@ -262,7 +297,9 @@ function reducer(state, action) {
         absences: state.absences.map(a =>
           a.id === action.absenceId ? { ...a, status: 'cancelled' } : a
         ),
+        notifications: [workerDeniedNotif, ...state.notifications],
       }
+    }
     case 'END_SICK_LEAVE':
       return {
         ...state,
@@ -330,6 +367,12 @@ function reducer(state, action) {
       return { ...state, toasts: [...state.toasts, action.toast] }
     case 'DISMISS_TOAST':
       return { ...state, toasts: state.toasts.filter(t => t.id !== action.id) }
+    case 'ADD_NOTIFICATION':
+      return { ...state, notifications: [action.notification, ...state.notifications] }
+    case 'MARK_NOTIFICATION_READ':
+      return { ...state, notifications: state.notifications.map(n => n.id === action.id ? { ...n, read: true } : n) }
+    case 'MARK_ALL_NOTIFICATIONS_READ':
+      return { ...state, notifications: state.notifications.map(n => n.forUserId === action.userId ? { ...n, read: true } : n) }
     default:
       return state
   }
@@ -386,7 +429,7 @@ export function AppProvider({ children }) {
     dispatch({ type: 'ARCHIVE_STAFF', id })
   }, [])
 
-  const reportSick = useCallback((staffId) => {
+  const reportSick = useCallback((staffId, workerName, { selfReported = false } = {}) => {
     const absence = {
       id: `abs-${Date.now()}`,
       staffId,
@@ -400,8 +443,9 @@ export function AppProvider({ children }) {
       confirmedBy: null,
       confirmedAt: null,
       notes: '',
+      selfReported,
     }
-    dispatch({ type: 'REPORT_SICK', staffId, absence })
+    dispatch({ type: 'REPORT_SICK', staffId, workerName, absence })
   }, [])
 
   const confirmSick = useCallback((staffId, absenceId, { paidStatus, confirmedBy, notes }) => {
@@ -444,6 +488,18 @@ export function AppProvider({ children }) {
     dispatch({ type: 'SWITCH_USER', user })
   }, [])
 
+  const markNotificationRead = useCallback((id) => {
+    dispatch({ type: 'MARK_NOTIFICATION_READ', id })
+  }, [])
+
+  const markAllNotificationsRead = useCallback((userId) => {
+    dispatch({ type: 'MARK_ALL_NOTIFICATIONS_READ', userId })
+  }, [])
+
+  const addNotification = useCallback((notification) => {
+    dispatch({ type: 'ADD_NOTIFICATION', notification })
+  }, [])
+
   const showToast = useCallback((message, type = 'success') => {
     const id = ++toastId
     dispatch({ type: 'SHOW_TOAST', toast: { id, message, toastType: type } })
@@ -476,6 +532,9 @@ export function AppProvider({ children }) {
     addCustomEvent,
     switchUser,
     showToast,
+    markNotificationRead,
+    markAllNotificationsRead,
+    addNotification,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

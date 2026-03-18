@@ -13,7 +13,7 @@ const MANAGER_ACTIONS = [
 const WORKER_ACTIONS = [
   { icon: 'add_task', label: 'Add Task', color: 'bg-blue-500', action: 'task' },
   { icon: 'visibility', label: 'Add Observation', color: 'bg-teal-500', action: 'observation' },
-  { icon: 'sick', label: 'Report Sick', color: 'bg-red-500', action: 'reportSick', disabled: true },
+  { icon: 'sick', label: 'Report Sick', color: 'bg-red-500', action: 'reportSick'},
   { icon: 'event', label: 'Book Holiday', color: 'bg-amber-500', action: 'bookHoliday', disabled: true },
   { icon: 'smart_toy', label: 'Ask LandArk', color: 'bg-emerald-600', action: 'landark', disabled: true },
 ]
@@ -23,11 +23,15 @@ const CLICK_BUFFER = 12 // px buffer around the FAB container for misclicks
 export default function FAB() {
   const [open, setOpen] = useState(false)
   const [closing, setClosing] = useState(false)
+  const [sickStep, setSickStep] = useState(0)
   const navigate = useNavigate()
   const location = useLocation()
   const containerRef = useRef(null)
-  const { currentUser } = useApp()
+  const { currentUser, staff, reportSick, showToast } = useApp()
   const ACTIONS = currentUser?.role === ROLES.FARM_MANAGER ? MANAGER_ACTIONS : WORKER_ACTIONS
+
+  const currentStaffMember = staff?.find(s => s.id === currentUser?.id)
+  const canReportSick = currentStaffMember?.status === 'Available' || currentStaffMember?.status === 'Off Duty'
 
   const closeFab = useCallback(() => {
     if (!open || closing) return
@@ -35,6 +39,7 @@ export default function FAB() {
     setTimeout(() => {
       setOpen(false)
       setClosing(false)
+      setSickStep(0)
     }, 150)
   }, [open, closing])
 
@@ -73,6 +78,10 @@ export default function FAB() {
   }, [open, closeFab])
 
   const handleAction = (action) => {
+    if (action === 'reportSick') {
+      setSickStep(1)
+      return
+    }
     closeFab()
     if (action === 'task') {
       const path = location.pathname
@@ -106,29 +115,60 @@ export default function FAB() {
         <span className="material-symbols-outlined" style={{ fontSize: "30px"}}>add</span>
       </button>
 
-      {/* Action buttons */}
-      {open && ACTIONS.map((item, i) => (
-        <button
-          key={item.action}
-          onClick={() => !item.disabled && handleAction(item.action)}
-          disabled={item.disabled}
-          className={`flex items-center gap-3 pl-4 pr-2 py-2 rounded-full shadow-lg transition-all duration-200 ${
-            item.disabled
-              ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-              : 'bg-white text-slate-800 hover:shadow-xl'
-          }`}
-          style={{
-            animation: closing
-              ? `fadeOutDown 0.15s ease-in ${(ACTIONS.length - 1 - i) * 0.02}s both`
-              : `fadeInUp 0.2s ease-out ${i * 0.05}s both`,
-          }}
+      {/* Sick confirm panel */}
+      {open && sickStep === 1 && (
+        <div
+          className="flex items-center gap-2 bg-white rounded-full shadow-lg px-4 py-2"
+          style={{ animation: `fadeInUp 0.2s ease-out both` }}
         >
-          <span className="text-sm font-medium">{item.label}</span>
-          <span className={`material-symbols-outlined text-white p-1.5 rounded-full text-sm ${item.disabled ? 'bg-slate-300' : item.color}`}>
-            {item.icon}
-          </span>
-        </button>
-      ))}
+          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-slate-700)' }}>Report sick?</span>
+          <button
+            onClick={() => {
+              reportSick(currentUser.id, currentUser.name, { selfReported: true })
+              showToast('Sick leave requested — pending approval', 'info')
+              closeFab()
+            }}
+            className="btn btn-ghost"
+            style={{ color: 'var(--color-amber-400)', fontWeight: 600, fontSize: 12, padding: '2px 8px' }}
+          >
+            Confirm
+          </button>
+          <button
+            onClick={() => setSickStep(0)}
+            className="btn btn-ghost"
+            style={{ fontSize: 12, padding: '2px 8px' }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+
+      {/* Action buttons */}
+      {open && sickStep === 0 && ACTIONS.map((item, i) => {
+        const isDisabled = item.disabled || (item.action === 'reportSick' && !canReportSick)
+        return (
+          <button
+            key={item.action}
+            onClick={() => !isDisabled && handleAction(item.action)}
+            disabled={isDisabled}
+            className={`flex items-center gap-3 pl-4 pr-2 py-2 rounded-full shadow-lg transition-all duration-200 ${
+              isDisabled
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                : 'bg-white text-slate-800 hover:shadow-xl'
+            }`}
+            style={{
+              animation: closing
+                ? `fadeOutDown 0.15s ease-in ${(ACTIONS.length - 1 - i) * 0.02}s both`
+                : `fadeInUp 0.2s ease-out ${i * 0.05}s both`,
+            }}
+          >
+            <span className="text-sm font-medium">{item.label}</span>
+            <span className={`material-symbols-outlined text-white p-1.5 rounded-full text-sm ${isDisabled ? 'bg-slate-300' : item.color}`}>
+              {item.icon}
+            </span>
+          </button>
+        )
+      })}
 
       <style>{`
         @keyframes fadeInUp {
