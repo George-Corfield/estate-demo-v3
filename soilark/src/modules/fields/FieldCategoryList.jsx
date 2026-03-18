@@ -12,7 +12,7 @@ const USAGE_ICONS = {
   'Oilseed rape': 'local_florist',
 }
 
-export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, onManageUsages, onCategoryChange, selectFieldForObservation, onCancelObservation, selectFieldForNote, onCancelNote }) {
+export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, onManageUsages, onCategoryChange, selectFieldForObservation, onCancelObservation }) {
   const { fields, usages, tasks } = useApp()
 
   const overdueFieldIds = useMemo(() => {
@@ -138,35 +138,6 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, 
         </div>
       )}
 
-      {/* Note pick banner */}
-      {selectFieldForNote && (
-        <div
-          className="flex items-center justify-between"
-          style={{
-            padding: '10px 16px',
-            background: 'rgba(16, 185, 129, 0.1)',
-            borderBottom: '1px solid rgba(16, 185, 129, 0.3)',
-          }}
-        >
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-emerald-500, #10b981)' }}>note_add</span>
-            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-emerald-700, #047857)' }}>Select a field to add a note</span>
-          </div>
-          <button
-            onClick={onCancelNote}
-            style={{
-              border: 'none',
-              background: 'none',
-              cursor: 'pointer',
-              padding: 4,
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-emerald-500, #10b981)' }}>close</span>
-          </button>
-        </div>
-      )}
 
       {/* Category list */}
       <div className="flex-1 overflow-y-auto custom-scrollbar" style={{ padding: 16 }}>

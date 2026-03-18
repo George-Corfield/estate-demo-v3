@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 const ACTIONS = [
   { icon: 'add_task', label: 'Add Task', color: 'bg-blue-500', action: 'task' },
   { icon: 'visibility', label: 'Add Observation', color: 'bg-teal-500', action: 'observation' },
-  { icon: 'note_add', label: 'Add Note', color: 'bg-emerald-500', action: 'note' },
   { icon: 'landscape', label: 'Add Field', color: 'bg-green-600', action: 'field', disabled: true },
   { icon: 'receipt_long', label: 'Add Expense', color: 'bg-amber-500', action: 'expense', disabled: true },
   { icon: 'build', label: 'Book Service', color: 'bg-indigo-500', action: 'bookService', disabled: true },
@@ -79,14 +78,6 @@ export default function FAB() {
         window.dispatchEvent(new CustomEvent('fab-add-observation'))
       } else {
         navigate('/fields', { state: { selectFieldForObservation: true } })
-      }
-      return
-    }
-    if (action === 'note') {
-      if (location.pathname === '/fields') {
-        window.dispatchEvent(new CustomEvent('fab-add-note'))
-      } else {
-        navigate('/fields', { state: { selectFieldForNote: true } })
       }
       return
     }

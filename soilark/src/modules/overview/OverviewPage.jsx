@@ -288,8 +288,6 @@ function buildAlerts(tasks, machinery, staff) {
 const ACTIVITY_TYPE_ICONS = {
   task: { icon: 'task', color: 'var(--color-blue-500, #3b82f6)' },
   observation: { icon: 'visibility', color: 'var(--color-amber-500, #f59e0b)' },
-  inspection: { icon: 'fact_check', color: 'var(--color-teal-500, #14b8a6)' },
-  note: { icon: 'note', color: 'var(--color-surface-500)' },
 }
 
 function extractTime(timestamp) {
@@ -308,7 +306,7 @@ function buildActivityFeed(tasks, fields, staff) {
     (f.activities || []).forEach(a => {
       const actDate = a.timestamp ? a.timestamp.split('T')[0] : null
       if (actDate !== todayStr) return
-      const typeConfig = ACTIVITY_TYPE_ICONS[a.type] || ACTIVITY_TYPE_ICONS.note
+      const typeConfig = ACTIVITY_TYPE_ICONS[a.type] || ACTIVITY_TYPE_ICONS.observation
       items.push({
         id: `act-field-${a.id}`,
         time: extractTime(a.timestamp),

@@ -7,8 +7,6 @@ const TYPE_CONFIG = {
   task: { icon: 'task', color: 'var(--color-blue-500, #3b82f6)', label: 'Tasks' },
   calendar_event: { icon: 'event', color: 'var(--color-purple-500, #a855f7)', label: 'Events' },
   observation: { icon: 'visibility', color: 'var(--color-amber-500, #f59e0b)', label: 'Observations' },
-  inspection: { icon: 'fact_check', color: 'var(--color-teal-500, #14b8a6)', label: 'Inspections' },
-  note: { icon: 'note', color: 'var(--color-slate-500)', label: 'Notes' },
 }
 
 const FILTERS = [
@@ -16,8 +14,6 @@ const FILTERS = [
   { id: 'task', label: 'Tasks', icon: 'task' },
   { id: 'calendar_event', label: 'Events', icon: 'event' },
   { id: 'observation', label: 'Observations', icon: 'visibility' },
-  { id: 'inspection', label: 'Inspections', icon: 'fact_check' },
-  { id: 'note', label: 'Notes', icon: 'note' },
 ]
 
 const TASK_ACTION_COLORS = {
@@ -72,7 +68,7 @@ function DetailRow({ icon, label, value }) {
   )
 }
 
-export default function FieldHistoryTab({ field, openObservationForm, onObservationFormOpened, openNoteForm, onNoteFormOpened }) {
+export default function FieldHistoryTab({ field, openObservationForm, onObservationFormOpened }) {
   const { addFieldActivity, addTask, linkActivityTask, showToast, customEvents, machinery, tasks, staff } = useApp()
   const navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
@@ -89,7 +85,7 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
   }
 
   const [form, setForm] = useState({
-    type: 'note',
+    type: 'observation',
     title: '',
     details: '',
     date: formatDateKey(new Date()),
@@ -105,13 +101,6 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
     }
   }, [openObservationForm])
 
-  useEffect(() => {
-    if (openNoteForm) {
-      setForm({ type: 'note', title: '', details: '', date: formatDateKey(new Date()), time: nowTime(), files: [] })
-      setShowForm(true)
-      onNoteFormOpened?.()
-    }
-  }, [openNoteForm])
 
   const timeline = useMemo(() => {
     const entries = [...(field.activities || [])]
@@ -205,7 +194,7 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
     return tasks.find(t => t.id === taskId)
   }
 
-  const TYPE_LABELS = { note: 'Note', observation: 'Observation', inspection: 'Inspection' }
+  const TYPE_LABELS = { observation: 'Observation' }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -234,8 +223,8 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
       source: 'manual',
     })
 
-    showToast(`${TYPE_LABELS[form.type]} added`)
-    setForm({ type: 'note', title: '', details: '', date: formatDateKey(new Date()), time: nowTime(), files: [] })
+    showToast('Observation added')
+    setForm({ type: 'observation', title: '', details: '', date: formatDateKey(new Date()), time: nowTime(), files: [] })
     setShowForm(false)
   }
 
@@ -245,55 +234,18 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
 
   return (
     <div style={{ padding: 20 }}>
-      {/* Add note button/form */}
+      {/* Add observation button/form */}
       <div style={{ marginBottom: 20 }}>
         {showForm ? (
           <form onSubmit={handleSubmit} className="card" style={{ padding: 16 }}>
             <div className="flex flex-col gap-3">
-              {/* Type selector */}
-              <div>
-                <label className="form-label">Type</label>
-                <div className="flex gap-2">
-                  {[
-                    { id: 'note', icon: 'note', label: 'Note' },
-                    { id: 'observation', icon: 'visibility', label: 'Observation' },
-                    { id: 'inspection', icon: 'fact_check', label: 'Inspection' },
-                  ].map(t => {
-                    const selected = form.type === t.id
-                    const typeColor = TYPE_CONFIG[t.id]?.color || 'var(--color-slate-500)'
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => setForm({ ...form, type: t.id })}
-                        className="flex items-center gap-1 flex-1 justify-center"
-                        style={{
-                          padding: '6px 0',
-                          borderRadius: 'var(--radius-md)',
-                          border: `1.5px solid ${selected ? typeColor : 'var(--color-surface-300)'}`,
-                          background: selected ? `${typeColor}12` : 'transparent',
-                          color: selected ? typeColor : 'var(--color-slate-500)',
-                          fontSize: 12,
-                          fontWeight: 500,
-                          fontFamily: 'var(--font-body)',
-                          cursor: 'pointer',
-                          transition: 'all 120ms ease',
-                        }}
-                      >
-                        <span className="material-symbols-outlined" style={{ fontSize: 15 }}>{t.icon}</span>
-                        {t.label}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
               <div>
                 <label className="form-label">Title</label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={e => setForm({ ...form, title: e.target.value })}
-                  placeholder={form.type === 'observation' ? 'e.g. Crop Walk — Pest Sighting' : form.type === 'inspection' ? 'e.g. Soil Sampling' : 'e.g. Fertiliser Application'}
+                  placeholder="e.g. Crop Walk — Pest Sighting"
                   className="form-input"
                   required
                 />
@@ -344,7 +296,7 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
                 )}
               </div>
               <div className="flex gap-2">
-                <button type="submit" className="btn btn-primary flex-1">Save {TYPE_LABELS[form.type]}</button>
+                <button type="submit" className="btn btn-primary flex-1">Save Observation</button>
                 <button type="button" onClick={() => setShowForm(false)} className="btn btn-secondary">Cancel</button>
               </div>
             </div>
@@ -352,7 +304,7 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
         ) : (
           <button
             onClick={() => {
-              setForm({ type: 'note', title: '', details: '', date: formatDateKey(new Date()), time: nowTime(), files: [] })
+              setForm({ type: 'observation', title: '', details: '', date: formatDateKey(new Date()), time: nowTime(), files: [] })
               setShowForm(true)
             }}
             className="w-full"
@@ -498,7 +450,7 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
       ) : (
         <div className="flex flex-col">
           {displayed.map((entry, i) => {
-            const config = TYPE_CONFIG[entry.type] || TYPE_CONFIG.note
+            const config = TYPE_CONFIG[entry.type] || TYPE_CONFIG.observation
             const isExpanded = expandedId === entry.id
             const matchedStaff = findStaffByName(entry.completedBy)
             const matchedMachinery = findMachineryByName(entry.machineryUsed)
