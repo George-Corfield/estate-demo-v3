@@ -1,13 +1,21 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useApp } from '../../context/AppContext'
+import { ROLES } from '../../constants/roles'
 
-const ACTIONS = [
+const MANAGER_ACTIONS = [
   { icon: 'add_task', label: 'Add Task', color: 'bg-blue-500', action: 'task' },
   { icon: 'visibility', label: 'Add Observation', color: 'bg-teal-500', action: 'observation' },
-  { icon: 'landscape', label: 'Add Field', color: 'bg-green-600', action: 'field', disabled: true },
-  { icon: 'receipt_long', label: 'Add Expense', color: 'bg-amber-500', action: 'expense', disabled: true },
-  { icon: 'build', label: 'Book Service', color: 'bg-indigo-500', action: 'bookService', disabled: true },
-  { icon: 'healing', label: 'Report Sick', color: 'bg-red-500', action: 'reportSick', disabled: true },
+  { icon: 'draw', label: 'Draw', color: 'bg-purple-500', action: 'draw', disabled: true },
+  { icon: 'smart_toy', label: 'Ask LandArk', color: 'bg-emerald-600', action: 'landark', disabled: true },
+]
+
+const WORKER_ACTIONS = [
+  { icon: 'add_task', label: 'Add Task', color: 'bg-blue-500', action: 'task' },
+  { icon: 'visibility', label: 'Add Observation', color: 'bg-teal-500', action: 'observation' },
+  { icon: 'sick', label: 'Report Sick', color: 'bg-red-500', action: 'reportSick', disabled: true },
+  { icon: 'event', label: 'Book Holiday', color: 'bg-amber-500', action: 'bookHoliday', disabled: true },
+  { icon: 'smart_toy', label: 'Ask LandArk', color: 'bg-emerald-600', action: 'landark', disabled: true },
 ]
 
 const CLICK_BUFFER = 12 // px buffer around the FAB container for misclicks
@@ -18,6 +26,8 @@ export default function FAB() {
   const navigate = useNavigate()
   const location = useLocation()
   const containerRef = useRef(null)
+  const { currentUser } = useApp()
+  const ACTIONS = currentUser?.role === ROLES.FARM_MANAGER ? MANAGER_ACTIONS : WORKER_ACTIONS
 
   const closeFab = useCallback(() => {
     if (!open || closing) return

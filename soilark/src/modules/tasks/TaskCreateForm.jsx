@@ -70,7 +70,6 @@ export default function TaskCreateForm({
     type: '',
     description: '',
     priority: 'medium',
-    assignedTo: [],
   })
 
   // Planting subtype state
@@ -104,6 +103,61 @@ export default function TaskCreateForm({
   const [treeSource, setTreeSource] = useState('')
   const [pricePerTree, setPricePerTree] = useState('')
 
+  // Staff / team assignment
+  const [selectedNames, setSelectedNames] = useState(new Set())
+  const [expandedTeams, setExpandedTeams] = useState(new Set())
+
+  // Group staff by team (preserving a consistent order)
+  const TEAM_ORDER = ['Management', 'Arable', 'Livestock', 'Maintenance']
+  const staffByTeam = useMemo(() => {
+    const groups = {}
+    initialStaff.forEach(s => {
+      const t = s.team || 'Other'
+      if (!groups[t]) groups[t] = []
+      groups[t].push(s)
+    })
+    return groups
+  }, [])
+  const orderedTeams = [...TEAM_ORDER, ...Object.keys(staffByTeam).filter(t => !TEAM_ORDER.includes(t))]
+    .filter(t => staffByTeam[t])
+
+  const isTeamFull = (team) => {
+    const members = staffByTeam[team] || []
+    return members.length > 0 && members.every(s => selectedNames.has(s.name))
+  }
+  const isTeamPartial = (team) => {
+    const members = staffByTeam[team] || []
+    return members.some(s => selectedNames.has(s.name)) && !isTeamFull(team)
+  }
+  const toggleTeamSelection = (team) => {
+    const members = staffByTeam[team] || []
+    setSelectedNames(prev => {
+      const next = new Set(prev)
+      if (isTeamFull(team)) {
+        members.forEach(s => next.delete(s.name))
+      } else {
+        members.forEach(s => next.add(s.name))
+      }
+      return next
+    })
+  }
+  const toggleMember = (name) => {
+    setSelectedNames(prev => {
+      const next = new Set(prev)
+      if (next.has(name)) next.delete(name)
+      else next.add(name)
+      return next
+    })
+  }
+  const toggleTeamExpanded = (team) => {
+    setExpandedTeams(prev => {
+      const next = new Set(prev)
+      if (next.has(team)) next.delete(team)
+      else next.add(team)
+      return next
+    })
+  }
+
   // Labour fields
   const [labourEnabled, setLabourEnabled] = useState(false)
   const [labourType, setLabourType] = useState('')
@@ -112,15 +166,6 @@ export default function TaskCreateForm({
   const [labourLength, setLabourLength] = useState('')
 
   const update = (key, value) => setForm(prev => ({ ...prev, [key]: value }))
-
-  const toggleStaff = (name) => {
-    setForm(prev => ({
-      ...prev,
-      assignedTo: prev.assignedTo.includes(name)
-        ? prev.assignedTo.filter(n => n !== name)
-        : [...prev.assignedTo, name],
-    }))
-  }
 
   const toggleField = (id) => {
     setSelectedFieldIds(prev =>
@@ -267,6 +312,13 @@ export default function TaskCreateForm({
     e.preventDefault()
     if (!form.name || !form.type || !dueDate || selectedFieldIds.length === 0) return
 
+    const fullySelectedTeams = orderedTeams.filter(t => isTeamFull(t))
+    const derivedAssignedTeams = fullySelectedTeams
+    const derivedAssignedTo = [...selectedNames].filter(name => {
+      const s = initialStaff.find(m => m.name === name)
+      return !s || !fullySelectedTeams.includes(s.team)
+    })
+
     addTask({
       id: `task-${Date.now()}`,
       name: form.name,
@@ -275,7 +327,8 @@ export default function TaskCreateForm({
       priority: form.priority,
       dueDate,
       description: form.description,
-      assignedTo: form.assignedTo,
+      assignedTo: derivedAssignedTo,
+      assignedTeams: derivedAssignedTeams,
       assignedMachinery: [],
       fieldIds: selectedFieldIds,
       completedDate: null,
@@ -936,21 +989,78 @@ export default function TaskCreateForm({
             </div>
           </div>
 
-          {/* Staff */}
+          {/* Staff & Teams */}
           <div>
             <label className="form-label">Assign Staff</label>
-            <div style={{ maxHeight: 144, overflowY: 'auto', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-sm)', marginTop: 4 }}>
-              {initialStaff.map(s => (
-                <label key={s.id} className="flex items-center gap-2" style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--color-surface-200)', fontSize: 13, fontFamily: 'var(--font-body)', color: 'var(--color-slate-600)' }}>
-                  <input
-                    type="checkbox"
-                    checked={form.assignedTo.includes(s.name)}
-                    onChange={() => toggleStaff(s.name)}
-                  />
-                  <span>{s.name}</span>
-                  <span className="text-data" style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-slate-400)' }}>{s.role}</span>
-                </label>
-              ))}
+            <div style={{ border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-sm)', marginTop: 4 }}>
+              {orderedTeams.map((team, idx) => {
+                const members = staffByTeam[team]
+                const full = isTeamFull(team)
+                const partial = isTeamPartial(team)
+                const open = expandedTeams.has(team)
+                const isLast = idx === orderedTeams.length - 1
+                return (
+                  <div key={team}>
+                    {/* Team row */}
+                    <div
+                      className="flex items-center gap-2"
+                      style={{
+                        padding: '8px 12px',
+                        borderBottom: (!isLast || open) ? '1px solid var(--color-surface-200)' : 'none',
+                        background: full ? 'rgba(78,140,53,0.04)' : 'none',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        ref={el => { if (el) el.indeterminate = partial }}
+                        checked={full}
+                        onChange={() => toggleTeamSelection(team)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ flex: 1, fontSize: 13, fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--color-slate-700)', cursor: 'default' }}>
+                        {team}
+                      </span>
+                      <span style={{ fontSize: 11, color: 'var(--color-slate-400)', marginRight: 4 }}>
+                        {partial ? `${members.filter(s => selectedNames.has(s.name)).length}/` : ''}{members.length}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => toggleTeamExpanded(team)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--color-slate-400)', display: 'flex', alignItems: 'center' }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 16, transition: 'transform 120ms ease', transform: open ? 'rotate(180deg)' : 'none' }}>
+                          expand_more
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Member rows */}
+                    {open && members.map((s, mIdx) => (
+                      <label
+                        key={s.id}
+                        className="flex items-center gap-2"
+                        style={{
+                          padding: '7px 12px 7px 32px',
+                          cursor: 'pointer',
+                          borderBottom: (mIdx < members.length - 1 || !isLast) ? '1px solid var(--color-surface-200)' : 'none',
+                          fontSize: 13,
+                          fontFamily: 'var(--font-body)',
+                          color: 'var(--color-slate-600)',
+                          background: selectedNames.has(s.name) ? 'rgba(78,140,53,0.04)' : 'none',
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedNames.has(s.name)}
+                          onChange={() => toggleMember(s.name)}
+                        />
+                        <span style={{ flex: 1 }}>{s.name}</span>
+                        <span style={{ fontSize: 11, color: 'var(--color-slate-400)' }}>{s.role}</span>
+                      </label>
+                    ))}
+                  </div>
+                )
+              })}
             </div>
           </div>
 

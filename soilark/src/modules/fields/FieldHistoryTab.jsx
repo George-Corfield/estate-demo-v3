@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
+import { ROLES } from '../../constants/roles'
 import { formatDateWithTime, formatDateKey } from '../../utils/dates'
+import { isTaskVisibleToUser } from '../../utils/visibility'
 
 const TYPE_CONFIG = {
   task: { icon: 'task', color: 'var(--color-blue-500, #3b82f6)', label: 'Tasks' },
@@ -26,9 +28,10 @@ const TASK_ACTION_COLORS = {
 }
 
 function LinkChip({ icon, label, onClick }) {
+  const Tag = onClick ? 'button' : 'span'
   return (
-    <button
-      onClick={(e) => { e.stopPropagation(); onClick() }}
+    <Tag
+      {...(onClick ? { onClick: (e) => { e.stopPropagation(); onClick() } } : {})}
       className="flex items-center gap-1"
       style={{
         padding: '2px 8px',
@@ -38,22 +41,22 @@ function LinkChip({ icon, label, onClick }) {
         fontSize: 12,
         fontWeight: 500,
         color: 'var(--color-slate-700)',
-        cursor: 'pointer',
+        cursor: onClick ? 'pointer' : 'default',
         fontFamily: 'var(--font-body)',
         transition: 'all 120ms ease',
       }}
-      onMouseEnter={e => {
+      onMouseEnter={onClick ? (e => {
         e.currentTarget.style.borderColor = 'var(--color-green-500)'
         e.currentTarget.style.color = 'var(--color-green-600, #166534)'
-      }}
-      onMouseLeave={e => {
+      }) : undefined}
+      onMouseLeave={onClick ? (e => {
         e.currentTarget.style.borderColor = 'var(--color-surface-300)'
         e.currentTarget.style.color = 'var(--color-slate-700)'
-      }}
+      }) : undefined}
     >
       <span className="material-symbols-outlined" style={{ fontSize: 13 }}>{icon}</span>
       {label}
-    </button>
+    </Tag>
   )
 }
 
@@ -69,7 +72,8 @@ function DetailRow({ icon, label, value }) {
 }
 
 export default function FieldHistoryTab({ field, openObservationForm, onObservationFormOpened }) {
-  const { addFieldActivity, addTask, linkActivityTask, showToast, customEvents, machinery, tasks, staff } = useApp()
+  const { addFieldActivity, addTask, linkActivityTask, showToast, customEvents, machinery, tasks, staff, currentUser } = useApp()
+  const isManager = currentUser.role === ROLES.FARM_MANAGER
   const navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
   const [activeFilter, setActiveFilter] = useState('all')
@@ -616,7 +620,7 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
                                 <LinkChip
                                   icon="task"
                                   label={matchedTask.name}
-                                  onClick={() => navigate('/tasks', { state: { openTaskId: matchedTask.id } })}
+                                  onClick={isTaskVisibleToUser(matchedTask, currentUser, staff) ? () => navigate('/tasks', { state: { openTaskId: matchedTask.id } }) : undefined}
                                 />
                               )}
                               {matchedMachinery?.map(m => (
@@ -624,14 +628,14 @@ export default function FieldHistoryTab({ field, openObservationForm, onObservat
                                   key={m.id}
                                   icon="agriculture"
                                   label={m.name}
-                                  onClick={() => navigate('/machinery', { state: { openEquipmentId: m.id } })}
+                                  onClick={isManager ? () => navigate('/machinery', { state: { openEquipmentId: m.id } }) : undefined}
                                 />
                               ))}
                               {matchedStaff && (
                                 <LinkChip
                                   icon="person"
                                   label={matchedStaff.name}
-                                  onClick={() => navigate('/staff', { state: { openStaffId: matchedStaff.id } })}
+                                  onClick={isManager ? () => navigate('/staff', { state: { openStaffId: matchedStaff.id } }) : undefined}
                                 />
                               )}
                             </div>

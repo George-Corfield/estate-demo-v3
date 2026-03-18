@@ -67,6 +67,11 @@ export default function TasksPage() {
           ? prev.filter(id => id !== field.id)
           : [...prev, field.id]
       )
+    } else if (activeView === 'kanban') {
+      setFilters(prev => ({
+        ...prev,
+        field: prev.field === field.id ? 'all' : field.id,
+      }))
     }
   }
 
@@ -128,7 +133,7 @@ export default function TasksPage() {
         {rightView === 'map' ? (
           <EstateMap
             selectedFieldIds={activeView === 'create' ? selectedFieldIds : []}
-            highlightedFieldIds={detailTaskFieldIds}
+            highlightedFieldIds={activeView === 'detail' ? detailTaskFieldIds : (filters.field !== 'all' ? [filters.field] : [])}
             onFieldClick={handleFieldToggle}
           />
         ) : (

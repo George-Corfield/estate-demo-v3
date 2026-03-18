@@ -4,6 +4,8 @@ import EstateMap from '../../components/shared/EstateMap'
 import Calendar from '../../components/shared/Calendar'
 import { useApp } from '../../context/AppContext'
 import { formatShortDate } from '../../utils/dates'
+import { ROLES } from '../../constants/roles'
+import { isTaskVisibleToUser } from '../../utils/visibility'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -369,7 +371,8 @@ export default function OverviewPage() {
   const [expandedDay, setExpandedDay] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const { tasks = [], staff = [], machinery = [], fields = [], absences = [] } = useApp()
+  const { tasks = [], staff = [], machinery = [], fields = [], absences = [], currentUser } = useApp()
+  const isManager = currentUser.role === ROLES.FARM_MANAGER
 
   useEffect(() => {
     if (location.state?.openCalendar) {
@@ -490,6 +493,11 @@ export default function OverviewPage() {
       })
   }, [])
 
+  // Reset expanded widget if it's role-restricted
+  const effectiveExpandedWidget = (!isManager && (expandedWidget === 'staff' || expandedWidget === 'machinery'))
+    ? null
+    : expandedWidget
+
   const handleFieldClick = (field) => {
     navigate('/fields', { state: { openFieldId: field.id } })
   }
@@ -503,13 +511,15 @@ export default function OverviewPage() {
 
   const todayStr = today()
 
-  const todayTasks = tasks.filter(t =>
+  const visibleTasks = tasks.filter(t => isTaskVisibleToUser(t, currentUser, staff))
+
+  const todayTasks = visibleTasks.filter(t =>
     t.status !== 'cancelled' && (t.dueDate === todayStr || t.status === 'in-progress')
   )
-  const overdueTasks = tasks.filter(t =>
+  const overdueTasks = visibleTasks.filter(t =>
     t.status !== 'done' && t.status !== 'cancelled' && t.dueDate && t.dueDate < todayStr
   )
-  const inProgressTasks = tasks.filter(t => t.status === 'in-progress')
+  const inProgressTasks = visibleTasks.filter(t => t.status === 'in-progress')
 
   const activeMachinery = machinery.filter(m => m.status === 'Active')
   const serviceDueMachinery = machinery.filter(m =>
@@ -526,8 +536,10 @@ export default function OverviewPage() {
   const offDutyStaff = staff.filter(s => s.status === 'Off Duty')
   const activeStaff = staff.filter(s => !['Archived', 'Off Duty'].includes(s.status))
 
-  const alerts = buildAlerts(tasks, machinery, staff)
-  const activityFeed = buildActivityFeed(tasks, fields, staff)
+  const allAlerts = buildAlerts(visibleTasks, machinery, staff)
+  const alerts = isManager ? allAlerts : allAlerts.filter(a => a.type !== 'machinery' && a.type !== 'staff')
+  const allActivity = buildActivityFeed(tasks, fields, staff)
+  const activityFeed = isManager ? allActivity : allActivity.filter(a => !a.id.startsWith('act-sick-'))
 
   const fieldsWithTasks = fields.filter(f =>
     inProgressTasks.some(t => t.fieldIds?.includes(f.id))
@@ -550,7 +562,7 @@ export default function OverviewPage() {
   // ── Expanded widget content ───────────────────────────────────────────────
 
   const renderExpandedContent = () => {
-    switch (expandedWidget) {
+    switch (effectiveExpandedWidget) {
       case 'weather': {
         const days = weather || []
         const tw = days[0]
@@ -708,8 +720,8 @@ export default function OverviewPage() {
       }
 
       case 'tasks': {
-        const todoTasks = tasks.filter(t => t.status === 'todo')
-        const ipTasks = tasks.filter(t => t.status === 'in-progress')
+        const todoTasks = visibleTasks.filter(t => t.status === 'todo')
+        const ipTasks = visibleTasks.filter(t => t.status === 'in-progress')
         const doneTasks = tasks.filter(t => t.status === 'done')
         const resolveFieldNames = (t) => {
           if (!t.fieldIds || t.fieldIds.length === 0) return 'No field'
@@ -931,7 +943,7 @@ export default function OverviewPage() {
             <EstateMap
               onFieldClick={handleFieldClick}
               highlightedFieldIds={highlightedFieldIds}
-              alertFieldIds={expandedWidget === 'tasks' ? fieldsWithOverdueTasks : []}
+              alertFieldIds={effectiveExpandedWidget === 'tasks' ? fieldsWithOverdueTasks : []}
             />
 
             {/* Toggle buttons — visible when tray is closed */}
@@ -1028,9 +1040,9 @@ export default function OverviewPage() {
               open={trayOpen}
               onClose={() => setTrayOpen(false)}
               onToggleCalendar={toggleView}
-              expandedWidget={expandedWidget}
+              expandedWidget={effectiveExpandedWidget}
             >
-              {expandedWidget ? (
+              {effectiveExpandedWidget ? (
                 renderExpandedContent()
               ) : (
                 <>
@@ -1058,31 +1070,35 @@ export default function OverviewPage() {
                   />
 
                   {/* Staff */}
-                  <WidgetCard
-                    icon="group"
-                    label="Staff"
-                    primary={`${availableStaff.length + onTaskStaff.length} Working`}
-                    secondary={`${onTaskStaff.length} on task${sickStaff.length > 0 ? ` · ${sickStaff.length} sick` : ''}`}
-                    badge={sickStaff.filter(s => s.status === 'Pending Sick Confirmation').length > 0 ? '!' : null}
-                    badgeColor="var(--color-red-500)"
-                    onClick={() => handleWidgetExpand('staff')}
-                  />
+                  {isManager && (
+                    <WidgetCard
+                      icon="group"
+                      label="Staff"
+                      primary={`${availableStaff.length + onTaskStaff.length} Working`}
+                      secondary={`${onTaskStaff.length} on task${sickStaff.length > 0 ? ` · ${sickStaff.length} sick` : ''}`}
+                      badge={sickStaff.filter(s => s.status === 'Pending Sick Confirmation').length > 0 ? '!' : null}
+                      badgeColor="var(--color-red-500)"
+                      onClick={() => handleWidgetExpand('staff')}
+                    />
+                  )}
 
                   {/* Machinery */}
-                  <WidgetCard
-                    icon="agriculture"
-                    label="Machinery"
-                    primary={`${activeMachinery.length} Active`}
-                    secondary={[
-                      serviceDueMachinery.length > 0 && `${serviceDueMachinery.length} service due`,
-                      maintenanceMachinery.length > 0 && `${maintenanceMachinery.length} maintenance`,
-                      storedMachinery.length > 0 && `${storedMachinery.length} stored`,
-                      soldMachinery.length > 0 && `${soldMachinery.length} sold`,
-                    ].filter(Boolean).join(' · ') || 'All available'}
-                    badge={serviceDueMachinery.length > 0 ? serviceDueMachinery.length : null}
-                    badgeColor="var(--color-amber-500)"
-                    onClick={() => handleWidgetExpand('machinery')}
-                  />
+                  {isManager && (
+                    <WidgetCard
+                      icon="agriculture"
+                      label="Machinery"
+                      primary={`${activeMachinery.length} Active`}
+                      secondary={[
+                        serviceDueMachinery.length > 0 && `${serviceDueMachinery.length} service due`,
+                        maintenanceMachinery.length > 0 && `${maintenanceMachinery.length} maintenance`,
+                        storedMachinery.length > 0 && `${storedMachinery.length} stored`,
+                        soldMachinery.length > 0 && `${soldMachinery.length} sold`,
+                      ].filter(Boolean).join(' · ') || 'All available'}
+                      badge={serviceDueMachinery.length > 0 ? serviceDueMachinery.length : null}
+                      badgeColor="var(--color-amber-500)"
+                      onClick={() => handleWidgetExpand('machinery')}
+                    />
+                  )}
 
                   {/* Alerts */}
                   {alerts.length > 0 && (
