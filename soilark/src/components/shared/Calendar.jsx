@@ -10,7 +10,7 @@ const MAX_VISIBLE_EVENTS = 2
 
 const FILTER_KEYS = ['task', 'service', 'event']
 
-export default function Calendar({ onDaySelect, selectedDate: externalSelectedDate, navigateToDate, mode = 'view', onToggleView, initialAddEvent = false }) {
+export default function Calendar({ onDaySelect, selectedDate: externalSelectedDate, navigateToDate, mode = 'view', onToggleView, initialAddEvent = false, bookingMachine = null, onBookingConfirmed }) {
   const { fields, tasks, customEvents, machinery } = useApp()
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
@@ -163,6 +163,23 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
           )}
         </header>
 
+        {/* Booking banner */}
+        {bookingMachine && (
+          <div style={{
+            padding: '10px 24px',
+            background: 'rgba(245,158,11,0.1)',
+            borderBottom: '1px solid rgba(245,158,11,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-amber-700, #92400e)' }}>build</span>
+            <span style={{ fontSize: 13, color: 'var(--color-amber-700, #92400e)', fontWeight: 500 }}>
+              Booking service for: <strong>{bookingMachine.name}</strong> — select a date
+            </span>
+          </div>
+        )}
+
         {/* Calendar grid */}
         <div className="flex-1 overflow-auto" style={{ padding: 24 }}>
           <div
@@ -297,6 +314,8 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
               onAddEvent={() => { setShowForm(true) }}
               showForm={showForm}
               onFormComplete={() => setShowForm(false)}
+              bookingMachine={bookingMachine}
+              onBookingConfirmed={onBookingConfirmed}
             />
           </div>
         </>

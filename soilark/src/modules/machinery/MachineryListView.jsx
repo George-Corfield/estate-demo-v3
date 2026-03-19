@@ -28,6 +28,8 @@ const KNOWN_TYPES = new Set(Object.values(TAB_TYPE_MAP))
 
 const CATEGORY_TABS = EQUIPMENT_CATEGORY_TABS.map(t => ({ id: t, label: t }))
 
+const SERVICE_DUE_THRESHOLD = 50 // hours within which service is flagged as coming up
+
 function exportCSV(machinery) {
   const headers = ['Name', 'Type', 'Make', 'Model', 'Year', 'Status', 'Hours', 'Serial Number']
   const rows = machinery.map(m => [m.name, m.type, m.make, m.model, m.year, m.status, m.hours, m.serialNumber])
@@ -41,11 +43,12 @@ function exportCSV(machinery) {
   URL.revokeObjectURL(url)
 }
 
-export default function MachineryListView({ onEquipmentClick, showInlineCreate, setShowInlineCreate, compact, selectedId }) {
+export default function MachineryListView({ onEquipmentClick, showInlineCreate, setShowInlineCreate, compact, selectedId, onToggleMap }) {
   const { machinery } = useApp()
   const [activeTab, setActiveTab] = useState('All')
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
+  const [activeStatCard, setActiveStatCard] = useState(null)
 
   const filtered = useMemo(() => {
     let items = machinery
@@ -60,11 +63,6 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
       }
     }
 
-    // Status filter
-    if (statusFilter !== 'All') {
-      items = items.filter(m => m.status === statusFilter)
-    }
-
     // Text search
     if (search.trim()) {
       const q = search.toLowerCase()
@@ -75,14 +73,43 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
       )
     }
 
+    // Stat card filter (overrides status dropdown)
+    if (activeStatCard === 'servicesDue') {
+      items = items.filter(m => m.nextServiceDue && m.hours >= m.nextServiceDue - SERVICE_DUE_THRESHOLD)
+    } else if (activeStatCard === 'maintenance') {
+      items = items.filter(m => m.status === 'Unavailable')
+    } else if (activeStatCard === 'active') {
+      items = items.filter(m => m.status === 'Active')
+    } else if (activeStatCard === 'available') {
+      items = items.filter(m => m.status === 'Available')
+    } else if (statusFilter !== 'All') {
+      items = items.filter(m => m.status === statusFilter)
+    }
+
     return items
-  }, [machinery, activeTab, search, statusFilter])
+  }, [machinery, activeTab, search, statusFilter, activeStatCard])
 
   // Stat strip counts
   const totalEquipment = machinery.length
-  const servicesDue = machinery.filter(m => m.hours >= m.nextServiceDue).length
-  const inMaintenance = machinery.filter(m => m.status === 'Maintenance').length
+  const servicesDue = machinery.filter(m => m.nextServiceDue && m.hours >= m.nextServiceDue - SERVICE_DUE_THRESHOLD).length
+  const inMaintenance = machinery.filter(m => m.status === 'Unavailable').length
   const activeCount = machinery.filter(m => m.status === 'Active').length
+  const availableCount = machinery.filter(m => m.status === 'Available').length
+
+  function handleStatCardClick(cardKey) {
+    setActiveStatCard(prev => prev === cardKey ? null : cardKey)
+    setStatusFilter('All')
+  }
+
+  function statCardStyle(cardKey) {
+    const isActive = activeStatCard === cardKey
+    return {
+      cursor: 'pointer',
+      borderLeft: isActive ? '3px solid var(--color-primary)' : '3px solid transparent',
+      background: isActive ? 'rgba(19, 236, 19, 0.06)' : undefined,
+      transition: 'background 0.2s ease, border-left 0.2s ease',
+    }
+  }
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -93,31 +120,48 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
             {compact ? 'Equipment' : 'Machinery & Equipment'}
           </h1>
           {!compact && (
-            <button onClick={() => setShowInlineCreate(true)} className="btn btn-primary">
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
-              Add Equipment
+            <div className="flex items-center gap-2">
+              {onToggleMap && (
+                <button onClick={onToggleMap} className="btn btn-ghost flex items-center gap-2">
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>map</span>
+                  Map
+                </button>
+              )}
+              <button onClick={() => setShowInlineCreate(true)} className="btn btn-primary">
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+                Add Equipment
+              </button>
+            </div>
+          )}
+          {compact && onToggleMap && (
+            <button onClick={onToggleMap} className="btn btn-ghost" style={{ padding: '4px 8px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>map</span>
             </button>
           )}
         </div>
 
         {/* Stat Strip */}
         {!compact && (
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-5 gap-4">
             <div className="stat-card">
               <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Total Equipment</p>
               <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{totalEquipment}</p>
             </div>
-            <div className="stat-card">
+            <div className="stat-card" style={statCardStyle('servicesDue')} onClick={() => handleStatCardClick('servicesDue')}>
               <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Services Due</p>
               <p className="text-data-large" style={{ color: servicesDue > 0 ? 'var(--color-amber-400)' : 'var(--color-green-600)' }}>{servicesDue}</p>
             </div>
-            <div className="stat-card">
-              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>In Maintenance</p>
+            <div className="stat-card" style={statCardStyle('maintenance')} onClick={() => handleStatCardClick('maintenance')}>
+              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Unavailable</p>
               <p className="text-data-large" style={{ color: inMaintenance > 0 ? 'var(--color-amber-400)' : 'var(--color-green-600)' }}>{inMaintenance}</p>
             </div>
-            <div className="stat-card">
+            <div className="stat-card" style={statCardStyle('active')} onClick={() => handleStatCardClick('active')}>
               <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Active</p>
               <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{activeCount}</p>
+            </div>
+            <div className="stat-card" style={statCardStyle('available')} onClick={() => handleStatCardClick('available')}>
+              <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Available</p>
+              <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{availableCount}</p>
             </div>
           </div>
         )}
@@ -138,8 +182,9 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
+            disabled={activeStatCard !== null}
             className="form-select"
-            style={{ width: compact ? 'auto' : 160, flex: compact ? '0 1 auto' : undefined }}
+            style={{ width: compact ? 'auto' : 160, flex: compact ? '0 1 auto' : undefined, opacity: activeStatCard !== null ? 0.4 : 1 }}
           >
             <option value="All">All Statuses</option>
             {EQUIPMENT_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -168,7 +213,8 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
           {filtered.map(equipment => {
             const icon = TYPE_ICON_MAP[equipment.type] || 'build';
             const badgeClass = MACHINERY_STATUS_COLORS[equipment.status] || 'badge-neutral';
-            const isOverdue = equipment.hours >= equipment.nextServiceDue;
+            const isOverdue = equipment.nextServiceDue && equipment.hours >= equipment.nextServiceDue;
+            const isServiceDue = equipment.nextServiceDue && equipment.hours >= equipment.nextServiceDue - SERVICE_DUE_THRESHOLD;
 
             const isSelected = compact && equipment.id === selectedId
 
@@ -218,7 +264,7 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
                     {equipment.nextServiceDue ? (
                       <span
                         className="font-semibold"
-                        style={{ color: isOverdue ? 'var(--color-red-50)' : 'var(color-slate-900)' }}
+                        style={{ color: isOverdue ? 'var(--color-red-600, #dc2626)' : isServiceDue ? 'var(--color-amber-600, #d97706)' : 'var(--color-slate-900)' }}
                       >
                         {equipment.nextServiceDue.toLocaleString()} <small className="text-[9px]">HRS</small>
                       </span>
@@ -229,10 +275,27 @@ export default function MachineryListView({ onEquipmentClick, showInlineCreate, 
                 )}
 
                 {/* 4. Status Column (The "Condition") - Right Aligned */}
-                <div className={compact ? '' : 'w-[120px]'} style={{ flexShrink: 0, display: 'flex', justifyContent: 'flex-end' }}>
+                <div className={compact ? '' : 'w-[160px]'} style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
                   <span className={`badge ${badgeClass} shadow-sm`} style={compact ? { fontSize: 10, padding: '2px 6px' } : undefined}>
                     {equipment.status}
                   </span>
+                  {isServiceDue && (
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 3,
+                      fontSize: compact ? 9 : 10,
+                      fontWeight: 600,
+                      letterSpacing: '0.03em',
+                      color: isOverdue ? 'var(--color-red-600, #dc2626)' : 'var(--color-amber-600, #d97706)',
+                      background: isOverdue ? 'rgba(220,38,38,0.08)' : 'rgba(217,119,6,0.08)',
+                      borderRadius: 4,
+                      padding: compact ? '1px 4px' : '2px 6px',
+                    }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: compact ? 10 : 12 }}>build_circle</span>
+                      {isOverdue ? 'Service overdue' : 'Service due soon'}
+                    </span>
+                  )}
                 </div>
               </div>
             );

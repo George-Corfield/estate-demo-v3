@@ -2,20 +2,26 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import { formatGBP } from '../../utils/currency'
-import { formatShortDate } from '../../utils/dates'
+import { formatShortDate, formatDateWithTime } from '../../utils/dates'
 import TabBar from '../../components/shared/TabBar'
 import { MACHINERY_STATUS_COLORS, SERVICE_TYPES } from '../../data/machinery'
 
+const HISTORY_TYPE_CONFIG = {
+  task_assigned: { icon: 'task', color: '#3b82f6' },
+  task_status:   { icon: 'task_alt', color: '#6366f1' },
+  service_recorded: { icon: 'build', color: '#f59e0b' },
+  details_update: { icon: 'edit', color: '#64748b' },
+}
+
 const TABS = [
-  { id: 'details', label: 'Details' },
-  { id: 'service', label: 'Service' },
-  { id: 'costs', label: 'Costs' },
-  { id: 'documents', label: 'Documents' },
+  { id: 'summary', label: 'Summary' },
+  { id: 'service', label: 'Service & Maintenance' },
+  { id: 'history', label: 'Timeline / History' },
 ]
 
 export default function MachineryDetailView({ equipmentId, onClose, onServiceDateClick }) {
   const { machinery, tasks, addServiceRecord, updateMachinery, showToast } = useApp()
-  const [activeTab, setActiveTab] = useState('details')
+  const [activeTab, setActiveTab] = useState('summary')
   const [showServiceForm, setShowServiceForm] = useState(false)
   const navigate = useNavigate()
 
@@ -26,34 +32,13 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
   const associatedTasks = tasks.filter(t =>
     t.assignedMachinery.includes(equipment.name)
   )
+  const inProgressTask = associatedTasks.find(t => t.status === 'inProgress')
 
   const schedule = equipment.serviceSchedule || { type: 'hours', interval: 250 }
   const isOverdue = schedule.type === 'hours'
     ? equipment.hours >= equipment.nextServiceDue
     : new Date() >= new Date(equipment.nextServiceDue)
   const badgeClass = MACHINERY_STATUS_COLORS[equipment.status] || 'badge-neutral'
-
-  // Cost calculations
-  const transactions = equipment.financialTransactions || []
-  const totalLifetimeCost = transactions.reduce((sum, t) => sum + t.amount, 0)
-  const costPerHour = equipment.hours > 0 ? totalLifetimeCost / equipment.hours : 0
-
-  const purchaseDate = equipment.purchaseDate ? new Date(equipment.purchaseDate) : null
-  const monthsSincePurchase = purchaseDate
-    ? Math.max(1, Math.round((Date.now() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44)))
-    : 1
-  const monthlyAverage = totalLifetimeCost / monthsSincePurchase
-
-  const oneYearAgo = new Date()
-  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
-  const annualCost = transactions
-    .filter(t => new Date(t.date) >= oneYearAgo)
-    .reduce((sum, t) => sum + t.amount, 0)
-
-  // Cost breakdown by category
-  const serviceCost = transactions.filter(t => t.category === 'Service' || t.category === 'Parts').reduce((s, t) => s + t.amount, 0)
-  const fuelCost = transactions.filter(t => t.category === 'Fuel').reduce((s, t) => s + t.amount, 0)
-  const insuranceCost = transactions.filter(t => t.category === 'Insurance').reduce((s, t) => s + t.amount, 0)
 
   return (
     <div className="flex flex-col h-full">
@@ -96,77 +81,51 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
       <TabBar tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {/* Details Tab */}
-        {activeTab === 'details' && (
+        {/* Summary Tab */}
+        {activeTab === 'summary' && (
           <div style={{ padding: 20 }} className='flex flex-col gap-5'>
-
-            {/* Equipment section */}
-            <FieldSection title="Equipment">
-              <FieldRow label="Category" value={equipment.type} />
-              <FieldRow label="Make" value={equipment.make} />
-              <FieldRow label="Model" value={equipment.model} />
-              <FieldRow label="Year" value={String(equipment.year)} />
-              <FieldRow label="Serial Number" value={equipment.serialNumber} />
-              <FieldRow label="Fuel Type" value={equipment.fuelType} />
-              <FieldRow label="Status" value={equipment.status} />
-              {equipment.notes && <FieldRow label="Notes" value={equipment.notes} />}
-            </FieldSection>
-
-            {/* Purchase & Financial section */}
-            <FieldSection title="Purchase & Financial">
-              <FieldRow label="Date Purchased" value={equipment.purchaseDate ? formatShortDate(equipment.purchaseDate) : '—'} />
-              <FieldRow label="Purchase Price" value={formatGBP(equipment.purchasePrice)} />
-              <FieldRow label="Current Value" value={formatGBP(equipment.currentValue)} />
-              <FieldRow label="Depreciation" value={formatGBP(equipment.purchasePrice - equipment.currentValue)} />
-            </FieldSection>
-
-            {/* Specifications section */}
-            {equipment.specifications && Object.keys(equipment.specifications).length > 0 && (
-              <FieldSection title="Specifications">
-                {Object.entries(equipment.specifications).map(([key, value]) => (
-                  <FieldRow
-                    key={key}
-                    label={key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
-                    value={typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)}
-                    mono
-                  />
-                ))}
-              </FieldSection>
-            )}
-
-            {/* Associated Tasks */}
-            {associatedTasks.length > 0 && (
-              <div style={{ padding: '16px' }}>
-                <h3 className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 12 }}>
-                  Associated Tasks ({associatedTasks.length})
-                </h3>
-                <div className="flex flex-col gap-1">
-                  {associatedTasks.map(task => (
-                    <button
-                      key={task.id}
-                      onClick={() => navigate('/tasks', { state: { openTaskId: task.id } })}
-                      className="w-full text-left flex items-center justify-between"
-                      style={{
-                        padding: '8px 12px',
-                        background: 'var(--color-surface-100)',
-                        borderRadius: 'var(--radius-sm)',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: 13,
-                        color: 'var(--color-slate-900)',
-                        transition: 'all 120ms ease',
-                      }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(78,140,53,0.08)' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-surface-100)' }}
-                    >
-                      <span>{task.name}</span>
-                      <span className="badge badge-neutral">
-                        {task.status === 'todo' ? 'To Do' : task.status === 'inProgress' ? 'In Progress' : 'Done'}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+            <div className='grid grid-cols-2 gap-3'>
+              <FieldRow label="Machine Name" value={equipment.name} />
+              <FieldRow label="Type" value={equipment.type} />
+              <FieldRow label="Make / Model" value={`${equipment.make} ${equipment.model}`} />
+              <FieldRow label="Registration / ID" value={equipment.numberPlate || equipment.serialNumber || '—'} />
+              <div style={{ padding: 12, background: 'var(--color-surface-100)', borderRadius: 'var(--radius-md)' }}>
+                <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Status</p>
+                <span className={`badge ${badgeClass}`}>{equipment.status}</span>
+              </div>
+              <FieldRow
+                label="Next Service Due"
+                value={schedule.type === 'hours'
+                  ? `${Number(equipment.nextServiceDue).toLocaleString()} hrs`
+                  : formatShortDate(equipment.nextServiceDue)}
+              />
+              {equipment.assignedOperator && (
+                <FieldRow label="Assigned Operator" value={equipment.assignedOperator} />
+              )}
+            </div>
+            {inProgressTask && (
+              <div>
+                <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 8 }}>Current Task</p>
+                <button
+                  onClick={() => navigate('/tasks', { state: { openTaskId: inProgressTask.id } })}
+                  className="w-full text-left flex items-center justify-between"
+                  style={{
+                    padding: '8px 12px',
+                    background: 'var(--color-surface-100)',
+                    borderRadius: 'var(--radius-sm)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 13,
+                    color: 'var(--color-slate-900)',
+                    transition: 'all 120ms ease',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(78,140,53,0.08)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-surface-100)' }}
+                >
+                  <span>{inProgressTask.name}</span>
+                  <span className="badge badge-healthy">In Progress</span>
+                </button>
               </div>
             )}
           </div>
@@ -280,62 +239,67 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
           </div>
         )}
 
-        {/* Costs Tab */}
-        {activeTab === 'costs' && (
-          <div style={{ padding: 16 }} className="flex flex-col gap-5">
-            {/* 4 Stat Cards */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="stat-card">
-                <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Lifetime Cost</p>
-                <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{formatGBP(totalLifetimeCost)}</p>
-              </div>
-              <div className="stat-card">
-                <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Monthly Average</p>
-                <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{formatGBP(monthlyAverage)}</p>
-              </div>
-              <div className="stat-card">
-                <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Annual Cost</p>
-                <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{formatGBP(annualCost)}</p>
-              </div>
-              <div className="stat-card">
-                <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>Cost per Hour</p>
-                <p className="text-data-large" style={{ color: 'var(--color-green-600)' }}>{formatGBP(costPerHour)}</p>
-              </div>
-            </div>
+        {/* Timeline / History Tab */}
+        {activeTab === 'history' && (
+          <div style={{ padding: '16px 16px 8px' }}>
+            {(equipment.history || []).length === 0 ? (
+              <p className="text-body" style={{ color: 'var(--color-slate-400)' }}>No history recorded yet.</p>
+            ) : (
+              <div className="flex flex-col">
+                {(equipment.history || []).map((entry, i) => {
+                  const config = HISTORY_TYPE_CONFIG[entry.type] || HISTORY_TYPE_CONFIG.details_update
+                  const isClickable = !!entry.taskId
+                  const isLast = i === (equipment.history || []).length - 1
+                  return (
+                    <div key={entry.id} className="flex gap-4 relative">
+                      {/* Timeline dot + connecting line */}
+                      <div className="flex-none flex flex-col items-center">
+                        <div
+                          className="flex items-center justify-center"
+                          style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: '50%',
+                            background: `${config.color}20`,
+                            flexShrink: 0,
+                          }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 14, color: config.color }}>
+                            {config.icon}
+                          </span>
+                        </div>
+                        {!isLast && (
+                          <div className="flex-1 mt-1" style={{ width: 1, background: 'var(--color-surface-300)' }} />
+                        )}
+                      </div>
 
-            {/* Cost Breakdown */}
-            <div>
-              <h3 className="text-label mb-3" style={{ color: 'var(--color-slate-400)' }}>Cost Breakdown</h3>
-              <div style={{ border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
-                <CostRow label="Service & Maintenance" value={serviceCost} />
-                <CostRow label="Fuel" value={fuelCost} border />
-                <CostRow label="Insurance" value={insuranceCost} border />
+                      {/* Entry content */}
+                      <div
+                        onClick={isClickable ? () => navigate('/tasks', { state: { openTaskId: entry.taskId } }) : undefined}
+                        style={{
+                          paddingBottom: 24,
+                          flex: 1,
+                          minWidth: 0,
+                          cursor: isClickable ? 'pointer' : 'default',
+                        }}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-heading-4" style={{ color: 'var(--color-slate-900)', margin: 0 }}>
+                            {entry.description}
+                          </p>
+                          {isClickable && (
+                            <span className="material-symbols-outlined" style={{ fontSize: 15, color: 'var(--color-slate-300)', flexShrink: 0, marginTop: 2 }}>arrow_forward</span>
+                          )}
+                        </div>
+                        <p className="text-body-small" style={{ color: 'var(--color-slate-400)', marginTop: 2 }}>
+                          {formatDateWithTime(entry.timestamp)}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Documents Tab */}
-        {activeTab === 'documents' && (
-          <div style={{ padding: 16 }} className="flex flex-col gap-3">
-            {(equipment.documents || []).map((doc, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3"
-                style={{ padding: '10px 16px' }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-slate-400)' }}>description</span>
-                <div className="flex-1 min-w-0">
-                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-slate-900)', margin: 0 }}>{doc.name}</p>
-                  <p className="text-label-small" style={{ color: 'var(--color-slate-400)', margin: 0 }}>{doc.type}</p>
-                </div>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-slate-400)', cursor: 'pointer' }}>download</span>
-              </div>
-            ))}
-            <button className="btn btn-ghost" style={{ alignSelf: 'flex-start', marginTop: 8 }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
-              Upload document
-            </button>
+            )}
           </div>
         )}
       </div>
