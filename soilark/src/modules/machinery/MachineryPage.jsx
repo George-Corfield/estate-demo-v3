@@ -122,8 +122,8 @@ export default function MachineryPage() {
             showInlineCreate={showInlineCreate}
             setShowInlineCreate={setShowInlineCreate}
             selectedId={selectedEquipmentId}
+            onToggleMap={handleToggleMapPanel}
           />
-          {toggleButton}
         </div>
         <div style={{ width: '35%', borderLeft: '1px solid var(--color-surface-300)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <MachineryDetailView
@@ -147,8 +147,8 @@ export default function MachineryPage() {
         onEquipmentClick={handleEquipmentClick}
         showInlineCreate={showInlineCreate}
         setShowInlineCreate={setShowInlineCreate}
+        onToggleMap={handleToggleMapPanel}
       />
-      {toggleButton}
     </div>
   )
 }

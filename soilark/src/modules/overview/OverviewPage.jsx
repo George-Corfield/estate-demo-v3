@@ -479,8 +479,8 @@ export default function OverviewPage() {
   const serviceDueMachinery = machinery.filter(m =>
     m.status === 'Service Due' || (m.nextServiceDue && m.hours >= m.nextServiceDue - 50)
   )
-  const maintenanceMachinery = machinery.filter(m => m.status === 'Maintenance')
-  const storedMachinery = machinery.filter(m => m.status === 'Stored')
+  const maintenanceMachinery = machinery.filter(m => m.status === 'Unavailable')
+  const storedMachinery = machinery.filter(m => m.status === 'Available')
   const soldMachinery = machinery.filter(m => m.status === 'Sold')
 
   const availableStaff = staff.filter(s => s.status === 'Available')
@@ -824,12 +824,12 @@ export default function OverviewPage() {
               m => `${m.hours} hrs · service at ${m.nextServiceDue} hrs`,
               'var(--color-amber-700)'
             )}
-            {renderMachinerySection('Maintenance', maintenanceMachinery, 'construction', 'var(--color-red-400)',
-              () => 'In maintenance',
+            {renderMachinerySection('Unavailable', maintenanceMachinery, 'construction', 'var(--color-red-400)',
+              () => 'Unavailable',
               'var(--color-red-700)'
             )}
-            {renderMachinerySection('Stored', storedMachinery, 'warehouse', 'var(--color-slate-500)',
-              () => 'In storage',
+            {renderMachinerySection('Available', storedMachinery, 'warehouse', 'var(--color-slate-500)',
+              () => 'Available',
               'var(--color-slate-600)'
             )}
             <div style={{ padding: '8px 14px', borderTop: '1px solid var(--color-surface-200)' }}>

@@ -191,7 +191,7 @@ export const initialMachinery = [
     model: 'BiG X 1180',
     year: 2020,
     serialNumber: 'KR-BX-2020-118',
-    status: 'Stored',
+    status: 'Available',
     hours: 890,
     purchaseDate: '2020-06-01',
     purchasePrice: 320000,
@@ -248,7 +248,7 @@ export const initialMachinery = [
     model: 'Magnum 340',
     year: 2022,
     serialNumber: 'CH-M3-2022-442',
-    status: 'Maintenance',
+    status: 'Unavailable',
     hours: 2105,
     purchaseDate: '2022-01-20',
     purchasePrice: 185000,
@@ -307,7 +307,7 @@ export const initialMachinery = [
     model: 'Lexion 8000',
     year: 2023,
     serialNumber: 'CL-LX-2023-112',
-    status: 'Stored',
+    status: 'Available',
     hours: 420,
     purchaseDate: '2023-05-01',
     purchasePrice: 380000,
@@ -370,8 +370,8 @@ export const EQUIPMENT_TYPES = [
 
 export const EQUIPMENT_STATUSES = [
   'Active',
-  'Stored',
-  'Maintenance',
+  'Available',
+  'Unavailable',
   'Sold',
 ]
 
@@ -394,7 +394,7 @@ export const SERVICE_TYPES = [
 
 export const MACHINERY_STATUS_COLORS = {
   Active: 'badge-healthy',
-  Maintenance: 'badge-attention',
-  Stored: 'badge-neutral',
+  Unavailable: 'badge-attention',
+  Available: 'badge-neutral',
   Sold: 'badge-neutral',
 }
