@@ -23,7 +23,7 @@ import {
   LABOUR_PRICING_METHODS_HEDGES,
 } from '../../constants/plantingOptions'
 
-const TASK_TYPES = ['Planting', 'Harvesting', 'Fertilizing', 'Maintenance', 'Feeding', 'Irrigation']
+const TASK_TYPES = ['Planting', 'Harvesting', 'Fertilizing', 'Maintenance', 'Feeding', 'Irrigation', 'Service']
 const PRIORITIES = ['low', 'medium', 'high']
 
 const toggleActiveStyle = {

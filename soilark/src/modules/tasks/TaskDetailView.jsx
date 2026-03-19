@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import { ROLES } from '../../constants/roles'
@@ -6,6 +6,7 @@ import { formatRelativeDate, formatShortDate } from '../../utils/dates'
 import { PriorityBadge, StatusBadge } from '../../components/shared/Badge'
 import TabBar from '../../components/shared/TabBar'
 import TaskTypeFields from './TaskTypeFields'
+import { SERVICE_TYPES } from '../../data/machinery'
 
 const TABS = [
   { id: 'details', label: 'Details' },
@@ -29,7 +30,7 @@ const STATUS_FLOW = [
 ]
 
 export default function TaskDetailView({ taskId, onBack }) {
-  const { tasks, fields, machinery, staff, moveTask, addComment, showToast, currentUser } = useApp()
+  const { tasks, fields, machinery, staff, moveTask, addComment, showToast, currentUser, updateTask, addServiceRecord, updateMachinery } = useApp()
   const isManager = currentUser.role === ROLES.FARM_MANAGER
   const [activeTab, setActiveTab] = useState('details')
   const [newComment, setNewComment] = useState('')
@@ -40,6 +41,12 @@ export default function TaskDetailView({ taskId, onBack }) {
   const [cancelReason, setCancelReason] = useState('')
   const [cancelNote, setCancelNote] = useState('')
   const [cancelPhoto, setCancelPhoto] = useState(null)
+  const [svcType, setSvcType] = useState('Regular Service')
+  const [svcHours, setSvcHours] = useState('')
+  const [svcCost, setSvcCost] = useState('')
+  const [svcNotes, setSvcNotes] = useState('')
+  const [svcPhoto, setSvcPhoto] = useState(null)
+  const [svcVoiceNote, setSvcVoiceNote] = useState(null)
   const navigate = useNavigate()
 
   const task = useMemo(() => tasks.find(t => t.id === taskId), [tasks, taskId])
@@ -51,6 +58,23 @@ export default function TaskDetailView({ taskId, onBack }) {
 
   const handleStatusChange = (newStatus) => {
     if (isCancelled) return
+
+    if (newStatus === 'done' && task.type === 'Service') {
+      if (expandedPanel === 'serviceComplete') {
+        setExpandedPanel(null)
+      } else {
+        setExpandedPanel('serviceComplete')
+        const machine = machinery.find(m => task.assignedMachinery?.includes(m.name))
+        setSvcHours(machine ? String(machine.hours) : '')
+        setSvcNotes(task.typeFields?.notes || '')
+        setSvcType('Regular Service')
+        setSvcCost('')
+        setSvcPhoto(null)
+        setSvcVoiceNote(null)
+      }
+      return
+    }
+
     if (newStatus === 'paused' || newStatus === 'cancelled') {
       // Toggle the inline panel open/closed
       if (expandedPanel === newStatus) {
@@ -79,6 +103,47 @@ export default function TaskDetailView({ taskId, onBack }) {
     if (!cancelReason.trim()) return
     moveTask(task.id, 'cancelled', { reason: cancelReason, note: cancelNote, photo: cancelPhoto })
     showToast('Task cancelled')
+    setExpandedPanel(null)
+  }
+
+  const handleCompleteService = () => {
+    const today = new Date().toISOString().split('T')[0]
+    const machine = machinery.find(m => task.assignedMachinery?.includes(m.name))
+    const hours = parseInt(svcHours) || machine?.hours || 0
+
+    let nextServiceDue
+    if (machine) {
+      const schedule = machine.serviceSchedule || { type: 'hours', interval: 250 }
+      if (schedule.type === 'hours') {
+        nextServiceDue = hours + schedule.interval
+      } else {
+        const serviceDate = new Date(today)
+        if (schedule.type === 'months') {
+          serviceDate.setMonth(serviceDate.getMonth() + schedule.interval)
+        } else {
+          serviceDate.setFullYear(serviceDate.getFullYear() + schedule.interval)
+        }
+        nextServiceDue = serviceDate.toISOString().split('T')[0]
+      }
+      addServiceRecord(machine.id, {
+        id: `svc-${Date.now()}`,
+        date: today,
+        type: svcType,
+        cost: parseFloat(svcCost) || 0,
+        notes: svcNotes,
+        hoursAtService: hours,
+        technician: task.typeFields?.mechanic || task.assignedTo?.[0] || '',
+      })
+      updateMachinery(machine.id, {
+        status: 'Available',
+        lastServiceDate: today,
+        hours,
+        nextServiceDue,
+      })
+    }
+
+    moveTask(task.id, 'done')
+    showToast('Service completed')
     setExpandedPanel(null)
   }
 
@@ -159,7 +224,7 @@ export default function TaskDetailView({ taskId, onBack }) {
                   <div className="flex gap-2 flex-wrap">
                     {STATUS_FLOW.map(s => {
                       const isActive = task.status === s.value
-                      const isExpanding = expandedPanel === s.value
+                      const isExpanding = expandedPanel === s.value || (s.value === 'done' && expandedPanel === 'serviceComplete')
                       let activeBg = 'rgba(78,140,53,0.15)'
                       let activeColor = 'var(--color-green-500)'
                       let activeBorder = 'rgba(78,140,53,0.3)'
@@ -399,6 +464,119 @@ export default function TaskDetailView({ taskId, onBack }) {
                       </div>
                     </div>
                   )}
+
+                  {/* Inline Service Complete panel */}
+                  {expandedPanel === 'serviceComplete' && (
+                    <div
+                      style={{
+                        padding: 16,
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid rgba(78,140,53,0.3)',
+                        background: 'rgba(78,140,53,0.04)',
+                      }}
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-green-600)' }}>build_circle</span>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-green-600)', fontFamily: 'var(--font-body)' }}>Complete Service</span>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3" style={{ marginBottom: 12 }}>
+                        <div>
+                          <label className="form-label">Service Type</label>
+                          <select
+                            value={svcType}
+                            onChange={e => setSvcType(e.target.value)}
+                            className="form-select"
+                          >
+                            {SERVICE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="form-label">Hours at Service</label>
+                          <input
+                            type="number"
+                            value={svcHours}
+                            onChange={e => setSvcHours(e.target.value)}
+                            placeholder="0"
+                            className="form-input"
+                          />
+                        </div>
+                        <div>
+                          <label className="form-label">Cost (£)</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={svcCost}
+                            onChange={e => setSvcCost(e.target.value)}
+                            placeholder="0.00"
+                            className="form-input"
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ marginBottom: 12 }}>
+                        <label className="form-label">Notes</label>
+                        <textarea
+                          value={svcNotes}
+                          onChange={e => setSvcNotes(e.target.value)}
+                          placeholder="Work performed..."
+                          rows={2}
+                          className="form-textarea"
+                        />
+                      </div>
+
+                      <div style={{ marginBottom: 12 }}>
+                        <label className="form-label">Photo (optional)</label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={e => handlePhotoChange(e, setSvcPhoto)}
+                          className="form-input"
+                          style={{ padding: 6 }}
+                        />
+                        {svcPhoto && (
+                          <p className="text-body-small" style={{ color: 'var(--color-slate-500)', marginTop: 4 }}>{svcPhoto.name}</p>
+                        )}
+                      </div>
+
+                      <div style={{ marginBottom: 14 }}>
+                        <label className="form-label">Voice Note (optional)</label>
+                        <VoiceNoteRecorder onRecorded={setSvcVoiceNote} />
+                        {svcVoiceNote && (
+                          <p className="text-body-small" style={{ color: 'var(--color-slate-500)', marginTop: 4 }}>
+                            Recorded: {formatDuration(svcVoiceNote.duration)}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleCompleteService}
+                          style={{
+                            padding: '8px 16px',
+                            borderRadius: 'var(--radius-sm)',
+                            border: 'none',
+                            fontFamily: 'var(--font-body)',
+                            fontSize: 13,
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            background: 'var(--color-primary)',
+                            color: 'var(--color-slate-900)',
+                            transition: 'all 120ms ease',
+                          }}
+                        >
+                          Complete Service
+                        </button>
+                        <button
+                          onClick={() => setExpandedPanel(null)}
+                          className="btn btn-secondary"
+                          style={{ fontSize: 13 }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -546,6 +724,56 @@ export default function TaskDetailView({ taskId, onBack }) {
                 </div>
               </div>
             )}
+
+            {/* Service Details section */}
+            {task.type === 'Service' && (
+              <div>
+                <h3 className="text-label mb-3" style={{ color: 'var(--color-slate-400)' }}>Service Details</h3>
+                <div className="flex flex-col gap-3">
+                  {task.typeFields?.scheduledTime && (
+                    <div>
+                      <label className="form-label">Scheduled Time</label>
+                      <p className="text-body" style={{ color: 'var(--color-slate-700)', padding: '6px 0' }}>
+                        {task.typeFields.scheduledTime}
+                      </p>
+                    </div>
+                  )}
+                  <div>
+                    <label className="form-label">Assigned Staff</label>
+                    <select
+                      value={task.assignedTo?.[0] || ''}
+                      onChange={e => updateTask(task.id, { assignedTo: e.target.value ? [e.target.value] : [] })}
+                      className="form-input"
+                    >
+                      <option value="">— unassigned —</option>
+                      {staff.map(s => (
+                        <option key={s.id} value={s.name}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="form-label">Mechanic / Contractor</label>
+                    <input
+                      type="text"
+                      defaultValue={task.typeFields?.mechanic || ''}
+                      onBlur={e => updateTask(task.id, { typeFields: { ...task.typeFields, mechanic: e.target.value } })}
+                      placeholder="Name or company..."
+                      className="form-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">Notes</label>
+                    <textarea
+                      defaultValue={task.typeFields?.notes || ''}
+                      onBlur={e => updateTask(task.id, { typeFields: { ...task.typeFields, notes: e.target.value } })}
+                      placeholder="Add service notes..."
+                      rows={3}
+                      className="form-textarea"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -604,6 +832,128 @@ function PropItem({ label, value }) {
     <div style={{ padding: 12, background: 'var(--color-surface-100)', borderRadius: 'var(--radius-md)' }}>
       <p className="text-label" style={{ color: 'var(--color-slate-400)', marginBottom: 4 }}>{label}</p>
       <p className="text-body" style={{ color: 'var(--color-slate-900)', fontWeight: 500, margin: 0 }}>{value}</p>
+    </div>
+  )
+}
+
+function formatDuration(secs) {
+  const m = Math.floor(secs / 60)
+  const s = secs % 60
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+}
+
+function VoiceNoteRecorder({ onRecorded }) {
+  const [recState, setRecState] = useState('idle') // 'idle' | 'recording' | 'recorded'
+  const [duration, setDuration] = useState(0)
+  const [audioUrl, setAudioUrl] = useState(null)
+  const mediaRecorderRef = useRef(null)
+  const chunksRef = useRef([])
+  const timerRef = useRef(null)
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      chunksRef.current = []
+      const recorder = new MediaRecorder(stream)
+      mediaRecorderRef.current = recorder
+
+      recorder.ondataavailable = e => {
+        if (e.data.size > 0) chunksRef.current.push(e.data)
+      }
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
+        const url = URL.createObjectURL(blob)
+        setAudioUrl(url)
+        setRecState('recorded')
+        clearInterval(timerRef.current)
+        setDuration(d => {
+          onRecorded({ name: `voice-${Date.now()}.webm`, url, duration: d })
+          return d
+        })
+        stream.getTracks().forEach(t => t.stop())
+      }
+
+      recorder.start()
+      setDuration(0)
+      setRecState('recording')
+      timerRef.current = setInterval(() => setDuration(d => d + 1), 1000)
+    } catch {
+      // microphone access denied — silently no-op
+    }
+  }
+
+  const stopRecording = () => {
+    clearInterval(timerRef.current)
+    mediaRecorderRef.current?.stop()
+  }
+
+  const resetRecording = () => {
+    if (audioUrl) URL.revokeObjectURL(audioUrl)
+    setAudioUrl(null)
+    setDuration(0)
+    setRecState('idle')
+    onRecorded(null)
+  }
+
+  if (recState === 'idle') {
+    return (
+      <button
+        type="button"
+        onClick={startRecording}
+        className="flex items-center gap-2"
+        style={{
+          padding: '6px 12px',
+          borderRadius: 'var(--radius-sm)',
+          border: '1px solid rgba(245,158,11,0.3)',
+          background: 'rgba(245,158,11,0.08)',
+          color: 'var(--color-amber-700, #92400e)',
+          fontSize: 13,
+          fontFamily: 'var(--font-body)',
+          cursor: 'pointer',
+        }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>mic</span>
+        Record
+      </button>
+    )
+  }
+
+  if (recState === 'recording') {
+    return (
+      <button
+        type="button"
+        onClick={stopRecording}
+        className="flex items-center gap-2"
+        style={{
+          padding: '6px 12px',
+          borderRadius: 'var(--radius-sm)',
+          border: '1px solid rgba(239,68,68,0.3)',
+          background: 'rgba(239,68,68,0.08)',
+          color: 'var(--color-red-600, #dc2626)',
+          fontSize: 13,
+          fontFamily: 'var(--font-body)',
+          cursor: 'pointer',
+        }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>stop_circle</span>
+        {formatDuration(duration)}
+      </button>
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <audio src={audioUrl} controls style={{ height: 32, flex: 1, maxWidth: 220 }} />
+      <button
+        type="button"
+        onClick={resetRecording}
+        className="btn btn-ghost flex items-center gap-1"
+        style={{ padding: '4px 8px', fontSize: 12 }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
+        Clear
+      </button>
     </div>
   )
 }

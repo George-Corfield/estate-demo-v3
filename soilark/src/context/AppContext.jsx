@@ -46,13 +46,29 @@ function reducer(state, action) {
     case 'ADD_TASK': {
       const newTask = action.task
       const fieldIdsForTask = newTask.fieldIds || []
-      if (fieldIdsForTask.length === 0) {
-        return { ...state, tasks: [...state.tasks, newTask] }
-      }
+      const machNamesForTask = newTask.assignedMachinery || []
       const now = new Date().toISOString()
+      const machTaskEntry = {
+        id: `mhist-${Date.now()}`,
+        timestamp: now,
+        type: 'task_assigned',
+        description: `Task "${newTask.name}" created and assigned`,
+        taskId: newTask.id,
+        taskName: newTask.name,
+      }
+      const updatedMachinery = machNamesForTask.length === 0
+        ? state.machinery
+        : state.machinery.map(m => {
+            if (!machNamesForTask.includes(m.name)) return m
+            return { ...m, history: [machTaskEntry, ...(m.history || [])] }
+          })
+      if (fieldIdsForTask.length === 0) {
+        return { ...state, tasks: [...state.tasks, newTask], machinery: updatedMachinery }
+      }
       return {
         ...state,
         tasks: [...state.tasks, newTask],
+        machinery: updatedMachinery,
         fields: state.fields.map(f => {
           if (!fieldIdsForTask.includes(f.id)) return f
           const entry = {
@@ -78,13 +94,31 @@ function reducer(state, action) {
         }),
       }
     }
-    case 'UPDATE_TASK':
+    case 'UPDATE_TASK': {
+      const prev = state.tasks.find(t => t.id === action.id)
+      const updated = { ...prev, ...action.updates }
+      const prevAssigned = prev?.assignedTo || []
+      const newAssigned = action.updates.assignedTo || prevAssigned
+      const newlyAdded = newAssigned.filter(name => !prevAssigned.includes(name))
+      const newNotifs = newlyAdded.flatMap(name => {
+        const member = state.staff.find(s => s.name === name)
+        if (!member) return []
+        return [{
+          id: `notif-${Date.now()}-${member.id}`,
+          forUserId: member.id,
+          message: `You've been assigned to "${updated.name}"`,
+          type: 'info',
+          read: false,
+          timestamp: new Date().toISOString(),
+          taskId: updated.id,
+        }]
+      })
       return {
         ...state,
-        tasks: state.tasks.map(t =>
-          t.id === action.id ? { ...t, ...action.updates } : t
-        ),
+        tasks: state.tasks.map(t => t.id === action.id ? updated : t),
+        notifications: [...newNotifs, ...state.notifications],
       }
+    }
     case 'MOVE_TASK': {
       const movedTask = state.tasks.find(t => t.id === action.id)
       const taskFieldIds = movedTask?.fieldIds || []
@@ -159,11 +193,28 @@ function reducer(state, action) {
         taskUpdates.cancelledDate = new Date().toISOString().split('T')[0]
       }
 
+      const moveMachNames = movedTask?.assignedMachinery || []
+      const moveMachEntry = movedTask ? {
+        id: `mhist-${Date.now()}`,
+        timestamp: nowMove,
+        type: 'task_status',
+        description: `Task "${movedTask.name}" → ${action.status}`,
+        taskId: movedTask.id,
+        taskName: movedTask.name,
+      } : null
+      const updatedMachineryMove = (moveMachNames.length === 0 || !moveMachEntry)
+        ? state.machinery
+        : state.machinery.map(m => {
+            if (!moveMachNames.includes(m.name)) return m
+            return { ...m, history: [moveMachEntry, ...(m.history || [])] }
+          })
+
       return {
         ...state,
         tasks: state.tasks.map(t =>
           t.id === action.id ? { ...t, ...taskUpdates } : t
         ),
+        machinery: updatedMachineryMove,
         fields: shouldAddHistory
           ? state.fields.map(f => {
               if (!taskFieldIds.includes(f.id)) return f
@@ -202,22 +253,41 @@ function reducer(state, action) {
       }
     case 'ADD_MACHINERY':
       return { ...state, machinery: [...state.machinery, action.equipment] }
-    case 'UPDATE_MACHINERY':
+    case 'UPDATE_MACHINERY': {
+      const changedKeys = Object.keys(action.updates).filter(k => k !== 'history')
+      const machHistEntry = changedKeys.length ? {
+        id: `mhist-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        type: 'details_update',
+        description: `Updated: ${changedKeys.join(', ')}`,
+      } : null
       return {
         ...state,
-        machinery: state.machinery.map(m =>
-          m.id === action.id ? { ...m, ...action.updates } : m
-        ),
+        machinery: state.machinery.map(m => {
+          if (m.id !== action.id) return m
+          return machHistEntry
+            ? { ...m, ...action.updates, history: [machHistEntry, ...(m.history || [])] }
+            : { ...m, ...action.updates }
+        }),
       }
-    case 'ADD_SERVICE_RECORD':
+    }
+    case 'ADD_SERVICE_RECORD': {
+      const svcRecord = action.record
+      const svcHistEntry = {
+        id: `mhist-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        type: 'service_recorded',
+        description: `${svcRecord.type} recorded — ${svcRecord.hoursAtService} hrs, £${svcRecord.cost}`,
+      }
       return {
         ...state,
         machinery: state.machinery.map(m =>
           m.id === action.equipmentId
-            ? { ...m, serviceHistory: [action.record, ...m.serviceHistory] }
+            ? { ...m, serviceHistory: [svcRecord, ...m.serviceHistory], history: [svcHistEntry, ...(m.history || [])] }
             : m
         ),
       }
+    }
     case 'ADD_STAFF':
       return { ...state, staff: [...state.staff, action.member] }
     case 'UPDATE_STAFF':

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { formatDateKey, DAYS_SHORT, MONTHS } from '../../utils/dates'
 import { getEventsForDate } from '../../utils/events'
 import { EVENT_TYPE_COLORS, EVENT_SUBTYPE_ICONS } from '../../constants/colors'
@@ -38,9 +38,11 @@ function getRelativeDay(eventDate, referenceDate) {
   return formatAgendaDateShort(eventDate)
 }
 
-export default function CalendarDayPanel({ date, events, allEvents, onClose, onAddEvent, showForm, onFormComplete }) {
+export default function CalendarDayPanel({ date, events, allEvents, onClose, onAddEvent, showForm, onFormComplete, bookingMachine = null, onBookingConfirmed }) {
   const dayEvents = getEventsForDate(events, date)
   const upNext = useMemo(() => getUpNextEvents(allEvents || events, date), [allEvents, events, date])
+  const [bookingPhase, setBookingPhase] = useState('confirm') // 'confirm' | 'time'
+  const [bookingTime, setBookingTime] = useState('09:00')
 
   const handleFormComplete = () => {
     onFormComplete?.()
@@ -203,16 +205,81 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
         )} */}
       </div>
 
-      {/* Bottom Add Event button */}
-      <div style={{ padding: 24, borderTop: '1px solid var(--color-surface-300)', background: 'var(--color-surface-50)' }}>
-        <button
-          onClick={onAddEvent}
-          className="btn btn-primary w-full flex items-center justify-center gap-2"
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>add</span>
-          Add Event
-        </button>
-      </div>
+      {/* Booking footer */}
+      {bookingMachine ? (
+        <div style={{
+          padding: 16,
+          borderTop: '2px solid rgba(245,158,11,0.4)',
+          background: 'rgba(245,158,11,0.06)',
+          flexShrink: 0,
+        }}>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="material-symbols-outlined" style={{ fontSize: 15, color: 'var(--color-amber-700, #92400e)' }}>build</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-amber-700, #92400e)' }}>{bookingMachine.name}</span>
+          </div>
+          {bookingPhase === 'confirm' ? (
+            <button
+              onClick={() => setBookingPhase('time')}
+              style={{
+                width: '100%',
+                padding: '8px 0',
+                background: 'rgba(245,158,11,0.2)',
+                border: '1px solid rgba(245,158,11,0.4)',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: 13,
+                fontWeight: 600,
+                color: 'var(--color-amber-700, #92400e)',
+                cursor: 'pointer',
+              }}
+            >
+              Confirm Date
+            </button>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <input
+                type="time"
+                value={bookingTime}
+                onChange={e => setBookingTime(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '6px 10px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid rgba(245,158,11,0.4)',
+                  background: 'white',
+                  fontSize: 13,
+                  color: 'var(--color-slate-700)',
+                }}
+              />
+              <button
+                onClick={() => onBookingConfirmed?.(bookingMachine, formatDateKey(date), bookingTime)}
+                style={{
+                  width: '100%',
+                  padding: '8px 0',
+                  background: 'rgba(245,158,11,0.8)',
+                  border: 'none',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: 'white',
+                  cursor: 'pointer',
+                }}
+              >
+                Book Service
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div style={{ padding: 24, borderTop: '1px solid var(--color-surface-300)', background: 'var(--color-surface-50)' }}>
+          <button
+            onClick={onAddEvent}
+            className="btn btn-primary w-full flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>add</span>
+            Add Event
+          </button>
+        </div>
+      )}
     </aside>
   )
 }

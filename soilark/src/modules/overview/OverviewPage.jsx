@@ -323,9 +323,10 @@ export default function OverviewPage() {
   const [expandedWidget, setExpandedWidget] = useState(null)
   const [weather, setWeather] = useState(null)
   const [expandedDay, setExpandedDay] = useState(null)
+  const [bookingMachine, setBookingMachine] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const { tasks = [], staff = [], machinery = [], fields = [], absences = [], currentUser, notifications = [], markAllNotificationsRead } = useApp()
+  const { tasks = [], staff = [], machinery = [], fields = [], absences = [], currentUser, notifications = [], markAllNotificationsRead, addTask, showToast } = useApp()
   const isManager = currentUser.role === ROLES.FARM_MANAGER
 
   useEffect(() => {
@@ -820,10 +821,48 @@ export default function OverviewPage() {
               m => tasks.find(t => t.status === 'in-progress' && (t.machineryId === m.id || t.machinery === m.name))?.name || 'Available',
               'var(--color-green-800)'
             )}
-            {renderMachinerySection('Service Due', serviceDueMachinery, 'build', 'var(--color-amber-500)',
-              m => `${m.hours} hrs · service at ${m.nextServiceDue} hrs`,
-              'var(--color-amber-700)'
-            )}
+            <>
+              <div style={{ padding: '6px 14px 4px', background: 'var(--color-surface-100)' }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-amber-700)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Service Due
+                </span>
+              </div>
+              {serviceDueMachinery.length === 0 ? (
+                <div style={{ padding: '9px 14px', fontSize: 12, color: 'var(--color-slate-400)', borderBottom: '1px solid var(--color-surface-100)' }}>
+                  No equipment
+                </div>
+              ) : serviceDueMachinery.map(m => (
+                <div key={m.id} style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--color-surface-100)' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <DrawerRow
+                      icon="build"
+                      iconColor="var(--color-amber-500)"
+                      title={m.name}
+                      subtitle={`${m.hours} hrs · service at ${m.nextServiceDue} hrs`}
+                      onClick={() => navigate('/machinery', { state: { openEquipmentId: m.id } })}
+                    />
+                  </div>
+                  <button
+                    onClick={() => { setBookingMachine(m); setExpandedWidget(null); setView('calendar') }}
+                    title="Book service"
+                    style={{
+                      flexShrink: 0,
+                      padding: '6px 10px',
+                      background: 'rgba(245,158,11,0.1)',
+                      border: '1px solid rgba(245,158,11,0.3)',
+                      borderRadius: 'var(--radius-sm)',
+                      cursor: 'pointer',
+                      marginRight: 10,
+                      display: 'flex',
+                      alignItems: 'center',
+                      color: 'var(--color-amber-700, #92400e)',
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>calendar_month</span>
+                  </button>
+                </div>
+              ))}
+            </>
             {renderMachinerySection('Unavailable', maintenanceMachinery, 'construction', 'var(--color-red-400)',
               () => 'Unavailable',
               'var(--color-red-700)'
@@ -1091,7 +1130,30 @@ export default function OverviewPage() {
             </WidgetTray>
           </>
         ) : (
-          <Calendar onToggleView={toggleView} initialAddEvent={addEvent} />
+          <Calendar
+            onToggleView={toggleView}
+            initialAddEvent={addEvent}
+            bookingMachine={bookingMachine}
+            onBookingConfirmed={(machine, dateStr, time) => {
+              const taskId = `task-${Date.now()}`
+              addTask({
+                id: taskId,
+                name: `Service — ${machine.name}`,
+                type: 'Service',
+                status: 'todo',
+                priority: 'high',
+                dueDate: dateStr,
+                assignedMachinery: [machine.name],
+                assignedTo: [],
+                fieldIds: [],
+                comments: [],
+                typeFields: { scheduledTime: time, mechanic: '', notes: '' },
+              })
+              showToast(`Service booked for ${machine.name}`)
+              setBookingMachine(null)
+              navigate('/tasks', { state: { openTaskId: taskId } })
+            }}
+          />
         )}
       </div>
     </div>
