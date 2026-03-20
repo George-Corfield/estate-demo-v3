@@ -63,9 +63,10 @@ export default function TaskCreateForm({
   onCancel,
   onSave,
   onFocusDate,
+  initialValues,
 }) {
-  const { fields, addTask, showToast } = useApp()
-  const [form, setForm] = useState({
+  const { fields, machinery, addTask, showToast } = useApp()
+  const [form, setForm] = useState(initialValues?.form ?? {
     name: '',
     type: '',
     description: '',
@@ -102,6 +103,20 @@ export default function TaskCreateForm({
   const [treeProtection, setTreeProtection] = useState('')
   const [treeSource, setTreeSource] = useState('')
   const [pricePerTree, setPricePerTree] = useState('')
+
+  // Machinery assignment
+  const [selectedMachinery, setSelectedMachinery] = useState(
+    new Set(initialValues?.assignedMachinery ?? [])
+  )
+
+  const toggleMachinery = (name) => {
+    setSelectedMachinery(prev => {
+      const next = new Set(prev)
+      if (next.has(name)) next.delete(name)
+      else next.add(name)
+      return next
+    })
+  }
 
   // Staff / team assignment
   const [selectedNames, setSelectedNames] = useState(new Set())
@@ -329,7 +344,7 @@ export default function TaskCreateForm({
       description: form.description,
       assignedTo: derivedAssignedTo,
       assignedTeams: derivedAssignedTeams,
-      assignedMachinery: [],
+      assignedMachinery: [...selectedMachinery],
       fieldIds: selectedFieldIds,
       completedDate: null,
       typeFields: buildTypeFields(),
@@ -1059,6 +1074,40 @@ export default function TaskCreateForm({
                       </label>
                     ))}
                   </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Machinery */}
+          <div>
+            <label className="form-label">Assign Machinery</label>
+            <div style={{ border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-sm)', marginTop: 4 }}>
+              {machinery.map((m, idx) => {
+                const checked = selectedMachinery.has(m.name)
+                const isLast = idx === machinery.length - 1
+                return (
+                  <label
+                    key={m.id}
+                    className="flex items-center gap-2"
+                    style={{
+                      padding: '8px 12px',
+                      cursor: 'pointer',
+                      borderBottom: isLast ? 'none' : '1px solid var(--color-surface-200)',
+                      fontSize: 13,
+                      fontFamily: 'var(--font-body)',
+                      color: 'var(--color-slate-600)',
+                      background: checked ? 'rgba(78,140,53,0.04)' : 'none',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggleMachinery(m.name)}
+                    />
+                    <span style={{ flex: 1 }}>{m.name}</span>
+                    <span className="text-data" style={{ fontSize: 11, color: 'var(--color-slate-400)' }}>{m.type}</span>
+                  </label>
                 )
               })}
             </div>

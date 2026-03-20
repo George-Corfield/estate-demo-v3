@@ -21,6 +21,7 @@ const initialState = {
   toasts: [],
   notifications: [],
   currentUser: DEFAULT_USER,
+  aiEnabled: false,
 }
 
 let toastId = 0
@@ -431,6 +432,8 @@ function reducer(state, action) {
     }
     case 'ADD_USAGE':
       return { ...state, usages: [...state.usages, action.usage] }
+    case 'TOGGLE_AI':
+      return { ...state, aiEnabled: !state.aiEnabled }
     case 'SWITCH_USER':
       return { ...state, currentUser: action.user }
     case 'SHOW_TOAST':
@@ -554,6 +557,10 @@ export function AppProvider({ children }) {
     dispatch({ type: 'ADD_CUSTOM_EVENT', event })
   }, [])
 
+  const toggleAI = useCallback(() => {
+    dispatch({ type: 'TOGGLE_AI' })
+  }, [])
+
   const switchUser = useCallback((user) => {
     dispatch({ type: 'SWITCH_USER', user })
   }, [])
@@ -600,6 +607,7 @@ export function AppProvider({ children }) {
     addUsage,
     linkActivityTask,
     addCustomEvent,
+    toggleAI,
     switchUser,
     showToast,
     markNotificationRead,

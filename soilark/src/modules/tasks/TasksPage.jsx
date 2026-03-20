@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import TaskFilterBar from './TaskFilterBar'
 import TaskKanban from './TaskKanban'
 import TaskDetailView from './TaskDetailView'
 import TaskCreateForm from './TaskCreateForm'
+import AITaskInput from './AITaskInput'
 import EstateMap from '../../components/shared/EstateMap'
 import Calendar from '../../components/shared/Calendar'
 
@@ -16,7 +17,10 @@ export default function TasksPage() {
   const [selectedFieldIds, setSelectedFieldIds] = useState([])
   const [dueDate, setDueDate] = useState('')
   const [formKey, setFormKey] = useState(0)
-  const { tasks } = useApp()
+  const [initialValues, setInitialValues] = useState(null)
+  const { tasks, aiEnabled } = useApp()
+  const aiEnabledRef = useRef(aiEnabled)
+  useEffect(() => { aiEnabledRef.current = aiEnabled }, [aiEnabled])
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -28,7 +32,11 @@ export default function TasksPage() {
 
   useEffect(() => {
     if (location.state?.createTask) {
-      setActiveView('create')
+      if (aiEnabled) {
+        setActiveView('ai-input')
+      } else {
+        setActiveView('create')
+      }
       if (location.state.prefillFieldIds) {
         setSelectedFieldIds(location.state.prefillFieldIds)
       }
@@ -43,16 +51,20 @@ export default function TasksPage() {
 
   useEffect(() => {
     const handleFabAddTask = () => {
-      if (activeView === 'create') {
+      const target = aiEnabledRef.current ? 'ai-input' : 'create'
+      if (activeView === 'create' || activeView === 'ai-input') {
         if (window.confirm('Discard current task draft?')) {
           setSelectedFieldIds([])
           setDueDate('')
+          setInitialValues(null)
           setFormKey(k => k + 1)
+          setActiveView(target)
         }
       } else {
-        setActiveView('create')
+        setActiveView(target)
         setSelectedFieldIds([])
         setDueDate('')
+        setInitialValues(null)
         setFormKey(k => k + 1)
       }
     }
@@ -92,9 +104,10 @@ export default function TasksPage() {
               filters={filters}
               onChange={setFilters}
               onAddTask={() => {
-                setActiveView('create')
+                setActiveView(aiEnabled ? 'ai-input' : 'create')
                 setSelectedFieldIds([])
                 setDueDate('')
+                setInitialValues(null)
               }}
             />
             <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -114,6 +127,18 @@ export default function TasksPage() {
             onBack={() => setActiveView('kanban')}
           />
         )}
+        {activeView === 'ai-input' && (
+          <AITaskInput
+            onBack={() => setActiveView('kanban')}
+            onGenerate={(result) => {
+              setInitialValues(result)
+              setSelectedFieldIds(result.fieldIds)
+              setDueDate(result.dueDate)
+              setFormKey(k => k + 1)
+              setActiveView('create')
+            }}
+          />
+        )}
         {activeView === 'create' && (
           <TaskCreateForm
             key={formKey}
@@ -124,6 +149,7 @@ export default function TasksPage() {
             onCancel={() => setActiveView('kanban')}
             onSave={() => setActiveView('kanban')}
             onFocusDate={() => setRightView('calendar')}
+            initialValues={initialValues}
           />
         )}
       </div>

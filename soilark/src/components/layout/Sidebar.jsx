@@ -1,13 +1,30 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { NAV_ITEMS } from '../../constants/navigation'
 import { useApp } from '../../context/AppContext'
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const settingsPanelRef = useRef(null)
+  const settingsBtnRef = useRef(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const { currentUser } = useApp()
+  const { currentUser, aiEnabled, toggleAI } = useApp()
+
+  useEffect(() => {
+    if (!showSettings) return
+    const handleClick = (e) => {
+      if (
+        settingsPanelRef.current && !settingsPanelRef.current.contains(e.target) &&
+        settingsBtnRef.current && !settingsBtnRef.current.contains(e.target)
+      ) {
+        setShowSettings(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [showSettings])
 
   const isActive = (path) => {
     if (path === '/') return location.pathname === '/'
@@ -162,6 +179,8 @@ export default function Sidebar() {
       {/* Footer: Settings */}
       <div className="mt-auto w-full pb-4" style={{ padding: '0 10px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
         <button
+          ref={settingsBtnRef}
+          onClick={() => setShowSettings(v => !v)}
           className="flex items-center gap-3 w-full text-left mt-2"
           style={{
             padding: '8px 10px',
@@ -195,6 +214,66 @@ export default function Sidebar() {
           </span>
         </button>
       </div>
+
+      {/* Settings popover — fixed panel to the right of the sidebar */}
+      {showSettings && (
+        <div
+          ref={settingsPanelRef}
+          style={{
+            position: 'fixed',
+            left: 64,
+            bottom: 48,
+            width: 280,
+            background: 'var(--color-surface-50)',
+            border: '1px solid var(--color-surface-300)',
+            borderRadius: 'var(--radius-md)',
+            boxShadow: 'var(--shadow-md)',
+            zIndex: 100,
+            overflow: 'hidden',
+          }}
+        >
+          <div style={{ padding: '8px 0' }}>
+            <p style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 600, color: 'var(--color-slate-400)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+              Features
+            </p>
+            <button
+              onClick={toggleAI}
+              className="flex items-center gap-3 w-full"
+              style={{ padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-surface-100)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-primary)' }}>auto_awesome</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-slate-900)', margin: 0 }}>AI Task Creation</p>
+                <p style={{ fontSize: 11, color: 'var(--color-slate-400)', margin: '2px 0 0' }}>Natural language task input</p>
+              </div>
+              <div
+                style={{
+                  width: 36,
+                  height: 20,
+                  borderRadius: 10,
+                  background: aiEnabled ? 'var(--color-primary)' : 'var(--color-surface-300)',
+                  position: 'relative',
+                  transition: 'background 150ms ease',
+                  flexShrink: 0,
+                }}
+              >
+                <div style={{
+                  position: 'absolute',
+                  top: 2,
+                  left: aiEnabled ? 18 : 2,
+                  width: 16,
+                  height: 16,
+                  borderRadius: '50%',
+                  background: 'white',
+                  transition: 'left 150ms ease',
+                }} />
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
     </aside>
   )
 }
