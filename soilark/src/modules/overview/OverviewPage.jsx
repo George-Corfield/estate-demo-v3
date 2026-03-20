@@ -884,6 +884,15 @@ export default function OverviewPage() {
       }
 
       case 'notifications':
+        function handleNotifClick(n) {
+          if (n.staffId) {
+            navigate('/staff', { state: { openStaffId: n.staffId } })
+          } else if (n.taskId)
+          {
+            navigate('/tasks', { state: { openTaskId: n.taskId }})
+          }
+        }
+
         return (
           <WidgetExpanded title="Notifications" icon="notifications" onBack={() => setExpandedWidget(null)}>
             {userNotifs.length === 0 ? (
@@ -897,6 +906,7 @@ export default function OverviewPage() {
                 const diff = Date.now() - new Date(n.timestamp).getTime()
                 const mins = Math.floor(diff / 60000)
                 const meta = mins < 1 ? 'just now' : mins < 60 ? `${mins}m ago` : mins < 1440 ? `${Math.floor(mins / 60)}h ago` : `${Math.floor(mins / 1440)}d ago`
+                console.log(n)
                 return (
                   <DrawerRow
                     key={n.id}
@@ -904,7 +914,7 @@ export default function OverviewPage() {
                     iconColor={colorMap[n.type] || colorMap.info}
                     title={n.message}
                     meta={meta}
-                    onClick={n.staffId ? () => navigate('/staff', { state: { openStaffId: n.staffId } }) : undefined}
+                    onClick={() => handleNotifClick(n)}
                   />
                 )
               })

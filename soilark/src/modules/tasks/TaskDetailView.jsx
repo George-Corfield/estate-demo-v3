@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import { ROLES } from '../../constants/roles'
@@ -46,7 +46,7 @@ export default function TaskDetailView({ taskId, onBack }) {
   const [svcCost, setSvcCost] = useState('')
   const [svcNotes, setSvcNotes] = useState('')
   const [svcPhoto, setSvcPhoto] = useState(null)
-  const [svcVoiceNote, setSvcVoiceNote] = useState(null)
+  const [svcAiProcessing, setSvcAiProcessing] = useState(false)
   const navigate = useNavigate()
 
   const task = useMemo(() => tasks.find(t => t.id === taskId), [tasks, taskId])
@@ -70,7 +70,7 @@ export default function TaskDetailView({ taskId, onBack }) {
         setSvcType('Regular Service')
         setSvcCost('')
         setSvcPhoto(null)
-        setSvcVoiceNote(null)
+        setSvcAiProcessing(false)
       }
       return
     }
@@ -143,8 +143,36 @@ export default function TaskDetailView({ taskId, onBack }) {
     }
 
     moveTask(task.id, 'done')
+    updateTask(task.id, {
+      typeFields: {
+        ...task.typeFields,
+        completionData: {
+          serviceType: svcType,
+          hoursAtService: hours,
+          cost: parseFloat(svcCost) || 0,
+          notes: svcNotes,
+          completedAt: today,
+        },
+      },
+    })
     showToast('Service completed')
     setExpandedPanel(null)
+  }
+
+  const SVC_AI_PRESET = {
+    type: 'Regular Service',
+    cost: '385',
+    notes: 'Full oil and filter change. Air filter cleaned. Brake fluid checked and topped up. Visual inspection — no defects found.',
+  }
+
+  const handleVoiceAI = () => {
+    setSvcAiProcessing(true)
+    setTimeout(() => {
+      setSvcType(SVC_AI_PRESET.type)
+      setSvcCost(SVC_AI_PRESET.cost)
+      setSvcNotes(SVC_AI_PRESET.notes)
+      setSvcAiProcessing(false)
+    }, 1400)
   }
 
   const handlePhotoChange = (e, setter) => {
@@ -541,11 +569,16 @@ export default function TaskDetailView({ taskId, onBack }) {
 
                       <div style={{ marginBottom: 14 }}>
                         <label className="form-label">Voice Note (optional)</label>
-                        <VoiceNoteRecorder onRecorded={setSvcVoiceNote} />
-                        {svcVoiceNote && (
-                          <p className="text-body-small" style={{ color: 'var(--color-slate-500)', marginTop: 4 }}>
-                            Recorded: {formatDuration(svcVoiceNote.duration)}
-                          </p>
+                        {svcAiProcessing ? (
+                          <div className="flex items-center gap-2" style={{ padding: '6px 12px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.08)', color: 'var(--color-amber-700)', fontSize: 13 }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 16, animation: 'spin 1s linear infinite' }}>autorenew</span>
+                            Transcribing voice note…
+                          </div>
+                        ) : (
+                          <button type="button" onClick={handleVoiceAI} className="flex items-center gap-2" style={{ padding: '6px 12px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.08)', color: 'var(--color-amber-700)', fontSize: 13, fontFamily: 'var(--font-body)', cursor: 'pointer' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>mic</span>
+                            Record
+                          </button>
                         )}
                       </div>
 
@@ -730,6 +763,24 @@ export default function TaskDetailView({ taskId, onBack }) {
               <div>
                 <h3 className="text-label mb-3" style={{ color: 'var(--color-slate-400)' }}>Service Details</h3>
                 <div className="flex flex-col gap-3">
+                  {task.status === 'done' && task.typeFields?.completionData && (() => {
+                    const cd = task.typeFields.completionData
+                    return (
+                      <div style={{ marginBottom: 16, padding: 12, background: 'rgba(78,140,53,0.06)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(78,140,53,0.2)' }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--color-green-600)' }}>check_circle</span>
+                          <span className="text-label" style={{ color: 'var(--color-green-600)' }}>Completion Record</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 mb-2">
+                          <PropItem label="Service Type" value={cd.serviceType} />
+                          <PropItem label="Hours at Service" value={`${cd.hoursAtService}h`} />
+                          <PropItem label="Cost" value={`£${cd.cost.toFixed(2)}`} />
+                          <PropItem label="Completed" value={formatShortDate(cd.completedAt)} />
+                        </div>
+                        {cd.notes && <p className="text-body" style={{ color: 'var(--color-slate-600)', margin: 0 }}>{cd.notes}</p>}
+                      </div>
+                    )
+                  })()}
                   {task.typeFields?.scheduledTime && (
                     <div>
                       <label className="form-label">Scheduled Time</label>
@@ -822,6 +873,7 @@ export default function TaskDetailView({ taskId, onBack }) {
           </div>
         )}
       </div>
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   )
 }
@@ -836,124 +888,3 @@ function PropItem({ label, value }) {
   )
 }
 
-function formatDuration(secs) {
-  const m = Math.floor(secs / 60)
-  const s = secs % 60
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-}
-
-function VoiceNoteRecorder({ onRecorded }) {
-  const [recState, setRecState] = useState('idle') // 'idle' | 'recording' | 'recorded'
-  const [duration, setDuration] = useState(0)
-  const [audioUrl, setAudioUrl] = useState(null)
-  const mediaRecorderRef = useRef(null)
-  const chunksRef = useRef([])
-  const timerRef = useRef(null)
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      chunksRef.current = []
-      const recorder = new MediaRecorder(stream)
-      mediaRecorderRef.current = recorder
-
-      recorder.ondataavailable = e => {
-        if (e.data.size > 0) chunksRef.current.push(e.data)
-      }
-
-      recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
-        const url = URL.createObjectURL(blob)
-        setAudioUrl(url)
-        setRecState('recorded')
-        clearInterval(timerRef.current)
-        setDuration(d => {
-          onRecorded({ name: `voice-${Date.now()}.webm`, url, duration: d })
-          return d
-        })
-        stream.getTracks().forEach(t => t.stop())
-      }
-
-      recorder.start()
-      setDuration(0)
-      setRecState('recording')
-      timerRef.current = setInterval(() => setDuration(d => d + 1), 1000)
-    } catch {
-      // microphone access denied — silently no-op
-    }
-  }
-
-  const stopRecording = () => {
-    clearInterval(timerRef.current)
-    mediaRecorderRef.current?.stop()
-  }
-
-  const resetRecording = () => {
-    if (audioUrl) URL.revokeObjectURL(audioUrl)
-    setAudioUrl(null)
-    setDuration(0)
-    setRecState('idle')
-    onRecorded(null)
-  }
-
-  if (recState === 'idle') {
-    return (
-      <button
-        type="button"
-        onClick={startRecording}
-        className="flex items-center gap-2"
-        style={{
-          padding: '6px 12px',
-          borderRadius: 'var(--radius-sm)',
-          border: '1px solid rgba(245,158,11,0.3)',
-          background: 'rgba(245,158,11,0.08)',
-          color: 'var(--color-amber-700, #92400e)',
-          fontSize: 13,
-          fontFamily: 'var(--font-body)',
-          cursor: 'pointer',
-        }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>mic</span>
-        Record
-      </button>
-    )
-  }
-
-  if (recState === 'recording') {
-    return (
-      <button
-        type="button"
-        onClick={stopRecording}
-        className="flex items-center gap-2"
-        style={{
-          padding: '6px 12px',
-          borderRadius: 'var(--radius-sm)',
-          border: '1px solid rgba(239,68,68,0.3)',
-          background: 'rgba(239,68,68,0.08)',
-          color: 'var(--color-red-600, #dc2626)',
-          fontSize: 13,
-          fontFamily: 'var(--font-body)',
-          cursor: 'pointer',
-        }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>stop_circle</span>
-        {formatDuration(duration)}
-      </button>
-    )
-  }
-
-  return (
-    <div className="flex items-center gap-2">
-      <audio src={audioUrl} controls style={{ height: 32, flex: 1, maxWidth: 220 }} />
-      <button
-        type="button"
-        onClick={resetRecording}
-        className="btn btn-ghost flex items-center gap-1"
-        style={{ padding: '4px 8px', fontSize: 12 }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
-        Clear
-      </button>
-    </div>
-  )
-}
