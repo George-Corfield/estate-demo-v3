@@ -9,7 +9,7 @@ export default function FieldEditForm({ field, onCancel, onSave }) {
     usage: field.usage,
     sizeHectares: field.sizeHectares,
     soilType: field.soilType,
-    currentCrop: field.currentCrop || '',
+    scheme: field.scheme || 'None',
     livestock: field.livestock || '',
     description: field.description || '',
   })
@@ -52,8 +52,10 @@ export default function FieldEditForm({ field, onCancel, onSave }) {
             {SOIL_TYPES.map(s => <option key={s}>{s}</option>)}
           </select>
         </FormField>
-        <FormField label="Current Crop">
-          <input type="text" value={form.currentCrop} onChange={e => update('currentCrop', e.target.value)} className="form-input" />
+        <FormField label="Scheme">
+          <select value={form.scheme} onChange={e => update('scheme', e.target.value)} className="form-select">
+            {['None', 'CS', 'SFI'].map(s => <option key={s}>{s}</option>)}
+          </select>
         </FormField>
       </div>
 

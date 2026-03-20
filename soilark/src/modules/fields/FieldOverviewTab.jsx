@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
 
 const SOIL_TYPES = ['Sandy', 'Clay', 'Loam', 'Silt', 'Peat', 'Chalk']
+const SCHEMES = ['None', 'CS', 'SFI']
 
 export default function FieldOverviewTab({ field }) {
   const { usages, updateField, showToast } = useApp()
@@ -48,12 +49,12 @@ export default function FieldOverviewTab({ field }) {
             options={SOIL_TYPES}
           />
           <PropItem
-            label="Current Crop"
-            value={field.currentCrop || '—'}
-            fieldKey="currentCrop"
+            label="Scheme"
+            value={field.scheme || '—'}
+            fieldKey="scheme"
             onSave={handleSave}
-            editControl="text"
-            rawValue={field.currentCrop || ''}
+            editControl="select"
+            options={SCHEMES}
           />
           <PropItem
             label="Livestock"

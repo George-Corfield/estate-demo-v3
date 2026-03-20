@@ -61,7 +61,7 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, 
       ...cat,
       fields: cat.fields.filter(f =>
         f.name.toLowerCase().includes(s) ||
-        (f.currentCrop && f.currentCrop.toLowerCase().includes(s))
+        (f.scheme && f.scheme.toLowerCase().includes(s))
       ),
     })).filter(cat => cat.fields.length > 0)
   }, [categories, search])
@@ -216,7 +216,7 @@ export default function FieldCategoryList({ onFieldSelect, initialOpenCategory, 
                           <span className="text-data" style={{ fontSize: 12, color: 'var(--color-slate-400)' }}>{field.sizeHectares} ha</span>
                         </div>
                         <p className="text-body-small" style={{ color: fieldOverdue ? 'var(--color-red-400)' : 'var(--color-slate-500)', marginTop: 2 }}>
-                          {fieldOverdue ? 'Overdue tasks' : (field.currentCrop || 'No current use')}
+                          {fieldOverdue ? 'Overdue tasks' : (field.scheme && field.scheme !== 'None' ? field.scheme : 'No scheme')}
                         </p>
                       </button>
                       )

@@ -3,7 +3,7 @@ export const initialFields = [
   {
     id: 'field-01', name: 'North Field', usage: 'Wheat',
     sizeAcres: 45.2, sizeHectares: 18.3, soilType: 'Clay', drainage: 'Good',
-    currentCrop: 'Wheat', livestock: null, lastWorked: '2026-02-05',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-05',
     description: 'Primary wheat field on the northern boundary. Heavy clay soil retains moisture well for winter wheat.',
     mapPosition: { top: 5, left: 20, width: 18, height: 16 },
     activities: [
@@ -16,7 +16,7 @@ export const initialFields = [
   {
     id: 'field-02', name: 'Top Acres', usage: 'Wheat',
     sizeAcres: 38.7, sizeHectares: 15.7, soilType: 'Loam', drainage: 'Very Good',
-    currentCrop: 'Wheat', livestock: null, lastWorked: '2026-01-28',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-28',
     description: 'Elevated field with rich loam soil. Consistent wheat yields year on year.',
     mapPosition: { top: 3, left: 42, width: 16, height: 14 },
     activities: [
@@ -27,7 +27,7 @@ export const initialFields = [
   {
     id: 'field-03', name: 'Church Field', usage: 'Wheat',
     sizeAcres: 52.1, sizeHectares: 21.1, soilType: 'Clay', drainage: 'Good',
-    currentCrop: 'Wheat', livestock: null, lastWorked: '2026-02-01',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-01',
     description: 'Large field adjacent to the parish church. Reliable wheat producer with deep clay.',
     mapPosition: { top: 22, left: 55, width: 20, height: 15 },
     activities: [
@@ -39,7 +39,7 @@ export const initialFields = [
   {
     id: 'field-04', name: 'Home Field', usage: 'Wheat',
     sizeAcres: 42.0, sizeHectares: 17.0, soilType: 'Loam', drainage: 'Good',
-    currentCrop: 'Wheat', livestock: null, lastWorked: '2026-02-08',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-08',
     description: 'Closest arable field to the farmstead. Convenient for trial plots and monitoring.',
     mapPosition: { top: 45, left: 38, width: 16, height: 12 },
     activities: [
@@ -53,7 +53,7 @@ export const initialFields = [
   {
     id: 'field-05', name: 'Mill Field', usage: 'Barley',
     sizeAcres: 32.5, sizeHectares: 13.2, soilType: 'Silt', drainage: 'Fair',
-    currentCrop: 'Barley', livestock: null, lastWorked: '2026-01-20',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-20',
     description: 'Near the old mill site. Silty soil suits spring barley well.',
     mapPosition: { top: 25, left: 5, width: 14, height: 18 },
     activities: [
@@ -65,7 +65,7 @@ export const initialFields = [
   {
     id: 'field-06', name: 'Long Furlong', usage: 'Barley',
     sizeAcres: 41.3, sizeHectares: 16.7, soilType: 'Sandy', drainage: 'Very Good',
-    currentCrop: 'Barley', livestock: null, lastWorked: '2026-01-18',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-18',
     description: 'Long narrow field running east-west. Light sandy soil ideal for malting barley.',
     mapPosition: { top: 40, left: 20, width: 25, height: 8 },
     activities: [
@@ -76,7 +76,7 @@ export const initialFields = [
   {
     id: 'field-07', name: 'Gallows Hill', usage: 'Barley',
     sizeAcres: 38.5, sizeHectares: 15.6, soilType: 'Loam', drainage: 'Fair',
-    currentCrop: 'Barley', livestock: null, lastWorked: '2026-01-30',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-30',
     description: 'Hilltop field with good loam. Winter barley performing well this season.',
     mapPosition: { top: 8, left: 82, width: 12, height: 15 },
     activities: [
@@ -87,7 +87,7 @@ export const initialFields = [
   {
     id: 'field-08', name: 'Warren Piece', usage: 'Barley',
     sizeAcres: 33.8, sizeHectares: 13.7, soilType: 'Chalk', drainage: 'Very Good',
-    currentCrop: 'Barley', livestock: null, lastWorked: '2026-01-25',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-25',
     description: 'Chalky soil on the hillside. Named after the old rabbit warren. Good for spring barley.',
     mapPosition: { top: 12, left: 65, width: 14, height: 12 },
     activities: [
@@ -101,7 +101,7 @@ export const initialFields = [
   {
     id: 'field-09', name: 'Bottom Meadow', usage: 'Maize',
     sizeAcres: 42.0, sizeHectares: 17.0, soilType: 'Silt', drainage: 'Fair',
-    currentCrop: 'Maize', livestock: null, lastWorked: '2026-02-06',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-06',
     description: 'Low-lying field with deep silty soil. Warm and sheltered, good for maize.',
     mapPosition: { top: 72, left: 45, width: 20, height: 14 },
     activities: [
@@ -113,7 +113,7 @@ export const initialFields = [
   {
     id: 'field-10', name: 'Ox Close', usage: 'Maize',
     sizeAcres: 35.0, sizeHectares: 14.2, soilType: 'Loam', drainage: 'Good',
-    currentCrop: 'Maize', livestock: null, lastWorked: '2026-01-22',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-22',
     description: 'Enclosed field with good shelter from the tree line. Warm microclimate for maize.',
     mapPosition: { top: 60, left: 5, width: 14, height: 16 },
     activities: [
@@ -124,7 +124,7 @@ export const initialFields = [
   {
     id: 'field-11', name: 'Leys Paddock', usage: 'Maize',
     sizeAcres: 38.0, sizeHectares: 15.4, soilType: 'Sandy', drainage: 'Good',
-    currentCrop: 'Maize', livestock: null, lastWorked: '2026-02-04',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-04',
     description: 'Free-draining sandy field. Warms up quickly in spring for early maize drilling.',
     mapPosition: { top: 76, left: 10, width: 16, height: 12 },
     activities: [
@@ -137,7 +137,7 @@ export const initialFields = [
   {
     id: 'field-12', name: 'Park Field', usage: 'Oats',
     sizeAcres: 40.0, sizeHectares: 16.2, soilType: 'Loam', drainage: 'Good',
-    currentCrop: 'Oats', livestock: null, lastWorked: '2026-01-28',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-28',
     description: 'Former parkland with scattered mature trees. Rich loam well suited to oats.',
     mapPosition: { top: 48, left: 50, width: 12, height: 10 },
     activities: [
@@ -149,7 +149,7 @@ export const initialFields = [
   {
     id: 'field-13', name: 'Clover Piece', usage: 'Oats',
     sizeAcres: 28.0, sizeHectares: 11.3, soilType: 'Sandy', drainage: 'Good',
-    currentCrop: 'Oats', livestock: null, lastWorked: '2026-02-02',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-02',
     description: 'Previously a clover ley providing good nitrogen base for oats.',
     mapPosition: { top: 18, left: 35, width: 12, height: 10 },
     activities: [
@@ -159,7 +159,7 @@ export const initialFields = [
   {
     id: 'field-14', name: 'Triangle', usage: 'Oats',
     sizeAcres: 41.0, sizeHectares: 16.6, soilType: 'Clay', drainage: 'Fair',
-    currentCrop: 'Oats', livestock: null, lastWorked: '2026-01-20',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-20',
     description: 'Triangular field at the road junction. Heavier clay but oats handle it well.',
     mapPosition: { top: 78, left: 75, width: 14, height: 12 },
     activities: [
@@ -171,7 +171,7 @@ export const initialFields = [
   {
     id: 'field-15', name: 'Sheep Down', usage: 'Oats',
     sizeAcres: 48.0, sizeHectares: 19.4, soilType: 'Chalk', drainage: 'Very Good',
-    currentCrop: 'Oats', livestock: null, lastWorked: '2026-02-09',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-09',
     description: 'Chalk downland with excellent natural drainage. Light oat variety performing well.',
     mapPosition: { top: 28, left: 80, width: 16, height: 18 },
     activities: [
@@ -184,7 +184,7 @@ export const initialFields = [
   {
     id: 'field-16', name: 'Big Meadow', usage: 'Grass',
     sizeAcres: 62.0, sizeHectares: 25.1, soilType: 'Clay', drainage: 'Good',
-    currentCrop: 'Grass', livestock: null, lastWorked: '2026-01-12',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-12',
     description: 'Largest grass field on the estate. Used for hay and silage production.',
     mapPosition: { top: 65, left: 58, width: 20, height: 14 },
     activities: [
@@ -196,7 +196,7 @@ export const initialFields = [
   {
     id: 'field-17', name: 'The Ley', usage: 'Grass',
     sizeAcres: 48.0, sizeHectares: 19.4, soilType: 'Loam', drainage: 'Good',
-    currentCrop: 'Grass', livestock: null, lastWorked: '2026-02-07',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-07',
     description: 'Temporary grass ley in rotation. Italian ryegrass and clover mix.',
     mapPosition: { top: 35, left: 48, width: 14, height: 10 },
     activities: [
@@ -209,7 +209,7 @@ export const initialFields = [
   {
     id: 'field-18', name: 'Hay Meadow', usage: 'Grass',
     sizeAcres: 35.3, sizeHectares: 14.3, soilType: 'Silt', drainage: 'Fair',
-    currentCrop: 'Grass', livestock: null, lastWorked: '2026-01-05',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-05',
     description: 'Species-rich traditional hay meadow under environmental stewardship.',
     mapPosition: { top: 82, left: 30, width: 18, height: 10 },
     activities: [
@@ -220,7 +220,7 @@ export const initialFields = [
   {
     id: 'field-19', name: 'River Meadow', usage: 'Grass',
     sizeAcres: 52.0, sizeHectares: 21.0, soilType: 'Peat', drainage: 'Poor',
-    currentCrop: 'Grass', livestock: null, lastWorked: '2025-12-15',
+    scheme: 'None', livestock: null, lastWorked: '2025-12-15',
     description: 'Flood meadow along the river. Wet grassland managed for conservation.',
     mapPosition: { top: 88, left: 55, width: 22, height: 8 },
     activities: [
@@ -233,7 +233,7 @@ export const initialFields = [
   {
     id: 'field-20', name: 'Home Pasture', usage: 'Potatoes',
     sizeAcres: 55.0, sizeHectares: 22.3, soilType: 'Sandy', drainage: 'Good',
-    currentCrop: 'Potatoes', livestock: null, lastWorked: '2026-02-10',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-10',
     description: 'Light sandy soil ideal for potato production. Easy stone picking.',
     mapPosition: { top: 58, left: 25, width: 18, height: 16 },
     activities: [
@@ -245,7 +245,7 @@ export const initialFields = [
   {
     id: 'field-21', name: 'Horse Paddock', usage: 'Potatoes',
     sizeAcres: 42.0, sizeHectares: 17.0, soilType: 'Loam', drainage: 'Very Good',
-    currentCrop: 'Potatoes', livestock: null, lastWorked: '2026-01-30',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-30',
     description: 'Well-drained loam field. Excellent potato land with good tilth.',
     mapPosition: { top: 50, left: 78, width: 14, height: 12 },
     activities: [
@@ -257,7 +257,7 @@ export const initialFields = [
   {
     id: 'field-22', name: 'Brook Field', usage: 'Potatoes',
     sizeAcres: 28.4, sizeHectares: 11.5, soilType: 'Sandy', drainage: 'Good',
-    currentCrop: 'Potatoes', livestock: null, lastWorked: '2026-02-03',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-03',
     description: 'Borders the brook on the eastern boundary. Light soil warms quickly for earlies.',
     mapPosition: { top: 50, left: 60, width: 15, height: 14 },
     activities: [
@@ -272,7 +272,7 @@ export const initialFields = [
   {
     id: 'field-23', name: 'Badger Wood', usage: 'Oilseed rape',
     sizeAcres: 46.5, sizeHectares: 18.8, soilType: 'Clay', drainage: 'Good',
-    currentCrop: 'Oilseed rape', livestock: null, lastWorked: '2026-02-03',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-03',
     description: 'Heavy clay field adjacent to Badger Wood. OSR established well in autumn.',
     mapPosition: { top: 2, left: 2, width: 16, height: 20 },
     activities: [
@@ -285,7 +285,7 @@ export const initialFields = [
   {
     id: 'field-24', name: 'New Plantation', usage: 'Oilseed rape',
     sizeAcres: 49.4, sizeHectares: 20.0, soilType: 'Loam', drainage: 'Good',
-    currentCrop: 'Oilseed rape', livestock: null, lastWorked: '2026-02-01',
+    scheme: 'None', livestock: null, lastWorked: '2026-02-01',
     description: 'Good deep loam. Autumn-sown OSR with vigorous establishment.',
     mapPosition: { top: 60, left: 82, width: 14, height: 16 },
     activities: [
@@ -296,7 +296,7 @@ export const initialFields = [
   {
     id: 'field-25', name: 'Spinney', usage: 'Oilseed rape',
     sizeAcres: 34.7, sizeHectares: 14.0, soilType: 'Chalk', drainage: 'Fair',
-    currentCrop: 'Oilseed rape', livestock: null, lastWorked: '2026-01-20',
+    scheme: 'None', livestock: null, lastWorked: '2026-01-20',
     description: 'Chalky field beside the spinney copse. OSR benefits from the free lime.',
     mapPosition: { top: 35, left: 2, width: 10, height: 14 },
     activities: [

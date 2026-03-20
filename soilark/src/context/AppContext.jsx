@@ -423,7 +423,7 @@ function reducer(state, action) {
         ? state.fields.map(f => {
             const updates = {}
             if (f.usage === oldUsage.name) updates.usage = action.updates.name
-            if (f.currentCrop === oldUsage.name) updates.currentCrop = action.updates.name
+            if (f.scheme === oldUsage.name) updates.scheme = action.updates.name
             return Object.keys(updates).length ? { ...f, ...updates } : f
           })
         : state.fields
