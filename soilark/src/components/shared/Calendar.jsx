@@ -5,12 +5,14 @@ import { aggregateEvents, getEventsForDate } from '../../utils/events'
 import { EVENT_TYPE_BG, EVENT_FILTER_COLORS, EVENT_TYPE_TO_FILTER, EVENT_SUBTYPE_ICONS } from '../../constants/colors'
 import CalendarDayPanel from './CalendarDayPanel'
 import NewEventPanel from './NewEventPanel'
+import useIsMobile from '../../hooks/useIsMobile'
 
 const MAX_VISIBLE_EVENTS = 2
 
 const FILTER_KEYS = ['task', 'service', 'event']
 
 export default function Calendar({ onDaySelect, selectedDate: externalSelectedDate, navigateToDate, mode = 'view', onToggleView, initialAddEvent = false, bookingMachine = null, onBookingConfirmed }) {
+  const isMobile = useIsMobile()
   const { fields, tasks, customEvents, machinery } = useApp()
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
@@ -111,7 +113,7 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
       {/* Main calendar area */}
       <div className="flex flex-col overflow-hidden h-full">
         {/* Header */}
-        <header className="flex items-center justify-between" style={{ padding: '16px 24px', borderBottom: '1px solid var(--color-surface-300)' }}>
+        <header className="flex items-center justify-between" style={{ padding: isMobile ? '12px 8px' : '16px 24px', borderBottom: '1px solid var(--color-surface-300)' }}>
           <div className="flex items-center gap-4">
             <div
               className="flex items-center p-1"
@@ -129,38 +131,50 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
             </div>
             <button onClick={handleToday} className="btn btn-secondary">Today</button>
 
-            {/* Legend filters */}
-            <div className="flex gap-3 items-center ml-2">
-              {FILTER_KEYS.map(key => {
-                const fc = EVENT_FILTER_COLORS[key]
-                return (
-                  <button
-                    key={key}
-                    onClick={() => toggleFilter(key)}
-                    className="flex items-center gap-1.5 text-label-small"
-                    style={{ opacity: filters[key] ? 1 : 0.4, transition: 'opacity 120ms ease', background: 'none', border: 'none', cursor: 'pointer' }}
-                  >
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: fc.dot }} />
-                    {fc.label}
-                  </button>
-                )
-              })}
-            </div>
+            {/* Legend filters — hidden on mobile */}
+            {!isMobile && (
+              <div className="flex gap-3 items-center ml-2">
+                {FILTER_KEYS.map(key => {
+                  const fc = EVENT_FILTER_COLORS[key]
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => toggleFilter(key)}
+                      className="flex items-center gap-1.5 text-label-small"
+                      style={{ opacity: filters[key] ? 1 : 0.4, transition: 'opacity 120ms ease', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: fc.dot }} />
+                      {fc.label}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
 
-            {/* New Event button */}
-            <button onClick={handleNewEvent} className="btn btn-primary ml-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>add</span>
-              New Event
-            </button>
+            {/* New Event button — text on desktop, icon-only on mobile */}
+            {!isMobile && (
+              <button onClick={handleNewEvent} className="btn btn-primary ml-2">
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>add</span>
+                New Event
+              </button>
+            )}
           </div>
 
-          {/* View toggle — hidden when overlay panel is open */}
-          {onToggleView && !panelMode && (
-            <button onClick={onToggleView} className="btn btn-secondary">
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>map</span>
-              Map
-            </button>
-          )}
+          {/* Right: add (mobile) + view toggle */}
+          <div className="flex items-center gap-2">
+            {isMobile && (
+              <button onClick={handleNewEvent} className="btn btn-secondary">
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>add</span>
+              </button>
+            )}
+            {/* View toggle — hidden when overlay panel is open */}
+            {onToggleView && !panelMode && (
+              <button onClick={onToggleView} className="btn btn-secondary">
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>map</span>
+                {!isMobile && 'Map'}
+              </button>
+            )}
+          </div>
         </header>
 
         {/* Booking banner */}
@@ -181,11 +195,11 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
         )}
 
         {/* Calendar grid */}
-        <div className="flex-1 overflow-auto" style={{ padding: 24 }}>
+        <div className="flex-1 overflow-auto" style={{ padding: isMobile ? 8 : 24 }}>
           <div
             className="h-full flex flex-col overflow-hidden"
             style={{
-              minHeight: 600,
+              minHeight: isMobile ? undefined : 600,
               border: '1px solid var(--color-surface-300)',
               borderRadius: 'var(--radius-md)',
               background: 'var(--color-surface-100)',
@@ -218,7 +232,7 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                       borderRight: '1px solid var(--color-surface-300)',
                       borderBottom: '1px solid var(--color-surface-300)',
                       padding: 8,
-                      minHeight: 120,
+                      minHeight: isMobile ? 44 : 120,
                       transition: 'background 120ms ease',
                       background: !day.isCurrentMonth ? 'var(--color-surface-200)'
                         : selected ? 'var(--color-surface-50)'
@@ -264,34 +278,42 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                       </span>
                     )}
 
-                    {day.isCurrentMonth && visibleEvents.length > 0 && (
-                      <div className="mt-1 flex flex-col gap-1">
-                        {visibleEvents.map(event => {
-                          const colors = EVENT_TYPE_BG[event.type] || { bg: 'var(--color-surface-200)', text: 'var(--color-slate-500)' }
-                          return (
-                            <div
-                              key={event.id}
-                              className="text-label-small truncate flex items-center gap-1"
-                              style={{
-                                padding: '2px 6px',
-                                borderRadius: 'var(--radius-sm)',
-                                backgroundColor: colors.bg,
-                                color: colors.text,
-                              }}
-                            >
-                              <span className="material-symbols-outlined" style={{ fontSize: 11 }}>
-                                {EVENT_SUBTYPE_ICONS[event.subType] || 'event'}
-                              </span>
-                              {event.title}
-                            </div>
-                          )
-                        })}
-                        {overflowCount > 0 && (
-                          <span className="text-body-small px-1" style={{ color: 'var(--color-slate-400)', fontSize: 8 }}>
-                            +{overflowCount} more
-                          </span>
-                        )}
-                      </div>
+                    {day.isCurrentMonth && dayEvents.length > 0 && (
+                      isMobile ? (
+                        <div style={{ display: 'flex', gap: 2, marginTop: 2 }}>
+                          {dayEvents.slice(0, 3).map((ev, idx) => (
+                            <span key={idx} style={{ width: 5, height: 5, borderRadius: '50%', background: EVENT_FILTER_COLORS[EVENT_TYPE_TO_FILTER[ev.type]]?.dot || 'var(--color-slate-300)', flexShrink: 0 }} />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="mt-1 flex flex-col gap-1">
+                          {visibleEvents.map(event => {
+                            const colors = EVENT_TYPE_BG[event.type] || { bg: 'var(--color-surface-200)', text: 'var(--color-slate-500)' }
+                            return (
+                              <div
+                                key={event.id}
+                                className="text-label-small truncate flex items-center gap-1"
+                                style={{
+                                  padding: '2px 6px',
+                                  borderRadius: 'var(--radius-sm)',
+                                  backgroundColor: colors.bg,
+                                  color: colors.text,
+                                }}
+                              >
+                                <span className="material-symbols-outlined" style={{ fontSize: 11 }}>
+                                  {EVENT_SUBTYPE_ICONS[event.subType] || 'event'}
+                                </span>
+                                {event.title}
+                              </div>
+                            )
+                          })}
+                          {overflowCount > 0 && (
+                            <span className="text-body-small px-1" style={{ color: 'var(--color-slate-400)', fontSize: 8 }}>
+                              +{overflowCount} more
+                            </span>
+                          )}
+                        </div>
+                      )
                     )}
                   </button>
                 )
@@ -305,7 +327,7 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
       {panelMode === 'agenda' && selectedDate && mode === 'view' && (
         <>
           {/* <div onClick={closePanel} style={{ position: 'absolute', inset: 0, zIndex: 19 }} /> */}
-          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, zIndex: 20, boxShadow: 'var(--shadow-lg)' }}>
+          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, ...(isMobile && { left: 0 }), zIndex: 20, boxShadow: 'var(--shadow-lg)' }}>
             <CalendarDayPanel
               date={selectedDate}
               events={events}
@@ -316,6 +338,7 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
               onFormComplete={() => setShowForm(false)}
               bookingMachine={bookingMachine}
               onBookingConfirmed={onBookingConfirmed}
+              isMobile={isMobile}
             />
           </div>
         </>
@@ -323,12 +346,13 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
       {panelMode === 'newEvent' && mode === 'view' && (
         <>
           {/* <div onClick={closePanel} style={{ position: 'absolute', inset: 0, zIndex: 19 }} /> */}
-          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, zIndex: 20, boxShadow: 'var(--shadow-lg)' }}>
+          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, ...(isMobile && { left: 0 }), zIndex: 20, boxShadow: 'var(--shadow-lg)' }}>
             <NewEventPanel
               selectedDate={selectedDate}
               events={events}
               onDateSelect={(date) => setSelectedDate(date)}
               onClose={closePanel}
+              isMobile={isMobile}
             />
           </div>
         </>

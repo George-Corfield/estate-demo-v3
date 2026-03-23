@@ -38,7 +38,7 @@ function getRelativeDay(eventDate, referenceDate) {
   return formatAgendaDateShort(eventDate)
 }
 
-export default function CalendarDayPanel({ date, events, allEvents, onClose, onAddEvent, showForm, onFormComplete, bookingMachine = null, onBookingConfirmed }) {
+export default function CalendarDayPanel({ date, events, allEvents, onClose, onAddEvent, showForm, onFormComplete, bookingMachine = null, onBookingConfirmed, isMobile = false }) {
   const dayEvents = getEventsForDate(events, date)
   const upNext = useMemo(() => getUpNextEvents(allEvents || events, date), [allEvents, events, date])
   const [bookingPhase, setBookingPhase] = useState('confirm') // 'confirm' | 'time'
@@ -49,7 +49,7 @@ export default function CalendarDayPanel({ date, events, allEvents, onClose, onA
   }
 
   return (
-    <aside style={{ width: 320, background: 'var(--color-surface-50)', borderLeft: '1px solid var(--color-surface-300)', display: 'flex', flexDirection: 'column', flexShrink: 0, height: '100%' }}>
+    <aside style={{ width: isMobile ? '100%' : 320, background: 'var(--color-surface-50)', borderLeft: '1px solid var(--color-surface-300)', display: 'flex', flexDirection: 'column', flexShrink: 0, height: '100%' }}>
       {/* Agenda header */}
       <div style={{ padding: 24, flex: 1, overflowY: 'auto' }} className="custom-scrollbar">
         <div className="flex items-center justify-between" style={{ marginBottom: 24 }}>

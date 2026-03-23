@@ -7,8 +7,10 @@ import { formatOrdinalDate } from '../../utils/dates'
 import { useApp } from '../../context/AppContext'
 import { USERS } from '../../constants/roles'
 import NotificationBell from './NotificationBell'
+import useIsMobile from '../../hooks/useIsMobile'
 
 export default function TopBar() {
+  const isMobile = useIsMobile()
   const location = useLocation()
   const { currentUser, switchUser } = useApp()
   const [showEstateSwitch, setShowEstateSwitch] = useState(false)
@@ -140,36 +142,38 @@ export default function TopBar() {
           )}
         </div>
 
-        {/* Total hectares — stats dropdown */}
-        <div className="relative" ref={statsRef}>
-          <button
-            onClick={toggleStats}
-            className="flex items-center gap-1"
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '4px 6px',
-              fontFamily: 'var(--font-body)',
-              fontSize: 14,
-              fontWeight: 500,
-              color: 'rgba(255,255,255,0.9)',
-              transition: 'color var(--duration-fast) ease',
-              borderRadius: 'var(--radius-sm)',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
-          >
-            {estateStats.totalHectares} ha
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-              {showStats ? 'expand_less' : 'expand_more'}
-            </span>
-          </button>
+        {/* Total hectares — stats dropdown (hidden on mobile) */}
+        {!isMobile && (
+          <div className="relative" ref={statsRef}>
+            <button
+              onClick={toggleStats}
+              className="flex items-center gap-1"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px 6px',
+                fontFamily: 'var(--font-body)',
+                fontSize: 14,
+                fontWeight: 500,
+                color: 'rgba(255,255,255,0.9)',
+                transition: 'color var(--duration-fast) ease',
+                borderRadius: 'var(--radius-sm)',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+            >
+              {estateStats.totalHectares} ha
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                {showStats ? 'expand_less' : 'expand_more'}
+              </span>
+            </button>
 
-          {showStats && (
-            <EstateStatsDropdown onClose={() => setShowStats(false)} />
-          )}
-        </div>
+            {showStats && (
+              <EstateStatsDropdown onClose={() => setShowStats(false)} />
+            )}
+          </div>
+        )}
 
         <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>
           /
@@ -181,7 +185,7 @@ export default function TopBar() {
 
       {/* Right: Notifications + Avatar */}
       <div className="flex items-center gap-3">
-        <div className="text-body opacity-90" style={{color: 'white'}}>{dateStr}</div>
+        {!isMobile && <div className="text-body opacity-90" style={{color: 'white'}}>{dateStr}</div>}
         <NotificationBell />
         <div className="relative" ref={userSwitchRef}>
           <button

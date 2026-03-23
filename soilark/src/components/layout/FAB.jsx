@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import { ROLES } from '../../constants/roles'
+import useIsMobile from '../../hooks/useIsMobile'
 
 const MANAGER_ACTIONS = [
   { icon: 'add_task', label: 'Add Task', color: 'bg-blue-500', action: 'task' },
@@ -21,6 +22,7 @@ const WORKER_ACTIONS = [
 const CLICK_BUFFER = 12 // px buffer around the FAB container for misclicks
 
 export default function FAB() {
+  const isMobile = useIsMobile()
   const [open, setOpen] = useState(false)
   const [closing, setClosing] = useState(false)
   const [sickStep, setSickStep] = useState(0)
@@ -140,7 +142,7 @@ export default function FAB() {
   }
 
   return (
-    <div ref={containerRef} className="fixed bottom-6 right-6 z-50 flex flex-col-reverse items-end gap-3">
+    <div ref={containerRef} className="fixed right-6 z-50 flex flex-col-reverse items-end gap-3" style={isMobile ? { bottom: 'calc(var(--bottom-nav-height) + 16px)' } : { bottom: '24px' }}>
       {/* Main FAB button */}
       <button
         onClick={toggleOpen}
@@ -183,7 +185,12 @@ export default function FAB() {
       {open && obsStep === 1 && aiEnabledRef.current && (
         <div
           className="flex flex-col gap-2 bg-white rounded-2xl shadow-lg p-3"
-          style={{ minWidth: 400, minHeight: 100, animation: 'fadeInUp 0.2s ease-out both' }}
+          style={{
+            width: isMobile ? 'calc(100vw - 48px)' : undefined,
+            minWidth: isMobile ? 'unset' : 400,
+            minHeight: 100,
+            animation: 'fadeInUp 0.2s ease-out both',
+          }}
         >
           <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-slate-500)' }}>
             North Field — Observation

@@ -9,7 +9,7 @@ function formatAgendaDate(date) {
   return `${DAYS_SHORT[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]}`
 }
 
-export default function NewEventPanel({ selectedDate, events, onDateSelect, onClose }) {
+export default function NewEventPanel({ selectedDate, events, onDateSelect, onClose, isMobile = false }) {
   const { addCustomEvent, showToast } = useApp()
   const [form, setForm] = useState({
     type: 'appointment',
@@ -52,7 +52,7 @@ export default function NewEventPanel({ selectedDate, events, onDateSelect, onCl
   }
 
   return (
-    <aside style={{ width: 320, background: 'var(--color-surface-50)', borderLeft: '1px solid var(--color-surface-300)', display: 'flex', flexDirection: 'column', flexShrink: 0, height: '100%' }}>
+    <aside style={{ width: isMobile ? '100%' : 320, background: 'var(--color-surface-50)', borderLeft: '1px solid var(--color-surface-300)', display: 'flex', flexDirection: 'column', flexShrink: 0, height: '100%' }}>
       {/* Header */}
       <div style={{ padding: '24px 24px 16px', borderBottom: '1px solid var(--color-surface-300)' }}>
         <div className="flex items-center justify-between" style={{ marginBottom: 4 }}>
