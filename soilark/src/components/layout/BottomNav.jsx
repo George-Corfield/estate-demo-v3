@@ -30,7 +30,7 @@ export default function BottomNav() {
         padding: '8px 6px',
         display: 'flex',
         alignItems: 'center',
-        zIndex: 50,
+        zIndex: 70,
       }}
     >
       {items.map(item => {
