@@ -75,9 +75,10 @@ export default function TopBar() {
     <header
       className="flex items-center justify-between shrink-0"
       style={{
-        height: 'var(--topbar-height)',
+        height: 'calc(var(--topbar-height) + env(safe-area-inset-top, 0px))',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingInline: '24px',
         background: 'linear-gradient(to right, var(--color-deep-900), var(--color-deep-800))',
-        padding: '0 24px',
       }}
     >
       {/* Left: Breadcrumb */}
