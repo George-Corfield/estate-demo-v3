@@ -49,6 +49,7 @@ export const initialStaff = [
     lineManagerId: null,
     annualLeaveEntitlement: 28,
     sickLeaveAllowance: 8,
+    observations: [],
     documents: [
       { id: 'doc-01', name: 'Employment Contract', type: 'Employee Records', expiryDate: null },
       { id: 'doc-02', name: 'Right to Work', type: 'Employee Records', expiryDate: null },
@@ -77,6 +78,7 @@ export const initialStaff = [
     lineManagerId: 'staff-01',
     annualLeaveEntitlement: 28,
     sickLeaveAllowance: 8,
+    observations: [],
     documents: [
       { id: 'doc-06', name: 'Employment Contract', type: 'Employee Records', expiryDate: null },
       { id: 'doc-07', name: 'Right to Work', type: 'Employee Records', expiryDate: null },
@@ -104,6 +106,7 @@ export const initialStaff = [
     lineManagerId: 'staff-01',
     annualLeaveEntitlement: 28,
     sickLeaveAllowance: 8,
+    observations: [],
     documents: [
       { id: 'doc-10', name: 'Employment Contract', type: 'Employee Records', expiryDate: null },
       { id: 'doc-11', name: 'Right to Work', type: 'Employee Records', expiryDate: null },
@@ -131,6 +134,7 @@ export const initialStaff = [
     lineManagerId: 'staff-01',
     annualLeaveEntitlement: 28,
     sickLeaveAllowance: 8,
+    observations: [],
     documents: [
       { id: 'doc-14', name: 'Employment Contract', type: 'Employee Records', expiryDate: null },
       { id: 'doc-15', name: 'Right to Work', type: 'Employee Records', expiryDate: null },
@@ -158,6 +162,7 @@ export const initialStaff = [
     lineManagerId: 'staff-02',
     annualLeaveEntitlement: 28,
     sickLeaveAllowance: 8,
+    observations: [],
     documents: [
       { id: 'doc-18', name: 'Employment Contract', type: 'Employee Records', expiryDate: null },
       { id: 'doc-19', name: 'Right to Work', type: 'Employee Records', expiryDate: null },
@@ -184,6 +189,7 @@ export const initialStaff = [
     lineManagerId: 'staff-01',
     annualLeaveEntitlement: 28,
     sickLeaveAllowance: 8,
+    observations: [],
     documents: [
       { id: 'doc-21', name: 'Contractor Agreement', type: 'Employee Records', expiryDate: null },
       { id: 'doc-22', name: 'Right to Work', type: 'Employee Records', expiryDate: null },

@@ -7,11 +7,13 @@ import TabBar from '../../components/shared/TabBar'
 import StaffCreateForm from './StaffCreateForm'
 import StaffLeaveTab from './StaffLeaveTab'
 import { ProfileCircle } from './StaffListView'
+import ObservationThread from '../../components/shared/ObservationThread'
 
 const TABS = [
   { id: 'details', label: 'Details' },
   { id: 'work', label: 'Work' },
   { id: 'leave', label: 'Leave' },
+  { id: 'notes', label: 'Notes' },
   { id: 'documents', label: 'Documents' },
 ]
 
@@ -383,6 +385,18 @@ export default function StaffDetailView({ staffId, onClose }) {
         {/* Leave Tab */}
         {activeTab === 'leave' && !editing && (
           <StaffLeaveTab member={member} />
+        )}
+
+        {/* Notes Tab */}
+        {activeTab === 'notes' && !editing && (
+          <div style={{ padding: 20 }}>
+            <ObservationThread
+              entityType="staff"
+              entityId={member.id}
+              observations={member.observations || []}
+              legacyComments={[]}
+            />
+          </div>
         )}
 
         {/* Documents Tab */}

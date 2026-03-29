@@ -4,10 +4,12 @@ import TabBar from '../../components/shared/TabBar'
 import FieldOverviewTab from './FieldOverviewTab'
 import FieldHistoryTab from './FieldHistoryTab'
 import FieldTasksTab from './FieldTasksTab'
+import ObservationThread from '../../components/shared/ObservationThread'
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
   { id: 'tasks', label: 'Tasks' },
+  { id: 'notes', label: 'Notes' },
   { id: 'history', label: 'History' },
 ]
 
@@ -57,6 +59,16 @@ export default function FieldDetailView({ fieldId, onBack, initialTab, openObser
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {activeTab === 'overview' && <FieldOverviewTab field={field} />}
         {activeTab === 'tasks' && <FieldTasksTab field={field} />}
+        {activeTab === 'notes' && (
+          <div style={{ padding: 20 }}>
+            <ObservationThread
+              entityType="fields"
+              entityId={field.id}
+              observations={field.observations || []}
+              legacyComments={[]}
+            />
+          </div>
+        )}
         {activeTab === 'history' && <FieldHistoryTab field={field} openObservationForm={openObservationForm} onObservationFormOpened={onObservationFormOpened} />}
       </div>
     </div>

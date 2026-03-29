@@ -243,6 +243,18 @@ function reducer(state, action) {
           : state.fields,
       }
     }
+    case 'ADD_OBSERVATION': {
+      // action: { entityType, entityId, observation }
+      // entityType: 'fields' | 'tasks' | 'machinery' | 'staff'
+      return {
+        ...state,
+        [action.entityType]: state[action.entityType].map(item =>
+          item.id === action.entityId
+            ? { ...item, observations: [action.observation, ...(item.observations || [])] }
+            : item
+        ),
+      }
+    }
     case 'ADD_COMMENT':
       return {
         ...state,
@@ -478,6 +490,10 @@ export function AppProvider({ children }) {
     dispatch({ type: 'ADD_COMMENT', taskId, comment })
   }, [])
 
+  const addObservation = useCallback((entityType, entityId, observation) => {
+    dispatch({ type: 'ADD_OBSERVATION', entityType, entityId, observation })
+  }, [])
+
   const addMachinery = useCallback((equipment) => {
     dispatch({ type: 'ADD_MACHINERY', equipment })
   }, [])
@@ -591,6 +607,7 @@ export function AppProvider({ children }) {
     updateTask,
     moveTask,
     addComment,
+    addObservation,
     addMachinery,
     updateMachinery,
     addServiceRecord,

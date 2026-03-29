@@ -7,6 +7,7 @@ import { PriorityBadge, StatusBadge } from '../../components/shared/Badge'
 import TabBar from '../../components/shared/TabBar'
 import TaskTypeFields from './TaskTypeFields'
 import { SERVICE_TYPES } from '../../data/machinery'
+import ObservationThread from '../../components/shared/ObservationThread'
 
 const TABS = [
   { id: 'details', label: 'Details' },
@@ -30,10 +31,9 @@ const STATUS_FLOW = [
 ]
 
 export default function TaskDetailView({ taskId, onBack }) {
-  const { tasks, fields, machinery, staff, moveTask, addComment, showToast, currentUser, updateTask, addServiceRecord, updateMachinery } = useApp()
+  const { tasks, fields, machinery, staff, moveTask, showToast, currentUser, updateTask, addServiceRecord, updateMachinery } = useApp()
   const isManager = currentUser.role === ROLES.FARM_MANAGER
   const [activeTab, setActiveTab] = useState('details')
-  const [newComment, setNewComment] = useState('')
   const [expandedPanel, setExpandedPanel] = useState(null) // 'paused' | 'cancelled' | null
   const [pauseReason, setPauseReason] = useState('')
   const [pauseNote, setPauseNote] = useState('')
@@ -183,20 +183,7 @@ export default function TaskDetailView({ taskId, onBack }) {
     reader.readAsDataURL(file)
   }
 
-  const handleAddComment = (e) => {
-    e.preventDefault()
-    if (!newComment.trim()) return
-    addComment(task.id, {
-      id: `cmt-${Date.now()}`,
-      date: new Date().toISOString(),
-      author: 'John Smith',
-      text: newComment,
-    })
-    setNewComment('')
-    showToast('Comment added')
-  }
-
-  return (
+    return (
     <div className="flex flex-col h-full">
       {/* Header */}
       <div style={{ padding: 16, borderBottom: '1px solid var(--color-surface-300)' }}>
@@ -838,38 +825,12 @@ export default function TaskDetailView({ taskId, onBack }) {
         {/* Comments tab */}
         {activeTab === 'comments' && (
           <div style={{ padding: 20 }}>
-            <form onSubmit={handleAddComment} className="flex gap-2 mb-5">
-              <input
-                type="text"
-                value={newComment}
-                onChange={e => setNewComment(e.target.value)}
-                placeholder="Add a comment..."
-                className="form-input flex-1"
-              />
-              <button type="submit" className="btn btn-primary">Post</button>
-            </form>
-
-            <div className="flex flex-col gap-4">
-              {[...(task.comments || [])].reverse().map((comment, index) => (
-                <div key={comment.id} className="flex gap-3 py-4"
-                  style={{borderTop: index !== 0 ? '1px solid var(--color-slate-300)' : 'none'}}
-                >
-                  <div
-                    className="flex items-center justify-center shrink-0"
-                    style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--color-surface-200)', color: 'var(--color-slate-500)', fontSize: 12, fontWeight: 700 }}
-                  >
-                    {comment.author.split(' ').map(n => n[0]).join('')}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-heading-4" style={{ color: 'var(--color-slate-900)' }}>{comment.author}</span>
-                      <span className="text-body-small" style={{ color: 'var(--color-slate-400)' }}>{formatShortDate(comment.date)}</span>
-                    </div>
-                    <p className="text-body" style={{ color: 'var(--color-slate-600)' }}>{comment.text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ObservationThread
+              entityType="tasks"
+              entityId={task.id}
+              observations={task.observations || []}
+              legacyComments={task.comments || []}
+            />
           </div>
         )}
       </div>

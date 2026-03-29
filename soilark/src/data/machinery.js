@@ -69,6 +69,7 @@ export const initialMachinery = [
     ],
     notes: 'Primary tractor for drilling and cultivation work. GPS auto-steer fitted.',
     assignedOperator: 'Tom Hughes',
+    observations: [],
     history: [
       { id: 'mhist-01-1', timestamp: '2026-02-09T08:00:00.000Z', type: 'task_assigned', description: 'Task "Plant Winter Wheat" created and assigned', taskId: 'task-03', taskName: 'Plant Winter Wheat' },
       { id: 'mhist-01-2', timestamp: '2025-10-12T10:00:00.000Z', type: 'service_recorded', description: 'Regular Service recorded — 1100 hrs, £1850' },
@@ -129,6 +130,7 @@ export const initialMachinery = [
       { date: '2025-02-01', category: 'Parts', description: 'Replacement vanes and bearings', provider: 'Amazone UK', amount: 285.00 },
     ],
     notes: 'Tractor-mounted fertiliser spreader. Used with John Deere 6155R.',
+    observations: [],
     history: [
       { id: 'mhist-02-1', timestamp: '2026-02-08T10:00:00.000Z', type: 'task_assigned', description: 'Task "Apply Spring Fertiliser" created and assigned', taskId: 'task-01', taskName: 'Apply Spring Fertiliser' },
       { id: 'mhist-02-2', timestamp: '2025-11-05T10:00:00.000Z', type: 'service_recorded', description: 'Post-Season Service recorded — 380 hrs, £420' },
@@ -195,6 +197,7 @@ export const initialMachinery = [
     ],
     notes: 'Heavy-duty tractor for silage and baling work. High-spec cab with suspension.',
     assignedOperator: 'James Fletcher',
+    observations: [],
     history: [
       { id: 'mhist-03-1', timestamp: '2026-02-05T17:00:00.000Z', type: 'task_status', description: 'Task "Harvest Hay" → done', taskId: 'task-04', taskName: 'Harvest Hay' },
       { id: 'mhist-03-2', timestamp: '2026-02-03T10:00:00.000Z', type: 'task_assigned', description: 'Task "Harvest Hay" created and assigned', taskId: 'task-04', taskName: 'Harvest Hay' },
@@ -258,6 +261,7 @@ export const initialMachinery = [
       { date: '2025-01-15', category: 'Insurance', description: 'Annual premium', provider: 'SafeFarm Insurance', amount: 8500.00 },
     ],
     notes: 'Self-propelled forage harvester. Seasonal use only — June to September.',
+    observations: [],
     history: [
       { id: 'mhist-04-1', timestamp: '2026-02-05T17:00:00.000Z', type: 'task_status', description: 'Task "Harvest Hay" → done', taskId: 'task-04', taskName: 'Harvest Hay' },
       { id: 'mhist-04-2', timestamp: '2026-02-03T10:00:00.000Z', type: 'task_assigned', description: 'Task "Harvest Hay" created and assigned', taskId: 'task-04', taskName: 'Harvest Hay' },
@@ -323,6 +327,7 @@ export const initialMachinery = [
       { date: '2025-05-12', category: 'Fuel', description: 'Diesel Refill (600L)', provider: 'AgriEnergy Ltd', amount: 864.00 },
     ],
     notes: 'Currently in workshop for scheduled maintenance. Expected back online next week.',
+    observations: [],
     history: [
       { id: 'mhist-05-1', timestamp: '2025-11-01T10:00:00.000Z', type: 'service_recorded', description: 'Regular Service recorded — 2100 hrs, £2800' },
       { id: 'mhist-05-2', timestamp: '2025-07-20T09:00:00.000Z', type: 'service_recorded', description: 'Emergency Repair recorded — 1890 hrs, £6500' },
@@ -383,6 +388,7 @@ export const initialMachinery = [
       { date: '2025-01-10', category: 'Insurance', description: 'Annual premium', provider: 'SafeFarm Insurance', amount: 9200.00 },
     ],
     notes: 'Seasonal use — July to September. Yield monitor and GPS mapping fitted.',
+    observations: [],
     history: [
       { id: 'mhist-06-1', timestamp: '2025-09-15T10:00:00.000Z', type: 'service_recorded', description: 'Post-Season Service recorded — 420 hrs, £4500' },
       { id: 'mhist-06-2', timestamp: '2025-07-01T09:00:00.000Z', type: 'service_recorded', description: 'Pre-Season Service recorded — 350 hrs, £3200' },

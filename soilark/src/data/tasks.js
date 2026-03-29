@@ -22,6 +22,10 @@ export const initialTasks = [
       totalApplied: 13775,
       totalCost: 5234.50,
     },
+    observations: [
+      { id: 'obs-task01-1', timestamp: '2026-02-10T14:15:00', authorId: 'staff-01', authorName: 'John Smith', authorInitials: 'JS', text: "Soil conditions still a bit wet after last week's rain — might need to delay if it doesn't dry out by the weekend.", attachment: null },
+      { id: 'obs-task01-2', timestamp: '2026-02-08T09:45:00', authorId: 'staff-04', authorName: 'Mike Williams', authorInitials: 'MW', text: 'Spreader calibrated and ready. NPK delivery confirmed for Thursday morning.', attachment: null },
+    ],
     comments: [
       { id: 'cmt-01', date: '2026-02-08T10:30:00', author: 'John Smith', text: 'Ordered fertiliser from supplier. Delivery expected Thursday 13th.' },
       { id: 'cmt-02', date: '2026-02-10T14:15:00', author: 'David Jones', text: 'Spreader calibrated and ready. Will need to refill hopper twice for full coverage.' },
@@ -48,6 +52,7 @@ export const initialTasks = [
       faultDescription: 'Three posts rotted at base, 15m of stock wire sagging and detached.',
       partsNeeded: '3x treated fence posts, 20m stock wire, staples, straining tools',
     },
+    observations: [],
     comments: [
       { id: 'cmt-03', date: '2026-02-06T16:00:00', author: 'Sarah Wilson', text: 'Found cattle in the brook again this morning. This needs doing ASAP before we have an escape onto the road.' },
       { id: 'cmt-04', date: '2026-02-07T09:00:00', author: 'Tom Taylor', text: 'Ordered posts and wire from the merchants. Should arrive Monday.' },
@@ -79,6 +84,7 @@ export const initialTasks = [
       totalCost: 1285.20,
       establishmentMethod: 'Direct Drill',
     },
+    observations: [],
     comments: [
       { id: 'cmt-05', date: '2026-02-09T08:00:00', author: 'David Jones', text: 'Managed to get 9 hectares done before the rain came in. Drill is parked at the north end of the field.' },
       { id: 'cmt-06', date: '2026-02-11T07:30:00', author: 'John Smith', text: 'Forecast shows a dry spell from Wednesday. Plan to finish then.' },
@@ -106,6 +112,7 @@ export const initialTasks = [
       baleType: 'Round (4ft)',
       cutNumber: '1st cut (winter)',
     },
+    observations: [],
     comments: [
       { id: 'cmt-07', date: '2026-02-03T16:30:00', author: 'David Jones', text: 'Cut today. Good crop, nice and dry. Will turn tomorrow.' },
       { id: 'cmt-08', date: '2026-02-05T17:00:00', author: 'Mike Williams', text: 'All baled and carted to the barn. 82 round bales total. Good quality.' },
@@ -125,6 +132,7 @@ export const initialTasks = [
     fieldIds: ['field-04'],
     completedDate: null,
     typeFields: {},
+    observations: [],
     comments: [],
   },
   {
@@ -141,6 +149,7 @@ export const initialTasks = [
     fieldIds: ['field-01'],
     completedDate: null,
     typeFields: {},
+    observations: [],
     comments: [],
   },
   {
@@ -157,6 +166,7 @@ export const initialTasks = [
     fieldIds: ['field-01'],
     completedDate: null,
     typeFields: {},
+    observations: [],
     comments: [],
   },
   {
@@ -173,6 +183,7 @@ export const initialTasks = [
     fieldIds: ['field-06'],
     completedDate: null,
     typeFields: {},
+    observations: [],
     comments: [],
   },
   {
@@ -189,6 +200,7 @@ export const initialTasks = [
     fieldIds: ['field-11'],
     completedDate: null,
     typeFields: {},
+    observations: [],
     comments: [],
   },
   {
@@ -205,6 +217,7 @@ export const initialTasks = [
     fieldIds: ['field-02'],
     completedDate: null,
     typeFields: {},
+    observations: [],
     comments: [],
   },
 ]

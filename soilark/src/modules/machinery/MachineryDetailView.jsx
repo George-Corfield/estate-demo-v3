@@ -5,6 +5,7 @@ import { formatGBP } from '../../utils/currency'
 import { formatShortDate, formatDateWithTime } from '../../utils/dates'
 import TabBar from '../../components/shared/TabBar'
 import { MACHINERY_STATUS_COLORS, SERVICE_TYPES } from '../../data/machinery'
+import ObservationThread from '../../components/shared/ObservationThread'
 
 const HISTORY_TYPE_CONFIG = {
   task_assigned: { icon: 'task', color: '#3b82f6' },
@@ -23,6 +24,7 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
   const { machinery, tasks, addServiceRecord, updateMachinery, showToast } = useApp()
   const [activeTab, setActiveTab] = useState('summary')
   const [showServiceForm, setShowServiceForm] = useState(false)
+  const [showNotes, setShowNotes] = useState(false)
   const navigate = useNavigate()
 
   const equipment = useMemo(() => machinery.find(m => m.id === equipmentId), [machinery, equipmentId])
@@ -128,6 +130,55 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
                 </button>
               </div>
             )}
+
+            {/* Notes — collapsible */}
+            <div style={{ borderTop: '1px solid var(--color-surface-300)', paddingTop: 12 }}>
+              <button
+                onClick={() => setShowNotes(v => !v)}
+                className="w-full flex items-center justify-between"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-label" style={{ color: 'var(--color-slate-400)' }}>NOTES</span>
+                  {(equipment.observations || []).length > 0 && (
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minWidth: 18,
+                        height: 18,
+                        borderRadius: 9,
+                        background: 'var(--color-surface-300)',
+                        color: 'var(--color-slate-500)',
+                        fontSize: 11,
+                        fontFamily: 'var(--font-body)',
+                        fontWeight: 600,
+                        padding: '0 5px',
+                      }}
+                    >
+                      {(equipment.observations || []).length}
+                    </span>
+                  )}
+                </div>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 18, color: 'var(--color-slate-400)', transition: 'transform 150ms ease', transform: showNotes ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                >
+                  expand_more
+                </span>
+              </button>
+              {showNotes && (
+                <div style={{ marginTop: 12 }}>
+                  <ObservationThread
+                    entityType="machinery"
+                    entityId={equipment.id}
+                    observations={equipment.observations || []}
+                    legacyComments={[]}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         )}
 
