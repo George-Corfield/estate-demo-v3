@@ -1,13 +1,56 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
+import useIsMobile from '../../hooks/useIsMobile'
 import TaskFilterBar from './TaskFilterBar'
 import TaskKanban from './TaskKanban'
 import TaskDetailView from './TaskDetailView'
 import TaskCreateForm from './TaskCreateForm'
 import AITaskInput from './AITaskInput'
+import MobileTaskOverlay from './MobileTaskOverlay'
 import EstateMap from '../../components/shared/EstateMap'
 import Calendar from '../../components/shared/Calendar'
+
+const MOBILE_FILTER_CHIPS = ['All Tasks', 'Urgent', 'Fertilizing', 'Planting', 'Harvesting', 'Maintenance', 'Irrigation', 'Feeding']
+
+function MobileFilterChips({ filters, onChange }) {
+  const active = filters.priority === 'high' ? 'Urgent' : (filters.type !== 'all' ? filters.type : 'All Tasks')
+
+  const handleClick = (chip) => {
+    if (chip === 'All Tasks') {
+      onChange({ priority: 'all', type: 'all', field: 'all' })
+    } else if (chip === 'Urgent') {
+      onChange({ priority: 'high', type: 'all', field: filters.field })
+    } else {
+      onChange({ priority: 'all', type: chip, field: filters.field })
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '12px 16px 8px', flexShrink: 0, scrollbarWidth: 'none' }}>
+      {MOBILE_FILTER_CHIPS.map(chip => {
+        const isActive = chip === active
+        return (
+          <button
+            key={chip}
+            onClick={() => handleClick(chip)}
+            style={{
+              flexShrink: 0, whiteSpace: 'nowrap',
+              padding: '8px 16px', borderRadius: 99, border: 'none', cursor: 'pointer',
+              fontSize: 13, fontWeight: isActive ? 700 : 500,
+              background: isActive ? 'var(--color-primary)' : 'var(--color-surface-100)',
+              color: isActive ? '#fff' : 'var(--color-slate-500)',
+              boxShadow: isActive ? '0 2px 8px rgba(19,60,18,0.20)' : 'none',
+              transition: 'all 150ms ease',
+            }}
+          >
+            {chip}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 export default function TasksPage() {
   const [activeView, setActiveView] = useState('kanban')
@@ -19,6 +62,7 @@ export default function TasksPage() {
   const [formKey, setFormKey] = useState(0)
   const [initialValues, setInitialValues] = useState(null)
   const { tasks, aiEnabled } = useApp()
+  const isMobile = useIsMobile()
   const aiEnabledRef = useRef(aiEnabled)
   useEffect(() => { aiEnabledRef.current = aiEnabled }, [aiEnabled])
   const location = useLocation()
@@ -92,6 +136,32 @@ export default function TasksPage() {
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
       setDueDate(key)
     }
+  }
+
+  // Mobile branch
+  if (isMobile) {
+    if (activeView === 'detail') {
+      return (
+        <MobileTaskOverlay
+          taskId={selectedTaskId}
+          onBack={() => setActiveView('kanban')}
+        />
+      )
+    }
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+        <MobileFilterChips filters={filters} onChange={setFilters} />
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          <TaskKanban
+            filters={filters}
+            onTaskClick={(id) => {
+              setSelectedTaskId(id)
+              setActiveView('detail')
+            }}
+          />
+        </div>
+      </div>
+    )
   }
 
   return (
