@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import EstateMap from '../../components/shared/EstateMap'
 import Calendar from '../../components/shared/Calendar'
@@ -58,62 +58,89 @@ function DrawerRow({ icon, iconColor, title, subtitle, meta, onClick, badge, bad
   )
 }
 
-// ─── Widget Card ──────────────────────────────────────────────────────────────
+// ─── Widget Chip ──────────────────────────────────────────────────────────────
 
-function WidgetCard({ icon, iconColor, label, primary, secondary, badge, badgeColor, onClick }) {
-  const [hovered, setHovered] = useState(false)
-
+function WidgetChip({ label, value, sublabel, attention, onClick }) {
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
+        background: attention ? 'rgba(30,20,8,0.68)' : 'rgba(15,30,20,0.62)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: attention ? '1px solid rgba(212,154,32,0.35)' : '1px solid rgba(255,255,255,0.09)',
+        borderRadius: 'var(--radius-lg, 8px)',
+        padding: '10px 12px',
         width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '12px 14px',
-        background: 'rgba(255,255,255,0.72)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        border: `1px solid ${hovered ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}`,
-        borderRadius: 'var(--radius-md)',
         cursor: 'pointer',
         textAlign: 'left',
-        transition: 'all 120ms ease',
-        transform: hovered ? 'translateY(-1px)' : 'none',
-        boxShadow: hovered
-          ? '0 4px 16px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.06)'
-          : '0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+        minHeight: 44,
       }}
     >
-      <span
-        className="material-symbols-outlined"
-        style={{ fontSize: 22, color: iconColor || 'var(--color-deep-500)', flexShrink: 0 }}
-      >{icon}</span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--color-slate-500)' }}>{label}</span>
-          {badge != null && (
-            <span style={{
-              fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 99,
-              background: badgeColor || 'var(--color-amber-100)',
-              color: badgeColor ? '#fff' : 'var(--color-amber-700)',
-              lineHeight: 1.5,
-            }}>{badge}</span>
-          )}
-        </div>
-        <span style={{ color: 'var(--color-slate-900)', fontWeight: 600, fontSize: 16, lineHeight: 1.2 }}>
-          {primary}
-        </span>
-        {secondary && (
-          <p style={{ color: 'var(--color-slate-400)', fontSize: 11, margin: 0, marginTop: 1 }}>
-            {secondary}
-          </p>
-        )}
-      </div>
-      <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-slate-300)', flexShrink: 0 }}>chevron_right</span>
+      <div style={{
+        fontFamily: 'var(--font-mono)',
+        fontSize: 8,
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        color: attention ? 'rgba(212,154,32,0.9)' : 'var(--color-green-300, #86efac)',
+        marginBottom: 2,
+      }}>{label}</div>
+      <div style={{
+        fontFamily: 'var(--font-heading)',
+        fontSize: 20,
+        fontWeight: 900,
+        color: '#fff',
+        lineHeight: 1.1,
+      }}>{value}</div>
+      <div style={{
+        fontFamily: 'var(--font-body)',
+        fontSize: 10,
+        lineHeight: 1.3,
+        color: attention ? 'rgba(212,154,32,0.7)' : 'rgba(255,255,255,0.45)',
+        marginTop: 2,
+      }}>{sublabel}</div>
+    </button>
+  )
+}
+
+// ─── Compact Chip (scrollable strip) ─────────────────────────────────────────
+
+function CompactChip({ icon, value, attention, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        flexShrink: 0,
+        width: 52, height: 52,
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center', gap: 2,
+        background: attention ? 'rgba(30,20,8,0.72)' : 'rgba(15,30,20,0.65)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: attention ? '1px solid rgba(212,154,32,0.4)' : '1px solid rgba(255,255,255,0.10)',
+        borderRadius: 'var(--radius-lg, 8px)',
+        cursor: 'pointer',
+        position: 'relative',
+      }}
+    >
+      {attention && (
+        <span style={{
+          position: 'absolute', top: 7, right: 7,
+          width: 6, height: 6, borderRadius: '50%',
+          background: 'rgba(212,154,32,0.9)',
+        }} />
+      )}
+      <span className="material-symbols-outlined" style={{
+        fontSize: 20,
+        color: attention ? 'rgba(212,154,32,0.9)' : 'rgba(255,255,255,0.75)',
+      }}>{icon}</span>
+      <span style={{
+        fontFamily: 'var(--font-heading)',
+        fontSize: 13,
+        fontWeight: 700,
+        color: '#fff',
+        lineHeight: 1,
+      }}>{value}</span>
     </button>
   )
 }
@@ -223,16 +250,11 @@ function buildActivityFeed(tasks, fields, staff) {
 // ─── Main Component ────────────────────────────────────────────────────────────
 
 export default function OverviewPageMobile() {
-  const [mobileSection, setMobileSection] = useState(0)
-  const [touchStartX, setTouchStartX] = useState(null)
-  const [touchStartY, setTouchStartY] = useState(null)
-  const [swipeDelta, setSwipeDelta] = useState(0)
-  const swipeAxisRef = useRef(null)
-  const swipeContainerRef = useRef(null)
-
+  const [calendarOpen, setCalendarOpen] = useState(false)
   const [addEvent, setAddEvent] = useState(false)
   const [highlightedFieldIds, setHighlightedFieldIds] = useState([])
   const [expandedWidget, setExpandedWidget] = useState(null)
+  const [widgetPanelOpen, setWidgetPanelOpen] = useState(false)
   const [weather, setWeather] = useState(null)
   const [expandedDay, setExpandedDay] = useState(null)
   const [bookingMachine, setBookingMachine] = useState(null)
@@ -244,11 +266,17 @@ export default function OverviewPageMobile() {
 
   useEffect(() => {
     if (location.state?.openCalendar) {
-      setMobileSection(1)
+      setCalendarOpen(true)
       setAddEvent(!!location.state?.addEvent)
       navigate('.', { replace: true, state: {} })
     }
   }, [location.state, navigate])
+
+  useEffect(() => {
+    const handler = () => setWidgetPanelOpen(false)
+    window.addEventListener('fab-open', handler)
+    return () => window.removeEventListener('fab-open', handler)
+  }, [])
 
   // Weather fetch
   useEffect(() => {
@@ -324,17 +352,6 @@ export default function OverviewPageMobile() {
       })
   }, [])
 
-  // Non-passive touch handler to prevent scroll when swiping horizontally
-  useEffect(() => {
-    const el = swipeContainerRef.current
-    if (!el) return
-    const handler = (e) => {
-      if (swipeAxisRef.current === 'x') e.preventDefault()
-    }
-    el.addEventListener('touchmove', handler, { passive: false })
-    return () => el.removeEventListener('touchmove', handler)
-  }, [])
-
   // ── Derived data ──────────────────────────────────────────────────────────
 
   const todayStr = today()
@@ -353,7 +370,6 @@ export default function OverviewPageMobile() {
   )
   const maintenanceMachinery = machinery.filter(m => m.status === 'Unavailable')
   const storedMachinery = machinery.filter(m => m.status === 'Available')
-  const soldMachinery = machinery.filter(m => m.status === 'Sold')
 
   const availableStaff = staff.filter(s => s.status === 'Available')
   const onTaskStaff = staff.filter(s => s.status === 'On Task')
@@ -381,46 +397,10 @@ export default function OverviewPageMobile() {
     if (widget === 'tasks') setHighlightedFieldIds(fieldsWithTasks)
     if (widget === 'notifications') markAllNotificationsRead(currentUser.id)
     setExpandedWidget(widget)
+    setWidgetPanelOpen(false)
   }
 
   const todayWeather = weather?.[0] || null
-  const rainBadge = todayWeather && todayWeather.pop > 50 ? `${todayWeather.pop}% rain` : null
-
-  // ── Touch handlers ────────────────────────────────────────────────────────
-
-  const handleTouchStart = (e) => {
-    setTouchStartX(e.touches[0].clientX)
-    setTouchStartY(e.touches[0].clientY)
-    setSwipeDelta(0)
-    swipeAxisRef.current = null
-  }
-
-  const handleTouchMove = (e) => {
-    if (touchStartX === null) return
-    const dx = e.touches[0].clientX - touchStartX
-    const dy = e.touches[0].clientY - touchStartY
-
-    if (swipeAxisRef.current === null) {
-      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
-        swipeAxisRef.current = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y'
-      }
-    }
-
-    if (swipeAxisRef.current === 'x') {
-      setSwipeDelta(dx)
-    }
-  }
-
-  const handleTouchEnd = () => {
-    if (Math.abs(swipeDelta) > 50) {
-      const direction = swipeDelta < 0 ? 1 : -1
-      setMobileSection(prev => Math.max(0, Math.min(2, prev + direction)))
-    }
-    setSwipeDelta(0)
-    setTouchStartX(null)
-    setTouchStartY(null)
-    swipeAxisRef.current = null
-  }
 
   const handleFieldClick = (field) => {
     navigate('/fields', { state: { openFieldId: field.id } })
@@ -675,7 +655,7 @@ export default function OverviewPageMobile() {
                       />
                     </div>
                     <button
-                      onClick={() => { setBookingMachine(m); setExpandedWidget(null); setMobileSection(1) }}
+                      onClick={() => { setBookingMachine(m); setExpandedWidget(null); setCalendarOpen(true) }}
                       title="Book service"
                       style={{
                         flexShrink: 0, padding: '6px 10px',
@@ -749,85 +729,142 @@ export default function OverviewPageMobile() {
     }
   }
 
-  const TABS = ['Map', 'Calendar', 'Overview']
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      {/* Tab bar */}
-      <div style={{
-        display: 'flex',
-        background: 'var(--color-surface-50)',
-        borderBottom: '1px solid var(--color-surface-200)',
-        flexShrink: 0,
-      }}>
-        {TABS.map((tab, i) => (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+
+      {/* Layer 1: Full-screen map */}
+      <EstateMap
+        onFieldClick={handleFieldClick}
+        highlightedFieldIds={highlightedFieldIds}
+        alertFieldIds={effectiveExpandedWidget === 'tasks' ? fieldsWithOverdueTasks : []}
+        style={{ position: 'absolute', inset: 0 }}
+      />
+
+      {/* Layer 2: Clear highlights button */}
+      {highlightedFieldIds.length > 0 && (
+        <div style={{ position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 20 }}>
           <button
-            key={tab}
-            onClick={() => setMobileSection(i)}
+            onClick={() => setHighlightedFieldIds([])}
             style={{
-              flex: 1,
-              padding: '10px 0',
-              background: 'none',
-              border: 'none',
-              borderBottom: mobileSection === i ? '2px solid var(--color-green-500)' : '2px solid transparent',
-              cursor: 'pointer',
-              fontFamily: 'var(--font-body)',
-              fontSize: 13,
-              fontWeight: mobileSection === i ? 600 : 400,
-              color: mobileSection === i ? 'var(--color-green-500)' : 'var(--color-slate-500)',
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '7px 14px', background: 'var(--color-deep-600)', color: '#fff',
+              border: 'none', borderRadius: 99, fontSize: 12, fontWeight: 600,
+              cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
             }}
           >
-            {tab}
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>layers_clear</span>
+            Clear field highlights
           </button>
-        ))}
-      </div>
+        </div>
+      )}
 
-      {/* Swipe container */}
-      <div
-        ref={swipeContainerRef}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        style={{ flex: 1, overflow: 'hidden', position: 'relative' }}
-      >
-        <div
+      {/* Layer 3: Widget panel toggle — top-right */}
+      <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 25, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+        {/* Toggle button */}
+        <button
+          onClick={() => {
+            const opening = !widgetPanelOpen
+            setWidgetPanelOpen(opening)
+            if (opening) {
+              setExpandedWidget(null)
+              window.dispatchEvent(new CustomEvent('overview-tray-open'))
+            }
+          }}
           style={{
-            display: 'flex',
-            width: '300%',
-            height: '100%',
-            transform: `translateX(calc(${-mobileSection * (100 / 3)}% + ${swipeDelta / 3}px))`,
-            transition: swipeDelta === 0 ? 'transform 250ms ease' : 'none',
+            width: 44, height: 44,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: widgetPanelOpen ? 'rgba(19,236,19,0.18)' : 'rgba(15,30,20,0.65)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: widgetPanelOpen ? '1px solid rgba(19,236,19,0.35)' : '1px solid rgba(255,255,255,0.10)',
+            borderRadius: 'var(--radius-lg, 8px)',
+            cursor: 'pointer',
+            flexShrink: 0,
           }}
         >
-          {/* Section 0: Map */}
-          <div style={{ width: '33.333%', height: '100%', flexShrink: 0, position: 'relative' }}>
-            <EstateMap
-              onFieldClick={handleFieldClick}
-              highlightedFieldIds={highlightedFieldIds}
-              alertFieldIds={effectiveExpandedWidget === 'tasks' ? fieldsWithOverdueTasks : []}
-            />
-            {highlightedFieldIds.length > 0 && (
-              <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 20 }}>
-                <button
-                  onClick={() => setHighlightedFieldIds([])}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '7px 14px', background: 'var(--color-deep-600)', color: '#fff',
-                    border: 'none', borderRadius: 99, fontSize: 12, fontWeight: 600,
-                    cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>layers_clear</span>
-                  Clear field highlights
-                </button>
-              </div>
-            )}
-          </div>
+          <span className="material-symbols-outlined" style={{
+            fontSize: 22,
+            color: widgetPanelOpen ? 'var(--color-primary, #13ec13)' : 'rgba(255,255,255,0.8)',
+            transition: 'transform 0.2s',
+            transform: widgetPanelOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}>expand_more</span>
+        </button>
 
-          {/* Section 1: Calendar */}
-          <div style={{ width: '33.333%', height: '100%', flexShrink: 0, overflow: 'auto' }}>
+        {/* Vertical chip panel */}
+        {widgetPanelOpen && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <CompactChip
+              icon="calendar_month"
+              value={new Date().getDate()}
+              onClick={() => { setWidgetPanelOpen(false); setCalendarOpen(true) }}
+            />
+            <CompactChip
+              icon="checklist"
+              value={overdueTasks.length > 0 ? String(overdueTasks.length) : String(todayTasks.length)}
+              attention={overdueTasks.length > 0}
+              onClick={() => handleWidgetExpand('tasks')}
+            />
+            <CompactChip
+              icon={todayWeather ? todayWeather.icon : 'thermostat'}
+              value={todayWeather ? `${todayWeather.temp}°` : '—'}
+              attention={!!(todayWeather && (todayWeather.pop > 60 || todayWeather.windAvg > 25))}
+              onClick={() => handleWidgetExpand('weather')}
+            />
+            <CompactChip
+              icon="people"
+              value={String(availableStaff.length + onTaskStaff.length)}
+              onClick={() => handleWidgetExpand('staff')}
+            />
+            <CompactChip
+              icon="agriculture"
+              value={String(activeMachinery.length)}
+              attention={serviceDueMachinery.length > 0}
+              onClick={() => handleWidgetExpand('machinery')}
+            />
+            <CompactChip
+              icon="notifications"
+              value={String(unreadCount > 0 ? unreadCount : userNotifs.length)}
+              attention={unreadCount > 0}
+              onClick={() => handleWidgetExpand('notifications')}
+            />
+            <CompactChip
+              icon="history"
+              value={String(activityFeed.length)}
+              onClick={() => handleWidgetExpand('activity')}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Layer 5: Calendar overlay */}
+      {calendarOpen && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 30,
+          background: 'var(--color-surface-50)',
+          display: 'flex', flexDirection: 'column',
+        }}>
+          <div style={{
+            height: 48, display: 'flex', alignItems: 'center', gap: 8,
+            padding: '0 16px', borderBottom: '1px solid var(--color-surface-200)',
+            background: 'var(--color-surface-50)', flexShrink: 0,
+          }}>
+            <button
+              onClick={() => { setCalendarOpen(false); setBookingMachine(null) }}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', color: 'var(--color-deep-500)',
+                padding: 0, minWidth: 44, minHeight: 44,
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 22 }}>arrow_back</span>
+            </button>
+            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: 'var(--color-slate-800)' }}>
+              Calendar
+            </span>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
             <Calendar
-              onToggleView={() => setMobileSection(0)}
+              onToggleView={() => setCalendarOpen(false)}
               initialAddEvent={addEvent}
               bookingMachine={bookingMachine}
               onBookingConfirmed={(machine, dateStr, time) => {
@@ -847,93 +884,24 @@ export default function OverviewPageMobile() {
                 })
                 showToast(`Service booked for ${machine.name}`)
                 setBookingMachine(null)
+                setCalendarOpen(false)
                 navigate('/tasks', { state: { openTaskId: taskId } })
               }}
             />
           </div>
-
-          {/* Section 2: Widgets */}
-          <div style={{ width: '33.333%', height: '100%', flexShrink: 0, overflowY: 'auto', padding: '12px 16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <WidgetCard
-              icon={todayWeather?.icon || 'wb_sunny'}
-              iconColor={todayWeather?.iconColor || 'var(--color-amber-400)'}
-              label="Weather"
-              primary={todayWeather ? `${todayWeather.temp}°C · ${todayWeather.label}` : 'Loading…'}
-              secondary={todayWeather ? `Wind ${todayWeather.windAvg} km/h` : null}
-              badge={rainBadge}
-              badgeColor={null}
-              onClick={() => handleWidgetExpand('weather')}
-            />
-            <WidgetCard
-              icon="assignment"
-              label="Tasks"
-              primary={`${todayTasks.length} Today`}
-              secondary={overdueTasks.length > 0 ? `${overdueTasks.length} overdue` : 'All on track'}
-              badge={overdueTasks.length > 0 ? overdueTasks.length : null}
-              badgeColor={overdueTasks.length > 0 ? 'var(--color-red-500)' : null}
-              onClick={() => handleWidgetExpand('tasks')}
-            />
-            {isManager && (
-              <WidgetCard
-                icon="group"
-                label="Staff"
-                primary={`${availableStaff.length + onTaskStaff.length} Working`}
-                secondary={`${onTaskStaff.length} on task${sickStaff.length > 0 ? ` · ${sickStaff.length} sick` : ''}`}
-                badge={sickStaff.filter(s => s.status === 'Pending Sick Confirmation').length > 0 ? '!' : null}
-                badgeColor="var(--color-red-500)"
-                onClick={() => handleWidgetExpand('staff')}
-              />
-            )}
-            {isManager && (
-              <WidgetCard
-                icon="agriculture"
-                label="Machinery"
-                primary={`${activeMachinery.length} Active`}
-                secondary={[
-                  serviceDueMachinery.length > 0 && `${serviceDueMachinery.length} service due`,
-                  maintenanceMachinery.length > 0 && `${maintenanceMachinery.length} maintenance`,
-                  storedMachinery.length > 0 && `${storedMachinery.length} stored`,
-                  soldMachinery.length > 0 && `${soldMachinery.length} sold`,
-                ].filter(Boolean).join(' · ') || 'All available'}
-                badge={serviceDueMachinery.length > 0 ? serviceDueMachinery.length : null}
-                badgeColor="var(--color-amber-500)"
-                onClick={() => handleWidgetExpand('machinery')}
-              />
-            )}
-            <WidgetCard
-              icon={unreadCount > 0 ? 'notifications_active' : 'notifications'}
-              iconColor={unreadCount > 0 ? 'var(--color-amber-500)' : 'var(--color-slate-400)'}
-              label="Notifications"
-              primary={userNotifs.length === 0 ? 'No notifications' : `${userNotifs.length} notification${userNotifs.length > 1 ? 's' : ''}`}
-              secondary={unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
-              badge={unreadCount > 0 ? unreadCount : null}
-              badgeColor="var(--color-amber-500)"
-              onClick={() => handleWidgetExpand('notifications')}
-            />
-            <WidgetCard
-              icon="history"
-              label="Activity"
-              primary={`${activityFeed.length} Events`}
-              secondary="Today's log"
-              onClick={() => handleWidgetExpand('activity')}
-            />
-          </div>
         </div>
-      </div>
+      )}
 
-      {/* Widget expansion overlay */}
+      {/* Layer 6: Widget expanded overlay */}
       {effectiveExpandedWidget !== null && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            top: 'var(--topbar-height)',
-            bottom: 'var(--bottom-nav-height)',
-            background: 'var(--color-surface-50)',
-            zIndex: 40,
-            overflowY: 'auto',
-          }}
-        >
+        <div style={{
+          position: 'fixed', inset: 0,
+          top: 'var(--topbar-height)',
+          bottom: 0,
+          background: 'var(--color-surface-50)',
+          zIndex: 40, overflowY: 'auto',
+          paddingBottom: 'calc(var(--bottom-nav-height) + 8px)',
+        }}>
           {renderExpandedContent()}
         </div>
       )}

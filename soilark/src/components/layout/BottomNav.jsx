@@ -18,15 +18,18 @@ export default function BottomNav() {
     <nav
       style={{
         position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 'var(--bottom-nav-height)',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        background: 'var(--color-deep-950)',
-        borderTop: '1px solid var(--color-deep-900)',
+        bottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
+        left: 16,
+        right: 16,
+        paddingBottom: 0,
+        background: 'rgba(30, 34, 24, 0.72)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        border: '1px solid rgba(255,255,255,0.09)',
+        borderRadius: 20,
+        padding: '8px 6px',
         display: 'flex',
-        alignItems: 'stretch',
+        alignItems: 'center',
         zIndex: 50,
       }}
     >
@@ -43,29 +46,30 @@ export default function BottomNav() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: 2,
-              background: 'none',
-              border: 'none',
-              borderTop: active ? '2px solid var(--color-green-500)' : '2px solid transparent',
+              background: active ? 'rgba(78,140,53,0.22)' : 'none',
+              border: active ? '1px solid rgba(78,140,53,0.3)' : '1px solid transparent',
+              borderRadius: 14,
               cursor: 'pointer',
               minHeight: 44,
-              padding: 0,
+              padding: '6px 10px',
             }}
           >
             <span
               className="material-symbols-outlined"
               style={{
-                fontSize: 20,
-                color: active ? 'var(--color-green-500)' : 'rgba(255,255,255,0.5)',
+                fontSize: 22,
+                color: active ? 'var(--color-green-300)' : 'rgba(255,255,255,0.32)',
               }}
             >
               {item.icon}
             </span>
             <span
               style={{
-                fontSize: 10,
-                fontFamily: 'var(--font-body)',
-                fontWeight: 500,
-                color: active ? 'var(--color-green-500)' : 'rgba(255,255,255,0.5)',
+                fontSize: 9,
+                fontFamily: 'var(--font-mono)',
+                letterSpacing: '0.07em',
+                textTransform: 'uppercase',
+                color: active ? 'var(--color-green-300)' : 'rgba(255,255,255,0.3)',
               }}
             >
               {item.label == "Overview" ? "Home" : item.label}
