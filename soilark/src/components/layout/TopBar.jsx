@@ -78,7 +78,7 @@ export default function TopBar() {
         height: 'calc(var(--topbar-height) + env(safe-area-inset-top, 0px))',
         paddingTop: 'env(safe-area-inset-top, 0px)',
         paddingInline: '24px',
-        background: 'linear-gradient(to right, var(--color-deep-900), var(--color-deep-800))',
+        background: 'var(--color-deep-900)',
       }}
     >
       {/* Left: Breadcrumb */}

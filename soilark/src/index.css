@@ -94,12 +94,22 @@
 
 /* === Base === */
 
+:root {
+  --sat: env(safe-area-inset-top);
+}
+
+header {
+  background-color: var(--color-deep-900);
+  padding-top: var(--sat);
+}
+
 body {
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 1.5;
   color: var(--color-slate-900);
   background: var(--color-surface-50);
+  background-color: var(--color-deep-900);
   margin: 0;
 }
 
