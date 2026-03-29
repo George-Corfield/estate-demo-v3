@@ -20,7 +20,7 @@ const TABS = [
   { id: 'history', label: 'Timeline / History' },
 ]
 
-export default function MachineryDetailView({ equipmentId, onClose, onServiceDateClick }) {
+export default function MachineryDetailView({ equipmentId, onClose, onServiceDateClick, hideHeader }) {
   const { machinery, tasks, addServiceRecord, updateMachinery, showToast } = useApp()
   const [activeTab, setActiveTab] = useState('summary')
   const [showServiceForm, setShowServiceForm] = useState(false)
@@ -45,7 +45,7 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
   return (
     <div className="flex flex-col h-full">
       {/* Sticky Panel Header */}
-      <div style={{
+      {!hideHeader && <div style={{
         padding: '12px 16px',
         borderBottom: '1px solid var(--color-surface-300)',
         background: 'var(--color-surface-100)',
@@ -78,7 +78,7 @@ export default function MachineryDetailView({ equipmentId, onClose, onServiceDat
             </div>
           </div>
         </div>
-      </div>
+      </div>}
 
       <TabBar tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
 
