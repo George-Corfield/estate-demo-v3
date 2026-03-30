@@ -8,6 +8,7 @@ import TaskDetailView from './TaskDetailView'
 import TaskCreateForm from './TaskCreateForm'
 import AITaskInput from './AITaskInput'
 import MobileTaskOverlay from './MobileTaskOverlay'
+import MobileTaskCreateOverlay from './MobileTaskCreateOverlay'
 import EstateMap from '../../components/shared/EstateMap'
 import Calendar from '../../components/shared/Calendar'
 
@@ -145,6 +146,34 @@ export default function TasksPage() {
         <MobileTaskOverlay
           taskId={selectedTaskId}
           onBack={() => setActiveView('kanban')}
+        />
+      )
+    }
+    if (activeView === 'ai-input') {
+      return (
+        <AITaskInput
+          onBack={() => setActiveView('kanban')}
+          onGenerate={(result) => {
+            setInitialValues(result)
+            setSelectedFieldIds(result.fieldIds)
+            setDueDate(result.dueDate)
+            setFormKey(k => k + 1)
+            setActiveView('create')
+          }}
+        />
+      )
+    }
+    if (activeView === 'create') {
+      return (
+        <MobileTaskCreateOverlay
+          formKey={formKey}
+          selectedFieldIds={selectedFieldIds}
+          setSelectedFieldIds={setSelectedFieldIds}
+          dueDate={dueDate}
+          setDueDate={setDueDate}
+          onCancel={() => setActiveView('kanban')}
+          onSave={() => setActiveView('kanban')}
+          initialValues={initialValues}
         />
       )
     }
