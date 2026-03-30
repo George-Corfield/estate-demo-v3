@@ -39,9 +39,12 @@ function PropItem({ label, value, accent }) {
 }
 
 export default function MobileMachineryOverlay({ equipmentId, onBack }) {
-  const { machinery, tasks, fields } = useApp()
+  const { machinery, tasks, fields, overlayInteraction } = useApp()
   const [snap, setSnap] = useState('mid')
+  const [dragHeight, setDragHeight] = useState(null)
   const dragStartY = useRef(null)
+  const dragStartHeight = useRef(null)
+  const dragHeightRef = useRef(null)
 
   const equipment = useMemo(() => machinery.find(m => m.id === equipmentId), [machinery, equipmentId])
 
@@ -71,10 +74,33 @@ export default function MobileMachineryOverlay({ equipmentId, onBack }) {
   const statusColors = STATUS_DARK[equipment.status] || STATUS_DARK.Available
   const typeIcon = TYPE_ICON_MAP[equipment.type] || 'build'
 
-  const handleTouchStart = (e) => { dragStartY.current = e.touches[0].clientY }
+  const handleTouchStart = (e) => {
+    dragStartY.current = e.touches[0].clientY
+    dragStartHeight.current = dragHeight ?? (window.innerHeight * parseFloat(SNAPS[snap]) / 100)
+  }
+
+  const handleTouchMove = (e) => {
+    if (dragStartY.current === null) return
+    const delta = dragStartY.current - e.touches[0].clientY
+    const minPx = window.innerHeight * 0.22
+    const maxPx = window.innerHeight * 0.95
+    const newH = Math.min(maxPx, Math.max(minPx, dragStartHeight.current + delta))
+    dragHeightRef.current = newH
+    setDragHeight(newH)
+    const midPx = window.innerHeight * 0.54
+    if (newH >= midPx) setSnap('full')
+    else if (newH >= minPx + 50 && newH < midPx) setSnap('mid')
+    else setSnap('minimal')
+  }
 
   const handleTouchEnd = (e) => {
     if (dragStartY.current === null) return
+    if (overlayInteraction === 'drag') {
+      // No snap, no close — height stays wherever released
+      dragStartY.current = null
+      dragHeightRef.current = null
+      return
+    }
     const delta = e.changedTouches[0].clientY - dragStartY.current
     dragStartY.current = null
     const idx = SNAP_ORDER.indexOf(snap)
@@ -82,6 +108,33 @@ export default function MobileMachineryOverlay({ equipmentId, onBack }) {
     else if (delta > 40 && idx > 0) setSnap(SNAP_ORDER[idx - 1])
     else if (delta > 40 && idx === 0) onBack()
   }
+
+  const handleClickUp = () => {
+    const idx = SNAP_ORDER.indexOf(snap)
+    if (idx < SNAP_ORDER.length - 1) setSnap(SNAP_ORDER[idx + 1])
+  }
+
+  const handleClickDown = () => {
+    const idx = SNAP_ORDER.indexOf(snap)
+    if (idx > 0) setSnap(SNAP_ORDER[idx - 1])
+    else onBack()
+  }
+
+  const sheetTouchHandlers = overlayInteraction === 'drag'
+    ? { onTouchStart: handleTouchStart, onTouchMove: handleTouchMove, onTouchEnd: handleTouchEnd }
+    : {}
+
+  const handleBarTouchHandlers = overlayInteraction === 'swipe'
+    ? { onTouchStart: handleTouchStart, onTouchEnd: handleTouchEnd }
+    : {}
+
+  const clickBtnStyle = {
+    position: 'absolute', background: 'none', border: 'none', cursor: 'pointer',
+    padding: '4px 8px', borderRadius: 6, color: 'rgba(255,255,255,0.5)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+  }
+
+  const isDragging = overlayInteraction === 'drag' && dragHeight !== null
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 60 }}>
@@ -132,12 +185,11 @@ export default function MobileMachineryOverlay({ equipmentId, onBack }) {
 
       {/* Bottom sheet */}
       <div
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        {...sheetTouchHandlers}
         style={{
           position: 'absolute',
           bottom: 0, left: 0, right: 0,
-          height: SNAPS[snap],
+          height: isDragging ? dragHeight + 'px' : SNAPS[snap],
           background: 'rgba(22,26,18,0.88)',
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
@@ -145,14 +197,24 @@ export default function MobileMachineryOverlay({ equipmentId, onBack }) {
           zIndex: 30,
           display: 'flex',
           flexDirection: 'column',
-          transition: 'height 320ms cubic-bezier(0.32,0.72,0,1)',
+          transition: isDragging ? 'none' : 'height 320ms cubic-bezier(0.32,0.72,0,1)',
           overflow: 'hidden',
           paddingBottom: 'var(--bottom-nav-height)',
         }}
       >
         {/* Drag handle */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 4px', flexShrink: 0 }}>
+        <div {...handleBarTouchHandlers} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 0 4px', flexShrink: 0, position: 'relative' }}>
+          {overlayInteraction === 'click' && (
+            <button onClick={handleClickDown} style={{ ...clickBtnStyle, left: 70 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>keyboard_arrow_down</span>
+            </button>
+          )}
           <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.2)' }} />
+          {overlayInteraction === 'click' && (
+            <button onClick={handleClickUp} style={{ ...clickBtnStyle, right: 70 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>keyboard_arrow_up</span>
+            </button>
+          )}
         </div>
 
         {/* Minimal snap */}

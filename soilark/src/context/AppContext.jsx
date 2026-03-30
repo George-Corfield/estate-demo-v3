@@ -22,6 +22,7 @@ const initialState = {
   notifications: [],
   currentUser: DEFAULT_USER,
   aiEnabled: false,
+  overlayInteraction: 'swipe',
 }
 
 let toastId = 0
@@ -446,6 +447,8 @@ function reducer(state, action) {
       return { ...state, usages: [...state.usages, action.usage] }
     case 'TOGGLE_AI':
       return { ...state, aiEnabled: !state.aiEnabled }
+    case 'SET_OVERLAY_INTERACTION':
+      return { ...state, overlayInteraction: action.value }
     case 'SWITCH_USER':
       return { ...state, currentUser: action.user }
     case 'SHOW_TOAST':
@@ -577,6 +580,10 @@ export function AppProvider({ children }) {
     dispatch({ type: 'TOGGLE_AI' })
   }, [])
 
+  const setOverlayInteraction = useCallback((value) => {
+    dispatch({ type: 'SET_OVERLAY_INTERACTION', value })
+  }, [])
+
   const switchUser = useCallback((user) => {
     dispatch({ type: 'SWITCH_USER', user })
   }, [])
@@ -625,6 +632,7 @@ export function AppProvider({ children }) {
     linkActivityTask,
     addCustomEvent,
     toggleAI,
+    setOverlayInteraction,
     switchUser,
     showToast,
     markNotificationRead,

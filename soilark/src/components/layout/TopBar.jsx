@@ -12,13 +12,15 @@ import useIsMobile from '../../hooks/useIsMobile'
 export default function TopBar() {
   const isMobile = useIsMobile()
   const location = useLocation()
-  const { currentUser, switchUser } = useApp()
+  const { currentUser, switchUser, aiEnabled, toggleAI, overlayInteraction, setOverlayInteraction } = useApp()
   const [showEstateSwitch, setShowEstateSwitch] = useState(false)
   const [showStats, setShowStats] = useState(false)
   const [showUserSwitch, setShowUserSwitch] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const estateSwitchRef = useRef(null)
   const statsRef = useRef(null)
   const userSwitchRef = useRef(null)
+  const settingsRef = useRef(null)
   const [dateStr, setDateStr] = useState(formatOrdinalDate(new Date()))
 
   const currentItem = NAV_ITEMS.find(item => {
@@ -48,10 +50,13 @@ export default function TopBar() {
       if (showUserSwitch && userSwitchRef.current && !userSwitchRef.current.contains(e.target)) {
         setShowUserSwitch(false)
       }
+      if (showSettings && settingsRef.current && !settingsRef.current.contains(e.target)) {
+        setShowSettings(false)
+      }
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
-  }, [showEstateSwitch, showStats, showUserSwitch])
+  }, [showEstateSwitch, showStats, showUserSwitch, showSettings])
 
   const toggleEstate = () => {
     setShowEstateSwitch(!showEstateSwitch)
@@ -188,6 +193,79 @@ export default function TopBar() {
       <div className="flex items-center gap-3">
         {!isMobile && <div className="text-body opacity-90" style={{color: 'white'}}>{dateStr}</div>}
         <NotificationBell />
+        {isMobile && (
+          <div className="relative" ref={settingsRef}>
+            <button
+              onClick={() => setShowSettings(v => !v)}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer', padding: 4,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 22, color: 'rgba(255,255,255,0.7)' }}>settings</span>
+            </button>
+            {showSettings && (
+              <div style={{
+                position: 'absolute', top: '100%', right: 0, marginTop: 8,
+                width: 260, background: 'var(--color-surface-50)',
+                border: '1px solid var(--color-surface-300)',
+                borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)',
+                zIndex: 100, overflow: 'hidden',
+              }}>
+                <div style={{ padding: '8px 0' }}>
+                  <p style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 600, color: 'var(--color-slate-400)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+                    Features
+                  </p>
+                  <button
+                    onClick={toggleAI}
+                    className="flex items-center gap-3 w-full"
+                    style={{ padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-surface-100)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-primary)' }}>auto_awesome</span>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-slate-900)', margin: 0 }}>AI Task Creation</p>
+                      <p style={{ fontSize: 11, color: 'var(--color-slate-400)', margin: '2px 0 0' }}>Natural language task input</p>
+                    </div>
+                    <div style={{
+                      width: 36, height: 20, borderRadius: 10,
+                      background: aiEnabled ? 'var(--color-primary)' : 'var(--color-surface-300)',
+                      position: 'relative', transition: 'background 150ms ease', flexShrink: 0,
+                    }}>
+                      <div style={{
+                        position: 'absolute', top: 2, left: aiEnabled ? 18 : 2,
+                        width: 16, height: 16, borderRadius: '50%',
+                        background: 'white', transition: 'left 150ms ease',
+                      }} />
+                    </div>
+                  </button>
+                  <p style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 600, color: 'var(--color-slate-400)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+                    Overlays
+                  </p>
+                  <div style={{ padding: '8px 16px 10px' }}>
+                    <p style={{ fontSize: 12, color: 'var(--color-slate-600)', marginBottom: 6, margin: '0 0 6px' }}>
+                      Expand/collapse mode
+                    </p>
+                    <div style={{ display: 'flex', borderRadius: 8, overflow: 'hidden', border: '1px solid var(--color-surface-300)' }}>
+                      {['click', 'swipe', 'drag'].map(mode => (
+                        <button key={mode} onClick={() => setOverlayInteraction(mode)}
+                          style={{
+                            flex: 1, padding: '7px 0', fontSize: 12, fontWeight: 500,
+                            background: overlayInteraction === mode ? 'var(--color-primary)' : 'transparent',
+                            color: overlayInteraction === mode ? '#000' : 'var(--color-slate-600)',
+                            border: 'none', cursor: 'pointer', textTransform: 'capitalize',
+                            transition: 'background 150ms ease, color 150ms ease',
+                          }}
+                        >{mode}</button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         <div className="relative" ref={userSwitchRef}>
           <button
             onClick={toggleUserSwitch}
