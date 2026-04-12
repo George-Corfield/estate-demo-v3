@@ -242,9 +242,7 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
                       outlineOffset: -2,
                       zIndex: selected ? 10 : 'auto',
                       cursor: 'pointer',
-                      border: 'none',
-                      borderRight: '1px solid var(--color-surface-300)',
-                      borderBottom: '1px solid var(--color-surface-300)',
+                      border: 'none'
                     }}
                   >
                     {today ? (

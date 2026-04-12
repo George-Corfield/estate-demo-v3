@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import EstateMap from '../../components/shared/EstateMap'
-import TaskCreateForm from './TaskCreateForm'
+import MobileTaskCreateStepper from './MobileTaskCreateStepper'
 import { useApp } from '../../context/AppContext'
 
 const SNAPS = { peek: '28vh', mid: '58vh', full: '95vh' }
@@ -10,14 +10,11 @@ export default function MobileTaskCreateOverlay({
   formKey,
   selectedFieldIds,
   setSelectedFieldIds,
-  dueDate,
-  setDueDate,
   onCancel,
   onSave,
-  initialValues,
 }) {
   const { overlayInteraction } = useApp()
-  const [snap, setSnap] = useState('mid')
+  const [snap, setSnap] = useState('full')
   const [dragHeight, setDragHeight] = useState(null)
   const dragStartY = useRef(null)
   const dragStartHeight = useRef(null)
@@ -167,16 +164,13 @@ export default function MobileTaskCreateOverlay({
 
         {/* Form fills the sheet */}
         <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <TaskCreateForm
+          <MobileTaskCreateStepper
             key={formKey}
             selectedFieldIds={selectedFieldIds}
             setSelectedFieldIds={setSelectedFieldIds}
-            dueDate={dueDate}
-            setDueDate={setDueDate}
             onCancel={onCancel}
             onSave={onSave}
-            onFocusDate={() => {}}
-            initialValues={initialValues}
+            onStepChange={(idx) => setSnap(idx === 1 ? 'mid' : 'full')}
           />
         </div>
       </div>
