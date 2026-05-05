@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const PRESET_QUERY = 'Show me what I have done for fertilisation previously on North Field'
@@ -14,9 +14,13 @@ export default function AskLandarkPanel({ onClose }) {
   const [query, setQuery] = useState(PRESET_QUERY)
   const navigate = useNavigate()
 
+  useEffect(() => () => clearTimeout(timerRef.current), [])
+
+  const timerRef = useRef(null)
+
   const handleAsk = () => {
     setPhase('thinking')
-    setTimeout(() => setPhase('response'), 2000)
+    timerRef.current = setTimeout(() => setPhase('response'), 2000)
   }
 
   const handleReset = () => {
@@ -51,8 +55,10 @@ export default function AskLandarkPanel({ onClose }) {
           Ask LandArk
         </span>
         <button
+          type="button"
           onClick={onClose}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
+          className="btn btn-ghost"
+          style={{ padding: 4 }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-slate-500)' }}>
             close
@@ -87,24 +93,12 @@ export default function AskLandarkPanel({ onClose }) {
           <textarea
             value={query}
             onChange={e => setQuery(e.target.value)}
-            style={{
-              width: '100%',
-              flex: 1,
-              minHeight: 140,
-              maxHeight: 240,
-              resize: 'vertical',
-              border: '1px solid var(--color-surface-300)',
-              borderRadius: 'var(--radius-sm)',
-              background: 'var(--color-surface-50)',
-              padding: 12,
-              fontSize: 13,
-              color: 'var(--color-slate-800)',
-              fontFamily: 'var(--font-body)',
-              boxSizing: 'border-box',
-            }}
+            className="form-textarea"
+            style={{ minHeight: 140, maxHeight: 240, resize: 'vertical' }}
           />
           <div style={{ display: 'flex', marginTop: 16 }}>
             <button
+              type="button"
               className="btn btn-primary"
               style={{ flex: 1 }}
               onClick={handleAsk}
@@ -214,6 +208,7 @@ export default function AskLandarkPanel({ onClose }) {
           </p>
 
           <button
+            type="button"
             className="btn btn-ghost"
             style={{ marginTop: 16 }}
             onClick={handleReset}
