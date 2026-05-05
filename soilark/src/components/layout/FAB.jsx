@@ -8,7 +8,7 @@ const MANAGER_ACTIONS = [
   { icon: 'add_task', label: 'Add Task', color: 'bg-blue-500', action: 'task' },
   { icon: 'visibility', label: 'Add Observation', color: 'bg-teal-500', action: 'observation' },
   { icon: 'draw', label: 'Draw', color: 'bg-purple-500', action: 'draw', disabled: true },
-  { icon: 'smart_toy', label: 'Ask LandArk', color: 'bg-emerald-600', action: 'landark', disabled: true },
+  { icon: 'smart_toy', label: 'Ask LandArk', color: 'bg-emerald-600', action: 'landark' },
 ]
 
 const WORKER_ACTIONS = [
@@ -16,7 +16,7 @@ const WORKER_ACTIONS = [
   { icon: 'visibility', label: 'Add Observation', color: 'bg-teal-500', action: 'observation' },
   { icon: 'sick', label: 'Report Sick', color: 'bg-red-500', action: 'reportSick'},
   { icon: 'event', label: 'Book Holiday', color: 'bg-amber-500', action: 'bookHoliday', disabled: true },
-  { icon: 'smart_toy', label: 'Ask LandArk', color: 'bg-emerald-600', action: 'landark', disabled: true },
+  { icon: 'smart_toy', label: 'Ask LandArk', color: 'bg-emerald-600', action: 'landark' },
 ]
 
 const CLICK_BUFFER = 12 // px buffer around the FAB container for misclicks
@@ -112,6 +112,10 @@ export default function FAB() {
       } else {
         navigate('/tasks', { state: { createTask: true } })
       }
+      return
+    }
+    if (action === 'landark') {
+      window.dispatchEvent(new CustomEvent('open-ask-landark'))
       return
     }
     console.log(`FAB action: ${action}`)

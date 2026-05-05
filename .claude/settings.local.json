@@ -14,7 +14,11 @@
       "Bash(npm run lint:*)",
       "Bash(npx eslint:*)",
       "WebFetch(domain:open-meteo.com)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(node --input-type=module)",
+      "Bash(echo \"exit: $?\")"
     ]
   }
 }
