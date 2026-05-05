@@ -179,6 +179,41 @@ export default function Sidebar() {
       {/* Footer: Settings */}
       <div className="mt-auto w-full pb-4" style={{ padding: '0 10px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
         <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent('open-ask-landark'))}
+          className="flex items-center gap-3 w-full text-left mt-2"
+          style={{
+            padding: '8px 10px',
+            borderRadius: 'var(--radius-lg)',
+            background: 'rgba(19,236,19,0.1)',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 150ms ease',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(19,236,19,0.18)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(19,236,19,0.1)' }}
+        >
+          <span
+            className="material-symbols-outlined shrink-0"
+            style={{ fontSize: 20, color: 'var(--color-green-500)' }}
+          >
+            smart_toy
+          </span>
+          <span
+            className="whitespace-nowrap"
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 14,
+              fontWeight: 500,
+              color: 'var(--color-green-500)',
+              opacity: expanded ? 1 : 0,
+              transition: 'opacity 200ms ease',
+            }}
+          >
+            Ask LandArk
+          </span>
+        </button>
+        <button
           ref={settingsBtnRef}
           onClick={() => setShowSettings(v => !v)}
           className="flex items-center gap-3 w-full text-left mt-2"
