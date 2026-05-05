@@ -112,7 +112,10 @@ export default function MobileCalendar({ onDaySelect, selectedDate: externalSele
       <MobileCalendarStrip
         events={filteredEvents}
         selectedDate={activeSelectedDate}
-        onDaySelect={handleDayTap}
+        onDaySelect={(date) => {
+          setSelectedDate(date)
+          if (mode === 'select' && onDaySelect) onDaySelect(date)
+        }}
       />
 
       {/* Filter bar */}

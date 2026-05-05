@@ -29,13 +29,13 @@ export default function MobileAgendaList({ events, selectedDate, onDayTap, onEve
   const listRef = useRef(null)
   const headingRefs = useRef({})
 
-  // Build groups: show from 30 days ago to 90 days ahead
+  // Build groups: show from 180 days ago to 365 days ahead
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const windowStart = new Date(today)
-  windowStart.setDate(windowStart.getDate() - 30)
+  windowStart.setDate(windowStart.getDate() - 180)
   const windowEnd = new Date(today)
-  windowEnd.setDate(windowEnd.getDate() + 90)
+  windowEnd.setDate(windowEnd.getDate() + 365)
 
   const filteredEvents = events.filter(ev => {
     const d = new Date(ev.date)
@@ -45,14 +45,24 @@ export default function MobileAgendaList({ events, selectedDate, onDayTap, onEve
 
   const groups = buildDateGroups(filteredEvents)
 
-  // Scroll to selected date or today on mount / selectedDate change
+  // Scroll to selected date (or nearest group) on mount / selectedDate change
   useEffect(() => {
     if (!listRef.current) return
     const targetKey = selectedDate ? formatDateKey(selectedDate) : formatDateKey(new Date())
-    const el = headingRefs.current[targetKey]
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+    // Try exact match first
+    if (headingRefs.current[targetKey]) {
+      headingRefs.current[targetKey].scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
     }
+
+    // Find nearest group by date key comparison
+    const keys = Object.keys(headingRefs.current).sort()
+    if (keys.length === 0) return
+    const nearest = keys.reduce((prev, cur) =>
+      Math.abs(cur.localeCompare(targetKey)) < Math.abs(prev.localeCompare(targetKey)) ? cur : prev
+    )
+    headingRefs.current[nearest]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [selectedDate])
 
   if (groups.length === 0) {

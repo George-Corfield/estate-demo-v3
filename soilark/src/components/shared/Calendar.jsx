@@ -5,6 +5,7 @@ import { aggregateEvents, getEventsForDate } from '../../utils/events'
 import { EVENT_TYPE_BG, EVENT_FILTER_COLORS, EVENT_TYPE_TO_FILTER, EVENT_SUBTYPE_ICONS } from '../../constants/colors'
 import CalendarDayPanel from './CalendarDayPanel'
 import NewEventPanel from './NewEventPanel'
+import MobileCalendar from './MobileCalendar'
 import useIsMobile from '../../hooks/useIsMobile'
 
 const MAX_VISIBLE_EVENTS = 2
@@ -51,6 +52,19 @@ export default function Calendar({ onDaySelect, selectedDate: externalSelectedDa
     () => getMonthDays(currentYear, currentMonth, true),
     [currentYear, currentMonth]
   )
+
+  if (isMobile) {
+    return (
+      <MobileCalendar
+        onDaySelect={onDaySelect}
+        selectedDate={externalSelectedDate}
+        navigateToDate={navigateToDate}
+        mode={mode}
+        bookingMachine={bookingMachine}
+        onBookingConfirmed={onBookingConfirmed}
+      />
+    )
+  }
 
   const handlePrev = () => {
     if (currentMonth === 0) {
